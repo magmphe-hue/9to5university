@@ -20,7 +20,7 @@
 </div>
 
 <div class="main-header">
-  <a href="#" class="logo-link" onclick="switchPage('home'); return false;">
+  <a href="#" class="logo-link" id="logoHomeLink">
     <img src="https://i.postimg.cc/8Chj1H8D/file-00000000d4b4722f8dcbec10fa906d0a.png" alt="9to5 University Logo">
   </a>
   <div class="crest-right">
@@ -51,7 +51,7 @@
         <div class="stat-card"><div class="stat-number">24/7</div><div>Resource Access</div></div>
         <div class="stat-card"><div class="stat-number">R500+</div><div>Commission Opportunities</div></div>
       </div>
-      <div><button class="btn-primary" onclick="switchPage('resume')">Create Professional CV →</button><button class="btn-outline" style="margin-left:1rem;" onclick="switchPage('rights')">Know Your Rights</button></div>
+      <div><button class="btn-primary" data-page="resume">Create Professional CV →</button><button class="btn-outline" style="margin-left:1rem;" data-page="rights">Know Your Rights</button></div>
     </div>
     <div class="hero-card">
       <i class="fas fa-info-circle" style="font-size:2rem;"></i>
@@ -62,9 +62,9 @@
 
   <div class="section-header"><i class="fas fa-briefcase"></i><h2>Official Services</h2></div>
   <div class="card-grid">
-    <div class="service-card"><div class="service-icon"><i class="fas fa-file-alt"></i></div><h3>Resume Builder</h3><p>7 professional CV templates. Free PDF download.</p><a href="#" onclick="switchPage('resume')" style="color:#00a2ad; font-weight:600;">Access Tool →</a></div>
-    <div class="service-card"><div class="service-icon"><i class="fas fa-gavel"></i></div><h3>Labour Rights Guide</h3><p>Comprehensive South African labour law resource. BCEA & LRA.</p><a href="#" onclick="switchPage('rights')" style="color:#00a2ad;">Read Guide →</a></div>
-    <div class="service-card"><div class="service-icon"><i class="fas fa-flag-checkered"></i></div><h3>Misconduct Reporting</h3><p>Official channels for CCMA, Department of Labour, and legal recourse.</p><a href="#" onclick="switchPage('issues')" style="color:#00a2ad;">Report →</a></div>
+    <div class="service-card"><div class="service-icon"><i class="fas fa-file-alt"></i></div><h3>Resume Builder</h3><p>7 professional CV templates. Free PDF download.</p><a href="#" data-page="resume" class="service-link">Access Tool →</a></div>
+    <div class="service-card"><div class="service-icon"><i class="fas fa-gavel"></i></div><h3>Labour Rights Guide</h3><p>Comprehensive South African labour law resource. BCEA & LRA.</p><a href="#" data-page="rights" class="service-link">Read Guide →</a></div>
+    <div class="service-card"><div class="service-icon"><i class="fas fa-flag-checkered"></i></div><h3>Misconduct Reporting</h3><p>Official channels for CCMA, Department of Labour, and legal recourse.</p><a href="#" data-page="issues" class="service-link">Report →</a></div>
   </div>
 
   <!-- CHORES CORNER -->
@@ -74,16 +74,18 @@
       <div class="chores-grid">
         <div class="chore-item"><i class="fas fa-code"></i><h4>Web Design Referral</h4><div class="chore-amount">R500</div><p>Refer a client who needs a website, hosting, or management.</p><a href="https://www.facebook.com/ondablock1" target="_blank" class="btn-primary">Refer Now →</a></div>
         <div class="chore-item"><i class="fas fa-mobile-alt"></i><h4>Tech Trade-in Referral</h4><div class="chore-amount">R300</div><p>Refer someone selling or buying pre-owned electronics.</p><a href="https://www.facebook.com/profile.php?id=100085596154873" target="_blank" class="btn-primary">Learn More →</a></div>
-        <div class="chore-item"><i class="fas fa-crown"></i><h4>Hustler Nomination</h4><div class="chore-amount">R300</div><p>Nominate an entrepreneur to be featured as Hustler of the Month.</p><a href="#" onclick="alert('Send nominations to mphelamlangeni@gmail.com with story and contact.')" class="btn-primary">Nominate →</a></div>
+        <div class="chore-item"><i class="fas fa-crown"></i><h4>Hustler Nomination</h4><div class="chore-amount">R300</div><p>Nominate an entrepreneur to be featured as Hustler of the Month.</p><a href="#" class="btn-primary" id="nominateBtn">Nominate →</a></div>
       </div>
     </div>
   </div>
 
-  <!-- HUSTLER OF THE MONTH - Clean, non‑overlapping layout -->
+  <!-- HUSTLER OF THE MONTH - Fixed layout -->
   <div class="feature-card">
     <div class="feature-header"><i class="fas fa-crown"></i><span>HUSTLER OF THE MONTH</span><span>MARCH 2025</span></div>
     <div class="feature-content">
-      <div class="feature-image"><img src="https://i.ibb.co/zW8y8KKb/FB-IMG-17740408166780955.jpg" alt="Ericsson Dorra Watch"></div>
+      <div class="feature-image">
+        <img src="https://i.ibb.co/zW8y8KKb/FB-IMG-17740408166780955.jpg" alt="Ericsson Dorra Watch">
+      </div>
       <div class="feature-story">
         <div class="founder-name">Buhle Gotsha</div>
         <div class="brand-tag">Founder, Ericsson Dorra Timepiece</div>
@@ -175,7 +177,7 @@
 <footer class="footer">
   <div class="footer-grid">
     <div class="footer-col"><h4>9to5 UNIVERSITY</h4><p>South Africa's first integrated workplace resource. Free tools, legal guidance, and entrepreneurial recognition.</p></div>
-    <div class="footer-col"><h4>RESOURCES</h4><a href="#" onclick="switchPage('resume')">Resume Builder</a><br><a href="#" onclick="switchPage('rights')">Workers' Rights</a><br><a href="#" onclick="switchPage('issues')">Report Misconduct</a></div>
+    <div class="footer-col"><h4>RESOURCES</h4><a href="#" data-page="resume" class="footer-link">Resume Builder</a><br><a href="#" data-page="rights" class="footer-link">Workers' Rights</a><br><a href="#" data-page="issues" class="footer-link">Report Misconduct</a></div>
     <div class="footer-col"><h4>PARTNERS</h4><a href="https://www.facebook.com/ondablock1" target="_blank">ON-DA BLOCK</a><br><a href="https://www.facebook.com/profile.php?id=100085596154873" target="_blank">Judacelia</a></div>
     <div class="footer-col"><h4>CONTACT</h4><p>079 487 4559</p><p>mphelamlangeni@gmail.com</p></div>
   </div>

@@ -258,7 +258,6 @@ body {
   border-radius: 28px;
   border: 1px solid #e5e7eb;
   margin: 1.5rem 5% 2rem;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.02);
   overflow: hidden;
 }
 .chores-header, .feature-header {
@@ -266,18 +265,21 @@ body {
   padding: 1rem 2rem;
   display: flex;
   align-items: center;
-  gap: 12px;
-  border-bottom: 1px solid #e5e7eb;
+  justify-content: space-between;
   flex-wrap: wrap;
+  gap: 1rem;
+  border-bottom: 1px solid #e5e7eb;
 }
 .chores-header i, .feature-header i { color: var(--accent); font-size: 1.3rem; }
 .chores-header h3, .feature-header span { font-weight: 700; color: var(--primary); }
+.chores-content {
+  padding: 2rem;
+}
 .chores-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
   justify-content: center;
-  padding: 2rem;
 }
 .chore-item {
   flex: 1;
@@ -290,7 +292,6 @@ body {
 }
 .chore-item:hover {
   transform: translateY(-3px);
-  border-color: var(--accent);
 }
 .chore-icon {
   font-size: 2rem;
@@ -395,8 +396,8 @@ body {
 }
 .partner-card {
   flex: 1;
-  padding: 1.5rem;
   margin: 0;
+  padding: 1.5rem;
 }
 .partner-header {
   display: flex;

@@ -1,9 +1,8 @@
-// script.js – Robust, production-ready
+// script.js – Fully functional, navigation and resume builder fixed
 // Supabase configuration (replace with your own)
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';       // e.g., 'https://xxxxx.supabase.co'
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
 const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
 
-// Initialize Supabase only if URLs are provided, otherwise use a dummy client
 let supabase = null;
 if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
   supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -46,6 +45,123 @@ document.body.addEventListener('click', (e) => {
 });
 
 // ==================== RESUME BUILDER ====================
+let currentPhotoUrl = 'https://via.placeholder.com/120?text=Photo';
+
+function parseExperience(text) {
+  return text.split('\n').filter(l=>l.trim()).map(l=>{
+    const p=l.split('|');
+    return {position:p[0]||'',company:p[1]||'',location:p[2]||'',start:p[3]||'',end:p[4]||'',description:p[5]||''};
+  });
+}
+function parseEducation(text) {
+  return text.split('\n').filter(l=>l.trim()).map(l=>{
+    const p=l.split('|');
+    return {institution:p[0]||'',degree:p[1]||'',start:p[2]||'',end:p[3]||''};
+  });
+}
+function parseAwards(text) {
+  return text.split('\n').filter(l=>l.trim()).map(l=>{
+    const p=l.split('|');
+    return {title:p[0]||'',description:p[1]||'',year:p[2]||''};
+  });
+}
+function parseReferences(text) {
+  return text.split('\n').filter(l=>l.trim()).map(l=>{
+    const p=l.split('|');
+    return {name:p[0]||'',company:p[1]||'',phone:p[2]||'',email:p[3]||''};
+  });
+}
+
+const templates = {
+  minimal: `<div class="cv-template cv-minimal"><div class="header"><div><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}}</p></div><div><p>{{email}}</p><p>{{phone}}</p></div></div><p>{{summary}}</p><div class="main"><div class="left"><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> – {{company}}<br><small>{{start}}–{{end}}</small><br>{{description}}</p>{{/experience}}</div><div class="right"><h3>Skills</h3><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div></div></div>`,
+  sidebar: `<div class="cv-template cv-sidebar"><div class="left"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><p><strong>Contact</strong></p><p>{{phone}}</p><p>{{email}}</p><p>{{address}}</p><p><strong>Skills</strong></p><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul><p><strong>Languages</strong></p><ul>{{#languages}}<li>{{.}}</li>{{/languages}}</ul></div><div class="right"><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}}</p><p>{{summary}}</p><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}} ({{start}}–{{end}})<br>{{description}}</p>{{/experience}}<h3>Education</h3>{{#education}}<p><strong>{{degree}}</strong>, {{institution}} ({{start}}–{{end}})</p>{{/education}}</div></div>`,
+  elegant: `<div class="cv-template cv-elegant"><div class="left"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><h2>{{firstName}} {{lastName}}</h2><p>{{jobTitle}}</p><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div><div class="right"><h3>About</h3><p>{{summary}}</p><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}} ({{start}}–{{end}})<br>{{description}}</p>{{/experience}}<h3>Education</h3>{{#education}}<p>{{degree}}, {{institution}}</p>{{/education}}</div></div>`,
+  centered: `<div class="cv-template cv-centered"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}}</p><p>{{phone}} | {{email}} | {{address}}</p><p>{{summary}}</p><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> – {{company}} ({{start}}–{{end}})<br>{{description}}</p>{{/experience}}<h3>Skills</h3><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div>`,
+  modern: `<div class="cv-template cv-modern"><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}} | {{email}} | {{phone}}</p><p>{{summary}}</p><div class="columns"><div><h3>Skills</h3><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div><div><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}}<br>{{description}}</p>{{/experience}}</div></div></div>`,
+  card: `<div class="cv-template cv-card"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}} | {{email}} | {{phone}}</p><p>{{summary}}</p><div class="main"><div><h3>Education</h3>{{#education}}<p>{{degree}} – {{institution}} ({{start}}–{{end}})</p>{{/education}}</div><div><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}}<br>{{description}}</p>{{/experience}}</div></div></div>`,
+  classic: `<div class="cv-template cv-classic"><div class="left"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><h2>{{firstName}} {{lastName}}</h2><p>{{jobTitle}}</p><p><strong>Contact</strong><br>{{email}}<br>{{phone}}<br>{{address}}</p></div><div><p>{{summary}}</p><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}} ({{start}}–{{end}})<br>{{description}}</p>{{/experience}}<h3>Skills</h3><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div></div>`
+};
+
+function renderTemplate(templateName, data) {
+  let tpl = templates[templateName];
+  if (!tpl) return '<p>Template not found</p>';
+  tpl = tpl.replace(/{{#(\w+)}}([\s\S]*?){{\/\1}}/g, (match, key, inner) => {
+    const items = data[key] || [];
+    return items.map(item => {
+      let sub = inner;
+      Object.keys(item).forEach(k => { sub = sub.replace(new RegExp(`{{${k}}}`, 'g'), item[k] || ''); });
+      return sub;
+    }).join('');
+  });
+  Object.keys(data).forEach(key => {
+    const val = typeof data[key] === 'string' ? data[key] : (Array.isArray(data[key]) ? data[key].join(', ') : '');
+    tpl = tpl.replace(new RegExp(`{{${key}}}`, 'g'), val);
+  });
+  return tpl;
+}
+
+function updatePreview() {
+  const skillsArr = document.getElementById('skills').value.split(',').map(s=>s.trim());
+  const langsArr = document.getElementById('languages').value.split(',').map(l=>l.trim());
+  const exp = parseExperience(document.getElementById('experience').value);
+  const edu = parseEducation(document.getElementById('education').value);
+  const aw = parseAwards(document.getElementById('awards').value);
+  const ref = parseReferences(document.getElementById('references').value);
+  const data = {
+    firstName: document.getElementById('firstName').value,
+    lastName: document.getElementById('lastName').value,
+    jobTitle: document.getElementById('jobTitle').value,
+    phone: document.getElementById('phone').value,
+    email: document.getElementById('email').value,
+    address: document.getElementById('address').value,
+    summary: document.getElementById('summary').value,
+    skills: skillsArr,
+    languages: langsArr,
+    experience: exp,
+    education: edu,
+    awards: aw,
+    references: ref,
+    photoUrl: currentPhotoUrl
+  };
+  const tplName = document.getElementById('templateSelect').value;
+  const html = renderTemplate(tplName, data);
+  document.getElementById('cvPreview').innerHTML = html;
+  document.querySelectorAll('.photoUpload').forEach(inp => {
+    inp.removeEventListener('change', handlePhoto);
+    inp.addEventListener('change', handlePhoto);
+  });
+}
+
+function handlePhoto(e) {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => { currentPhotoUrl = ev.target.result; updatePreview(); };
+  reader.readAsDataURL(file);
+}
+
+async function downloadPDF() {
+  const element = document.querySelector('#cvPreview .cv-template');
+  if (!element) {
+    alert('No resume preview to download.');
+    return;
+  }
+  try {
+    const canvas = await html2canvas(element, { scale: 3, backgroundColor: '#ffffff', logging: false });
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const imgWidth = pdfWidth - 20;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+    pdf.save('resume_9to5.pdf');
+  } catch(err) {
+    console.error(err);
+    alert('PDF generation failed. Please try again.');
+  }
+}
+
 function reloadResumeBuilder() {
   const templateSelect = document.getElementById('templateSelect');
   if (templateSelect) {
@@ -252,132 +368,12 @@ window.loadResume = async function(resumeId) {
   }
 };
 
-// ==================== RESUME BUILDER CORE ====================
-let currentPhotoUrl = 'https://via.placeholder.com/120?text=Photo';
-
-function parseExperience(text) {
-  return text.split('\n').filter(l=>l.trim()).map(l=>{
-    const p=l.split('|');
-    return {position:p[0]||'',company:p[1]||'',location:p[2]||'',start:p[3]||'',end:p[4]||'',description:p[5]||''};
-  });
-}
-function parseEducation(text) {
-  return text.split('\n').filter(l=>l.trim()).map(l=>{
-    const p=l.split('|');
-    return {institution:p[0]||'',degree:p[1]||'',start:p[2]||'',end:p[3]||''};
-  });
-}
-function parseAwards(text) {
-  return text.split('\n').filter(l=>l.trim()).map(l=>{
-    const p=l.split('|');
-    return {title:p[0]||'',description:p[1]||'',year:p[2]||''};
-  });
-}
-function parseReferences(text) {
-  return text.split('\n').filter(l=>l.trim()).map(l=>{
-    const p=l.split('|');
-    return {name:p[0]||'',company:p[1]||'',phone:p[2]||'',email:p[3]||''};
-  });
-}
-
-const templates = {
-  minimal: `<div class="cv-template cv-minimal"><div class="header"><div><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}}</p></div><div><p>{{email}}</p><p>{{phone}}</p></div></div><p>{{summary}}</p><div class="main"><div class="left"><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> – {{company}}<br><small>{{start}}–{{end}}</small><br>{{description}}</p>{{/experience}}</div><div class="right"><h3>Skills</h3><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div></div></div>`,
-  sidebar: `<div class="cv-template cv-sidebar"><div class="left"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><p><strong>Contact</strong></p><p>{{phone}}</p><p>{{email}}</p><p>{{address}}</p><p><strong>Skills</strong></p><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul><p><strong>Languages</strong></p><ul>{{#languages}}<li>{{.}}</li>{{/languages}}</ul></div><div class="right"><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}}</p><p>{{summary}}</p><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}} ({{start}}–{{end}})<br>{{description}}</p>{{/experience}}<h3>Education</h3>{{#education}}<p><strong>{{degree}}</strong>, {{institution}} ({{start}}–{{end}})</p>{{/education}}</div></div>`,
-  elegant: `<div class="cv-template cv-elegant"><div class="left"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><h2>{{firstName}} {{lastName}}</h2><p>{{jobTitle}}</p><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div><div class="right"><h3>About</h3><p>{{summary}}</p><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}} ({{start}}–{{end}})<br>{{description}}</p>{{/experience}}<h3>Education</h3>{{#education}}<p>{{degree}}, {{institution}}</p>{{/education}}</div></div>`,
-  centered: `<div class="cv-template cv-centered"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}}</p><p>{{phone}} | {{email}} | {{address}}</p><p>{{summary}}</p><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> – {{company}} ({{start}}–{{end}})<br>{{description}}</p>{{/experience}}<h3>Skills</h3><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div>`,
-  modern: `<div class="cv-template cv-modern"><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}} | {{email}} | {{phone}}</p><p>{{summary}}</p><div class="columns"><div><h3>Skills</h3><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div><div><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}}<br>{{description}}</p>{{/experience}}</div></div></div>`,
-  card: `<div class="cv-template cv-card"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}} | {{email}} | {{phone}}</p><p>{{summary}}</p><div class="main"><div><h3>Education</h3>{{#education}}<p>{{degree}} – {{institution}} ({{start}}–{{end}})</p>{{/education}}</div><div><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}}<br>{{description}}</p>{{/experience}}</div></div></div>`,
-  classic: `<div class="cv-template cv-classic"><div class="left"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><h2>{{firstName}} {{lastName}}</h2><p>{{jobTitle}}</p><p><strong>Contact</strong><br>{{email}}<br>{{phone}}<br>{{address}}</p></div><div><p>{{summary}}</p><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}} ({{start}}–{{end}})<br>{{description}}</p>{{/experience}}<h3>Skills</h3><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div></div>`
-};
-
-function renderTemplate(templateName, data) {
-  let tpl = templates[templateName];
-  if (!tpl) return '<p>Template not found</p>';
-  tpl = tpl.replace(/{{#(\w+)}}([\s\S]*?){{\/\1}}/g, (match, key, inner) => {
-    const items = data[key] || [];
-    return items.map(item => {
-      let sub = inner;
-      Object.keys(item).forEach(k => { sub = sub.replace(new RegExp(`{{${k}}}`, 'g'), item[k] || ''); });
-      return sub;
-    }).join('');
-  });
-  Object.keys(data).forEach(key => {
-    const val = typeof data[key] === 'string' ? data[key] : (Array.isArray(data[key]) ? data[key].join(', ') : '');
-    tpl = tpl.replace(new RegExp(`{{${key}}}`, 'g'), val);
-  });
-  return tpl;
-}
-
-function updatePreview() {
-  const skillsArr = document.getElementById('skills').value.split(',').map(s=>s.trim());
-  const langsArr = document.getElementById('languages').value.split(',').map(l=>l.trim());
-  const exp = parseExperience(document.getElementById('experience').value);
-  const edu = parseEducation(document.getElementById('education').value);
-  const aw = parseAwards(document.getElementById('awards').value);
-  const ref = parseReferences(document.getElementById('references').value);
-  const data = {
-    firstName: document.getElementById('firstName').value,
-    lastName: document.getElementById('lastName').value,
-    jobTitle: document.getElementById('jobTitle').value,
-    phone: document.getElementById('phone').value,
-    email: document.getElementById('email').value,
-    address: document.getElementById('address').value,
-    summary: document.getElementById('summary').value,
-    skills: skillsArr,
-    languages: langsArr,
-    experience: exp,
-    education: edu,
-    awards: aw,
-    references: ref,
-    photoUrl: currentPhotoUrl
-  };
-  const tplName = document.getElementById('templateSelect').value;
-  const html = renderTemplate(tplName, data);
-  document.getElementById('cvPreview').innerHTML = html;
-  document.querySelectorAll('.photoUpload').forEach(inp => {
-    inp.removeEventListener('change', handlePhoto);
-    inp.addEventListener('change', handlePhoto);
-  });
-}
-
-function handlePhoto(e) {
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => { currentPhotoUrl = ev.target.result; updatePreview(); };
-  reader.readAsDataURL(file);
-}
-
-async function downloadPDF() {
-  const element = document.querySelector('#cvPreview .cv-template');
-  if (!element) {
-    alert('No resume preview to download.');
-    return;
-  }
-  try {
-    const canvas = await html2canvas(element, { scale: 3, backgroundColor: '#ffffff', logging: false });
-    const imgData = canvas.toDataURL('image/png');
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const imgWidth = pdfWidth - 20;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-    pdf.save('resume_9to5.pdf');
-  } catch(err) {
-    console.error(err);
-    alert('PDF generation failed. Please try again.');
-  }
-}
-
 // ==================== INITIALIZATION ====================
 document.addEventListener('DOMContentLoaded', async () => {
   await checkUser();
-  // If resume page is active on load, set up listeners
   if (document.getElementById('resume-page').classList.contains('active-page')) {
     reloadResumeBuilder();
   }
-  // Nominate button alert
   const nominateBtn = document.getElementById('nominateBtn');
   if (nominateBtn) {
     nominateBtn.addEventListener('click', (e) => {

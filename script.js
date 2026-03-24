@@ -1,63 +1,75 @@
-// script.js – All errors fixed, globally accessible switchPage
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';       // Replace with your actual Supabase URL
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Replace with your actual anon key
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// script.js – Robust, production-ready
+// Supabase configuration (replace with your own)
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';       // e.g., 'https://xxxxx.supabase.co'
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
 
-// ==================== PAGE SWITCHING ====================
+// Initialize Supabase only if URLs are provided, otherwise use a dummy client
+let supabase = null;
+if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} else {
+  console.warn('Supabase not configured. Profile features will be disabled.');
+  supabase = {
+    auth: { getUser: async () => ({ data: { user: null } }) },
+    from: () => ({ select: () => ({ eq: () => ({ single: async () => ({ data: null }) }) }) })
+  };
+}
+
+// ==================== GLOBAL PAGE SWITCHING ====================
 window.switchPage = function(pageId) {
-  // Hide all sections
   document.querySelectorAll('.page-section').forEach(section => {
     section.classList.remove('active-page');
   });
-  // Show selected section
-  const targetSection = document.getElementById(pageId + '-page');
-  if (targetSection) targetSection.classList.add('active-page');
+  const target = document.getElementById(pageId + '-page');
+  if (target) target.classList.add('active-page');
   else console.error('Section not found:', pageId + '-page');
 
-  // Update active class on nav links
   document.querySelectorAll('.nav-link').forEach(link => {
     link.classList.remove('active');
     if (link.dataset.page === pageId) link.classList.add('active');
   });
   window.scrollTo(0, 0);
 
-  // Special handling for resume page to reattach dynamic listeners
   if (pageId === 'resume') {
     reloadResumeBuilder();
   }
   if (pageId === 'profile') renderProfilePage();
 };
 
-// Attach navigation listeners
-document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', (e) => {
+// Event delegation for all elements with data-page attribute
+document.body.addEventListener('click', (e) => {
+  let target = e.target.closest('[data-page]');
+  if (target && target.dataset.page) {
     e.preventDefault();
-    const page = link.dataset.page;
-    if (page) window.switchPage(page);
-  });
+    window.switchPage(target.dataset.page);
+  }
 });
 
 // ==================== RESUME BUILDER ====================
 function reloadResumeBuilder() {
-  // Re‑attach listeners that might have been lost
   const templateSelect = document.getElementById('templateSelect');
-  if (templateSelect) templateSelect.addEventListener('change', updatePreview);
-
+  if (templateSelect) {
+    templateSelect.removeEventListener('change', updatePreview);
+    templateSelect.addEventListener('change', updatePreview);
+  }
   const saveBtn = document.getElementById('saveResumeBtn');
-  if (saveBtn) saveBtn.addEventListener('click', saveCurrentResume);
-
+  if (saveBtn) {
+    saveBtn.removeEventListener('click', saveCurrentResume);
+    saveBtn.addEventListener('click', saveCurrentResume);
+  }
   const downloadBtn = document.getElementById('downloadPdfBtn');
-  if (downloadBtn) downloadBtn.addEventListener('click', downloadPDF);
-
-  // Input listeners
-  const inputIds = ['firstName','lastName','jobTitle','phone','email','address','summary','experience','education','skills','languages','awards','references'];
-  inputIds.forEach(id => {
+  if (downloadBtn) {
+    downloadBtn.removeEventListener('click', downloadPDF);
+    downloadBtn.addEventListener('click', downloadPDF);
+  }
+  const inputs = ['firstName','lastName','jobTitle','phone','email','address','summary','experience','education','skills','languages','awards','references'];
+  inputs.forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.removeEventListener('input', updatePreview);
-    if (el) el.addEventListener('input', updatePreview);
+    if (el) {
+      el.removeEventListener('input', updatePreview);
+      el.addEventListener('input', updatePreview);
+    }
   });
-
-  // Refresh preview
   updatePreview();
 }
 
@@ -65,9 +77,15 @@ function reloadResumeBuilder() {
 let currentUser = null;
 
 async function checkUser() {
-  const { data: { user } } = await supabase.auth.getUser();
-  currentUser = user;
-  return user;
+  if (!supabase || !supabase.auth) return null;
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    currentUser = user;
+    return user;
+  } catch (err) {
+    console.error('Supabase error:', err);
+    return null;
+  }
 }
 
 async function renderProfilePage() {
@@ -98,49 +116,52 @@ async function renderProfilePage() {
     return;
   }
 
-  // Fetch profile data
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single();
+  try {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
 
-  const { data: resumes } = await supabase
-    .from('resumes')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
+    const { data: resumes } = await supabase
+      .from('resumes')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
 
-  container.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-      <h2>Welcome, ${profile?.full_name || user.email}</h2>
-      <button class="btn-outline" id="logoutBtn">Sign Out</button>
-    </div>
-    <div style="margin-bottom: 2rem;">
-      <h3>Edit Profile</h3>
-      <input type="text" id="editName" placeholder="Full Name" value="${profile?.full_name || ''}">
-      <input type="text" id="editPhone" placeholder="Phone" value="${profile?.phone || ''}">
-      <button class="btn-primary" id="updateProfileBtn">Update Profile</button>
-    </div>
-    <div>
-      <h3>Saved Resumes</h3>
-      ${resumes?.length ? resumes.map(res => `
-        <div class="saved-resume-item">
-          <span><strong>${res.name || 'Resume'}</strong> (${new Date(res.created_at).toLocaleDateString()})</span>
-          <button class="btn-outline" data-id="${res.id}" onclick="loadResume('${res.id}')">Load</button>
-        </div>
-      `).join('') : '<p>No saved resumes yet. Create and save one from the Resume Builder.</p>'}
-    </div>
-  `;
-
-  document.getElementById('logoutBtn')?.addEventListener('click', logout);
-  document.getElementById('updateProfileBtn')?.addEventListener('click', async () => {
-    const full_name = document.getElementById('editName').value;
-    const phone = document.getElementById('editPhone').value;
-    await supabase.from('profiles').update({ full_name, phone }).eq('id', user.id);
-    alert('Profile updated!');
-    renderProfilePage();
-  });
+    container.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <h2>Welcome, ${profile?.full_name || user.email}</h2>
+        <button class="btn-outline" id="logoutBtn">Sign Out</button>
+      </div>
+      <div style="margin-bottom: 2rem;">
+        <h3>Edit Profile</h3>
+        <input type="text" id="editName" placeholder="Full Name" value="${profile?.full_name || ''}">
+        <input type="text" id="editPhone" placeholder="Phone" value="${profile?.phone || ''}">
+        <button class="btn-primary" id="updateProfileBtn">Update Profile</button>
+      </div>
+      <div>
+        <h3>Saved Resumes</h3>
+        ${resumes?.length ? resumes.map(res => `
+          <div class="saved-resume-item">
+            <span><strong>${res.name || 'Resume'}</strong> (${new Date(res.created_at).toLocaleDateString()})</span>
+            <button class="btn-outline" data-id="${res.id}" onclick="loadResume('${res.id}')">Load</button>
+          </div>
+        `).join('') : '<p>No saved resumes yet. Create and save one from the Resume Builder.</p>'}
+      </div>
+    `;
+    document.getElementById('logoutBtn')?.addEventListener('click', logout);
+    document.getElementById('updateProfileBtn')?.addEventListener('click', async () => {
+      const full_name = document.getElementById('editName').value;
+      const phone = document.getElementById('editPhone').value;
+      await supabase.from('profiles').update({ full_name, phone }).eq('id', user.id);
+      alert('Profile updated!');
+      renderProfilePage();
+    });
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = '<p>Error loading profile. Please try again later.</p>';
+  }
 }
 
 async function login() {
@@ -179,7 +200,6 @@ async function saveCurrentResume() {
     window.switchPage('profile');
     return;
   }
-
   const resumeData = {
     firstName: document.getElementById('firstName').value,
     lastName: document.getElementById('lastName').value,
@@ -196,13 +216,10 @@ async function saveCurrentResume() {
     references: document.getElementById('references').value,
     template: document.getElementById('templateSelect').value
   };
-
   const name = `${resumeData.firstName} ${resumeData.lastName}`.trim() || 'Untitled';
-
   const { error } = await supabase
     .from('resumes')
     .insert({ user_id: user.id, name, data: resumeData });
-
   if (error) alert('Error saving resume: ' + error.message);
   else alert('Resume saved successfully!');
 }
@@ -213,7 +230,6 @@ window.loadResume = async function(resumeId) {
     .select('data')
     .eq('id', resumeId)
     .single();
-
   if (resume && resume.data) {
     const d = resume.data;
     document.getElementById('firstName').value = d.firstName || '';
@@ -355,11 +371,18 @@ async function downloadPDF() {
 }
 
 // ==================== INITIALIZATION ====================
-window.addEventListener('load', async () => {
+document.addEventListener('DOMContentLoaded', async () => {
   await checkUser();
-  // Ensure resume builder listeners are attached
-  reloadResumeBuilder();
-  // Ensure the default active page is home (if not already)
-  const activePage = document.querySelector('.page-section.active-page');
-  if (!activePage) window.switchPage('home');
+  // If resume page is active on load, set up listeners
+  if (document.getElementById('resume-page').classList.contains('active-page')) {
+    reloadResumeBuilder();
+  }
+  // Nominate button alert
+  const nominateBtn = document.getElementById('nominateBtn');
+  if (nominateBtn) {
+    nominateBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Send nominations to mphelamlangeni@gmail.com with story and contact.');
+    });
+  }
 });

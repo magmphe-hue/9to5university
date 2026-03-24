@@ -1,23 +1,31 @@
-// script.js
-
-// ==================== SUPABASE CONFIGURATION ====================
-// Replace these with your actual Supabase URL and anon key.
-// For Vercel, use environment variables.
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+// script.js – Fully functional with fixed navigation
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';       // Replace with your actual Supabase URL
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Replace with your actual anon key
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ==================== PAGE SWITCHING ====================
 function switchPage(pageId) {
-  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active-page'));
-  document.getElementById(pageId + '-page').classList.add('active-page');
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-  const activeLink = Array.from(document.querySelectorAll('.nav-link')).find(l => l.dataset.page === pageId);
-  if (activeLink) activeLink.classList.add('active');
+  // Hide all sections
+  document.querySelectorAll('.page-section').forEach(section => {
+    section.classList.remove('active-page');
+  });
+  // Show selected section
+  const targetSection = document.getElementById(pageId + '-page');
+  if (targetSection) targetSection.classList.add('active-page');
+  else console.error('Section not found:', pageId + '-page');
+
+  // Update active class on nav links
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.classList.remove('active');
+    if (link.dataset.page === pageId) link.classList.add('active');
+  });
   window.scrollTo(0, 0);
+
+  // If profile page, render dynamic content
   if (pageId === 'profile') renderProfilePage();
 }
 
+// Attach navigation listeners
 document.querySelectorAll('.nav-link').forEach(link => {
   link.addEventListener('click', (e) => {
     e.preventDefault();
@@ -26,7 +34,7 @@ document.querySelectorAll('.nav-link').forEach(link => {
   });
 });
 
-// ==================== AUTHENTICATION & PROFILE ====================
+// ==================== AUTH & PROFILE ====================
 let currentUser = null;
 
 async function checkUser() {
@@ -70,7 +78,6 @@ async function renderProfilePage() {
     .eq('id', user.id)
     .single();
 
-  // Fetch saved resumes
   const { data: resumes } = await supabase
     .from('resumes')
     .select('*')
@@ -78,7 +85,7 @@ async function renderProfilePage() {
     .order('created_at', { ascending: false });
 
   container.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
       <h2>Welcome, ${profile?.full_name || user.email}</h2>
       <button class="btn-outline" id="logoutBtn">Sign Out</button>
     </div>
@@ -114,9 +121,7 @@ async function login() {
   const password = document.getElementById('loginPassword').value;
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) alert(error.message);
-  else {
-    switchPage('profile');
-  }
+  else switchPage('profile');
 }
 
 async function signup() {
@@ -204,7 +209,7 @@ window.loadResume = async function(resumeId) {
   }
 };
 
-// ==================== RESUME BUILDER CODE (template rendering, PDF) ====================
+// ==================== RESUME BUILDER CORE ====================
 let currentPhotoUrl = 'https://via.placeholder.com/120?text=Photo';
 
 function parseExperience(text) {
@@ -327,6 +332,7 @@ document.getElementById('saveResumeBtn').addEventListener('click', saveCurrentRe
 // Auto-check session on load
 window.addEventListener('load', async () => {
   await checkUser();
+  // Ensure the active page is displayed (home by default)
   const activePage = document.querySelector('.page-section.active-page');
-  if (activePage && activePage.id === 'profile-page') renderProfilePage();
+  if (!activePage) switchPage('home');
 });

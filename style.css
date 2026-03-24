@@ -1,414 +1,778 @@
-// script.js – Final, fully functional version
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';       // Replace with your actual Supabase URL
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Replace with your actual anon key
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/* style.css – Fully responsive, no overlap */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
 
-// ==================== PAGE SWITCHING ====================
-window.switchPage = function(pageId) {
-  document.querySelectorAll('.page-section').forEach(section => {
-    section.classList.remove('active-page');
-  });
-  const target = document.getElementById(pageId + '-page');
-  if (target) target.classList.add('active-page');
-  else console.error('Section not found:', pageId + '-page');
+body {
+  background: #f9f7f6;
+  color: #1f2937;
+  overflow-x: hidden;
+}
 
-  document.querySelectorAll('.nav-link').forEach(link => {
-    link.classList.remove('active');
-    if (link.dataset.page === pageId) link.classList.add('active');
-  });
-  window.scrollTo(0, 0);
+:root {
+  --primary: #014656;
+  --primary-dark: #013544;
+  --accent: #00a2ad;
+  --accent-light: #2fb8c2;
+  --gold-light: #fdd65d;
+  --gold: #f6a801;
+  --bg-light: #f9f7f6;
+  --white: #ffffff;
+  --text-dark: #1f2937;
+}
 
-  if (pageId === 'resume') {
-    reloadResumeBuilder();
+/* Buttons */
+.btn-primary {
+  background: var(--accent);
+  padding: 12px 28px;
+  border-radius: 40px;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-block;
+  font-size: 0.9rem;
+}
+.btn-primary:hover {
+  background: var(--gold);
+  transform: translateY(-2px);
+}
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--accent);
+  padding: 10px 24px;
+  border-radius: 40px;
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn-outline:hover {
+  background: var(--accent);
+  color: white;
+}
+
+/* Top bar */
+.top-bar {
+  background: var(--primary);
+  color: white;
+  padding: 0.6rem 5%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.top-bar a {
+  color: white;
+  text-decoration: none;
+}
+.whatsapp-icon, .facebook-icon, .signin-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.whatsapp-icon { background: #25D366; }
+.facebook-icon { background: #1877f2; }
+.facebook-icon:hover { background: #0f5bdb; }
+.signin-icon {
+  border: 1px solid white;
+  background: transparent;
+}
+.signin-icon:hover {
+  background: white;
+  color: var(--primary);
+}
+
+/* Header */
+.main-header {
+  background: var(--white);
+  padding: 2rem 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+.logo-link {
+  display: inline-block;
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+.logo-link:hover { transform: scale(1.02); }
+.logo-link img {
+  max-height: 320px;
+  width: auto;
+}
+.crest-right {
+  text-align: right;
+  font-size: 0.85rem;
+  color: #6b6a5f;
+  border-left: 2px solid var(--accent);
+  padding-left: 1rem;
+}
+.crest-right span {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+/* Navigation */
+.nav-bar {
+  background: var(--white);
+  padding: 0.6rem 5%;
+  border-bottom: 1px solid #e5e7eb;
+}
+.nav-menu {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.nav-menu a {
+  color: var(--text-dark);
+  text-decoration: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+  transition: 0.2s;
+}
+.nav-menu a:hover, .nav-menu a.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+  padding: 3rem 5%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: space-between;
+}
+.hero-text {
+  flex: 2;
+  min-width: 280px;
+}
+.hero-text h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+.hero-text p {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  border-left: 3px solid var(--gold-light);
+  padding-left: 1rem;
+}
+.stat-grid {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+.stat-card {
+  background: rgba(255,255,255,0.15);
+  padding: 0.6rem 1rem;
+  border-radius: 30px;
+  text-align: center;
+  flex: 1;
+  min-width: 100px;
+}
+.stat-number {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+.hero-card {
+  flex: 1;
+  background: rgba(255,255,255,0.1);
+  border-radius: 24px;
+  padding: 1.5rem;
+  backdrop-filter: blur(4px);
+  min-width: 260px;
+}
+
+/* Section headers */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 2.5rem 5% 1rem;
+}
+.section-header i {
+  font-size: 1.8rem;
+  color: var(--accent);
+}
+.section-header h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* Service cards */
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  padding: 0 5% 2rem;
+}
+.service-card {
+  background: var(--white);
+  border-radius: 24px;
+  padding: 1.5rem;
+  flex: 1 1 280px;
+  max-width: 320px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  transition: 0.2s;
+  border: 1px solid #e5e7eb;
+}
+.service-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+}
+.service-icon {
+  font-size: 2.2rem;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+.service-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+/* Chores */
+.chores-card, .feature-card, .partner-card {
+  background: var(--white);
+  border-radius: 28px;
+  border: 1px solid #e5e7eb;
+  margin: 1.5rem 5% 2rem;
+  overflow: hidden;
+}
+.chores-header, .feature-header {
+  background: #fef7e6;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+.chores-header i, .feature-header i { color: var(--accent); font-size: 1.3rem; }
+.chores-header h3, .feature-header span { font-weight: 700; color: var(--primary); }
+.chores-content {
+  padding: 2rem;
+}
+.chores-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+}
+.chore-item {
+  flex: 1;
+  min-width: 260px;
+  background: #fef7e6;
+  border-radius: 20px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.2s;
+}
+.chore-item:hover {
+  transform: translateY(-3px);
+}
+.chore-icon {
+  font-size: 2rem;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+.chore-amount {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+}
+.feature-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 2rem;
+}
+.feature-image {
+  flex: 0 0 200px;
+  text-align: center;
+}
+.feature-image img {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  max-width: 200px;
+  height: auto;
+}
+.feature-story {
+  flex: 2;
+}
+.founder-name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.3rem;
+}
+.brand-tag {
+  background: #eef2f6;
+  display: inline-block;
+  padding: 0.2rem 1rem;
+  border-radius: 30px;
+  font-size: 0.75rem;
+}
+.stats-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+.stat-pill {
+  background: #eef2f6;
+  padding: 0.3rem 1rem;
+  border-radius: 30px;
+  font-size: 0.75rem;
+}
+.stat-pill i { color: var(--accent); margin-right: 6px; }
+.social-links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+.social-btn {
+  background: #eef2f6;
+  padding: 0.4rem 1rem;
+  border-radius: 30px;
+  text-decoration: none;
+  color: var(--text-dark);
+  font-size: 0.75rem;
+}
+.social-btn:hover {
+  background: var(--accent);
+  color: white;
+}
+.order-card {
+  flex: 0 0 200px;
+  background: #fef7e6;
+  border-radius: 20px;
+  padding: 1rem;
+  text-align: center;
+}
+.watch-price {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+.order-btn {
+  background: var(--accent);
+  color: white;
+  padding: 0.4rem;
+  border-radius: 40px;
+  display: block;
+  text-decoration: none;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* Partners */
+.partners-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin: 2rem 5%;
+}
+.partner-card {
+  flex: 1;
+  margin: 0;
+  padding: 1.5rem;
+}
+.partner-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.partner-logo {
+  height: 70px;
+  width: auto;
+  object-fit: contain;
+}
+.partner-badge {
+  background: #eef2f6;
+  padding: 0.2rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  color: var(--accent);
+}
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: 1rem 0;
+}
+.contact-link {
+  background: #f8fafc;
+  padding: 0.4rem 1rem;
+  border-radius: 40px;
+  text-decoration: none;
+  color: var(--text-dark);
+  border: 1px solid #e5e7eb;
+  font-size: 0.75rem;
+}
+.contact-link:hover {
+  background: var(--accent);
+  color: white;
+}
+
+/* Resume builder */
+.resume-section {
+  padding: 2rem 5%;
+}
+.builder-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 2rem;
+}
+.form-panel, .preview-panel {
+  background: var(--white);
+  border-radius: 28px;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+.template-selector select {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 40px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 1rem;
+}
+.form-group {
+  margin-bottom: 1rem;
+}
+.form-group label {
+  font-weight: 600;
+  font-size: 0.8rem;
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--primary);
+}
+.form-group input, .form-group textarea {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+}
+.cv-preview {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 20px;
+  min-height: 400px;
+  overflow-x: auto;
+}
+.download-btn {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* CV templates (responsive) */
+.cv-template img { max-width: 100%; }
+.cv-minimal .header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+.cv-minimal .main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+.cv-minimal .left { width: 60%; }
+.cv-minimal .right { width: 40%; }
+.cv-sidebar {
+  display: flex;
+  flex-wrap: wrap;
+}
+.cv-sidebar .left {
+  width: 35%;
+  background: #2f3b4c;
+  color: #fff;
+  padding: 20px;
+  border-radius: 16px 0 0 16px;
+}
+.cv-sidebar .right {
+  width: 65%;
+  padding: 20px;
+}
+.cv-elegant {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+.cv-elegant .left {
+  width: 35%;
+  background: #fef5e8;
+  padding: 20px;
+  border-radius: 20px;
+}
+.cv-elegant .right {
+  width: 65%;
+}
+.cv-centered { text-align: center; }
+.cv-modern .columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 20px;
+}
+.cv-card .main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 20px;
+}
+.cv-classic {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+.cv-classic .left {
+  width: 35%;
+  background: #f4f4f4;
+  padding: 20px;
+  border-radius: 20px;
+}
+.photo {
+  text-align: center;
+  margin-bottom: 15px;
+}
+.photo img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent);
+}
+.photo input {
+  margin-top: 8px;
+  font-size: 0.7rem;
+}
+
+/* Other pages */
+.content-page {
+  background: var(--white);
+  border-radius: 28px;
+  margin: 2rem 5%;
+  padding: 2rem;
+  border: 1px solid #e5e7eb;
+}
+.report-links {
+  background: #fef7e6;
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border-left: 4px solid var(--gold);
+}
+.city-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Profile */
+.profile-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  background: white;
+  border-radius: 28px;
+  padding: 2rem;
+  border: 1px solid #e5e7eb;
+}
+.auth-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+.auth-form input {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border-radius: 40px;
+  border: 1px solid #e5e7eb;
+}
+.saved-resume-item {
+  background: #f8fafc;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Footer */
+.footer {
+  background: var(--primary);
+  color: white;
+  padding: 3rem 5% 2rem;
+  margin-top: 3rem;
+}
+.footer-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2rem;
+}
+.footer-col h4 {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+.footer-col a, .footer-col p {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 0.85rem;
+  line-height: 1.8;
+}
+.footer-copyright {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #2f6e6e;
+  font-size: 0.7rem;
+}
+.footer-link {
+  color: #ccc;
+  text-decoration: none;
+}
+.footer-link:hover {
+  color: white;
+}
+
+/* Page switching */
+.page-section {
+  display: none;
+}
+.active-page {
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .builder-grid {
+    grid-template-columns: 1fr;
   }
-  if (pageId === 'profile') renderProfilePage();
-};
-
-// Attach all navigation elements
-function attachNavListeners() {
-  document.querySelectorAll('.nav-link, [data-page]').forEach(el => {
-    if (el.classList && el.classList.contains('nav-link')) {
-      el.removeEventListener('click', navClickHandler);
-      el.addEventListener('click', navClickHandler);
-    } else if (el.dataset && el.dataset.page) {
-      el.removeEventListener('click', genericPageClickHandler);
-      el.addEventListener('click', genericPageClickHandler);
-    }
-  });
-}
-
-function navClickHandler(e) {
-  e.preventDefault();
-  const page = this.dataset.page;
-  if (page) window.switchPage(page);
-}
-
-function genericPageClickHandler(e) {
-  e.preventDefault();
-  const page = this.dataset.page;
-  if (page) window.switchPage(page);
-}
-
-// ==================== RESUME BUILDER ====================
-function reloadResumeBuilder() {
-  const templateSelect = document.getElementById('templateSelect');
-  if (templateSelect) {
-    templateSelect.removeEventListener('change', updatePreview);
-    templateSelect.addEventListener('change', updatePreview);
+  .hero {
+    flex-direction: column;
+    text-align: center;
   }
-
-  const saveBtn = document.getElementById('saveResumeBtn');
-  if (saveBtn) {
-    saveBtn.removeEventListener('click', saveCurrentResume);
-    saveBtn.addEventListener('click', saveCurrentResume);
+  .hero-text p {
+    text-align: left;
   }
-
-  const downloadBtn = document.getElementById('downloadPdfBtn');
-  if (downloadBtn) {
-    downloadBtn.removeEventListener('click', downloadPDF);
-    downloadBtn.addEventListener('click', downloadPDF);
-  }
-
-  const inputs = ['firstName','lastName','jobTitle','phone','email','address','summary','experience','education','skills','languages','awards','references'];
-  inputs.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.removeEventListener('input', updatePreview);
-      el.addEventListener('input', updatePreview);
-    }
-  });
-
-  updatePreview();
-}
-
-// ==================== AUTH & PROFILE ====================
-let currentUser = null;
-
-async function checkUser() {
-  const { data: { user } } = await supabase.auth.getUser();
-  currentUser = user;
-  return user;
-}
-
-async function renderProfilePage() {
-  const container = document.getElementById('profileContainer');
-  const user = await checkUser();
-
-  if (!user) {
-    container.innerHTML = `
-      <h2>Access Your Profile</h2>
-      <div style="display:flex; gap:2rem; flex-wrap:wrap;">
-        <div class="auth-form">
-          <h3>Sign In</h3>
-          <input type="email" id="loginEmail" placeholder="Email">
-          <input type="password" id="loginPassword" placeholder="Password">
-          <button class="btn-primary" id="loginBtn">Sign In</button>
-        </div>
-        <div class="auth-form">
-          <h3>Create Account</h3>
-          <input type="email" id="signupEmail" placeholder="Email">
-          <input type="password" id="signupPassword" placeholder="Password">
-          <input type="text" id="signupName" placeholder="Full Name">
-          <button class="btn-primary" id="signupBtn">Sign Up</button>
-        </div>
-      </div>
-    `;
-    document.getElementById('loginBtn')?.addEventListener('click', login);
-    document.getElementById('signupBtn')?.addEventListener('click', signup);
-    return;
-  }
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single();
-
-  const { data: resumes } = await supabase
-    .from('resumes')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
-
-  container.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-      <h2>Welcome, ${profile?.full_name || user.email}</h2>
-      <button class="btn-outline" id="logoutBtn">Sign Out</button>
-    </div>
-    <div style="margin-bottom: 2rem;">
-      <h3>Edit Profile</h3>
-      <input type="text" id="editName" placeholder="Full Name" value="${profile?.full_name || ''}">
-      <input type="text" id="editPhone" placeholder="Phone" value="${profile?.phone || ''}">
-      <button class="btn-primary" id="updateProfileBtn">Update Profile</button>
-    </div>
-    <div>
-      <h3>Saved Resumes</h3>
-      ${resumes?.length ? resumes.map(res => `
-        <div class="saved-resume-item">
-          <span><strong>${res.name || 'Resume'}</strong> (${new Date(res.created_at).toLocaleDateString()})</span>
-          <button class="btn-outline" data-id="${res.id}" onclick="loadResume('${res.id}')">Load</button>
-        </div>
-      `).join('') : '<p>No saved resumes yet. Create and save one from the Resume Builder.</p>'}
-    </div>
-  `;
-
-  document.getElementById('logoutBtn')?.addEventListener('click', logout);
-  document.getElementById('updateProfileBtn')?.addEventListener('click', async () => {
-    const full_name = document.getElementById('editName').value;
-    const phone = document.getElementById('editPhone').value;
-    await supabase.from('profiles').update({ full_name, phone }).eq('id', user.id);
-    alert('Profile updated!');
-    renderProfilePage();
-  });
-}
-
-async function login() {
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) alert(error.message);
-  else window.switchPage('profile');
-}
-
-async function signup() {
-  const email = document.getElementById('signupEmail').value;
-  const password = document.getElementById('signupPassword').value;
-  const full_name = document.getElementById('signupName').value;
-  const { error, data } = await supabase.auth.signUp({ email, password });
-  if (error) alert(error.message);
-  else {
-    if (data.user) {
-      await supabase.from('profiles').update({ full_name }).eq('id', data.user.id);
-    }
-    alert('Sign-up successful! Please check your email to confirm your account.');
-    window.switchPage('profile');
+  .stat-grid {
+    justify-content: center;
   }
 }
 
-async function logout() {
-  await supabase.auth.signOut();
-  window.switchPage('profile');
-}
-
-// ==================== RESUME SAVING & LOADING ====================
-async function saveCurrentResume() {
-  const user = await checkUser();
-  if (!user) {
-    alert('Please sign in to save your resume.');
-    window.switchPage('profile');
-    return;
+@media (max-width: 768px) {
+  .main-header {
+    flex-direction: column;
+    text-align: center;
   }
-
-  const resumeData = {
-    firstName: document.getElementById('firstName').value,
-    lastName: document.getElementById('lastName').value,
-    jobTitle: document.getElementById('jobTitle').value,
-    phone: document.getElementById('phone').value,
-    email: document.getElementById('email').value,
-    address: document.getElementById('address').value,
-    summary: document.getElementById('summary').value,
-    experience: document.getElementById('experience').value,
-    education: document.getElementById('education').value,
-    skills: document.getElementById('skills').value,
-    languages: document.getElementById('languages').value,
-    awards: document.getElementById('awards').value,
-    references: document.getElementById('references').value,
-    template: document.getElementById('templateSelect').value
-  };
-
-  const name = `${resumeData.firstName} ${resumeData.lastName}`.trim() || 'Untitled';
-
-  const { error } = await supabase
-    .from('resumes')
-    .insert({ user_id: user.id, name, data: resumeData });
-
-  if (error) alert('Error saving resume: ' + error.message);
-  else alert('Resume saved successfully!');
-}
-
-window.loadResume = async function(resumeId) {
-  const { data: resume } = await supabase
-    .from('resumes')
-    .select('data')
-    .eq('id', resumeId)
-    .single();
-
-  if (resume && resume.data) {
-    const d = resume.data;
-    document.getElementById('firstName').value = d.firstName || '';
-    document.getElementById('lastName').value = d.lastName || '';
-    document.getElementById('jobTitle').value = d.jobTitle || '';
-    document.getElementById('phone').value = d.phone || '';
-    document.getElementById('email').value = d.email || '';
-    document.getElementById('address').value = d.address || '';
-    document.getElementById('summary').value = d.summary || '';
-    document.getElementById('experience').value = d.experience || '';
-    document.getElementById('education').value = d.education || '';
-    document.getElementById('skills').value = d.skills || '';
-    document.getElementById('languages').value = d.languages || '';
-    document.getElementById('awards').value = d.awards || '';
-    document.getElementById('references').value = d.references || '';
-    if (d.template) document.getElementById('templateSelect').value = d.template;
-    updatePreview();
-    window.switchPage('resume');
-    alert('Resume loaded!');
+  .crest-right {
+    border-left: none;
+    padding-left: 0;
   }
-};
-
-// ==================== RESUME BUILDER CORE ====================
-let currentPhotoUrl = 'https://via.placeholder.com/120?text=Photo';
-
-function parseExperience(text) {
-  return text.split('\n').filter(l=>l.trim()).map(l=>{
-    const p=l.split('|');
-    return {position:p[0]||'',company:p[1]||'',location:p[2]||'',start:p[3]||'',end:p[4]||'',description:p[5]||''};
-  });
-}
-function parseEducation(text) {
-  return text.split('\n').filter(l=>l.trim()).map(l=>{
-    const p=l.split('|');
-    return {institution:p[0]||'',degree:p[1]||'',start:p[2]||'',end:p[3]||''};
-  });
-}
-function parseAwards(text) {
-  return text.split('\n').filter(l=>l.trim()).map(l=>{
-    const p=l.split('|');
-    return {title:p[0]||'',description:p[1]||'',year:p[2]||''};
-  });
-}
-function parseReferences(text) {
-  return text.split('\n').filter(l=>l.trim()).map(l=>{
-    const p=l.split('|');
-    return {name:p[0]||'',company:p[1]||'',phone:p[2]||'',email:p[3]||''};
-  });
-}
-
-const templates = {
-  minimal: `<div class="cv-template cv-minimal"><div class="header"><div><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}}</p></div><div><p>{{email}}</p><p>{{phone}}</p></div></div><p>{{summary}}</p><div class="main"><div class="left"><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> – {{company}}<br><small>{{start}}–{{end}}</small><br>{{description}}</p>{{/experience}}</div><div class="right"><h3>Skills</h3><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div></div></div>`,
-  sidebar: `<div class="cv-template cv-sidebar"><div class="left"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><p><strong>Contact</strong></p><p>{{phone}}</p><p>{{email}}</p><p>{{address}}</p><p><strong>Skills</strong></p><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul><p><strong>Languages</strong></p><ul>{{#languages}}<li>{{.}}</li>{{/languages}}</ul></div><div class="right"><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}}</p><p>{{summary}}</p><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}} ({{start}}–{{end}})<br>{{description}}</p>{{/experience}}<h3>Education</h3>{{#education}}<p><strong>{{degree}}</strong>, {{institution}} ({{start}}–{{end}})</p>{{/education}}</div></div>`,
-  elegant: `<div class="cv-template cv-elegant"><div class="left"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><h2>{{firstName}} {{lastName}}</h2><p>{{jobTitle}}</p><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div><div class="right"><h3>About</h3><p>{{summary}}</p><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}} ({{start}}–{{end}})<br>{{description}}</p>{{/experience}}<h3>Education</h3>{{#education}}<p>{{degree}}, {{institution}}</p>{{/education}}</div></div>`,
-  centered: `<div class="cv-template cv-centered"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}}</p><p>{{phone}} | {{email}} | {{address}}</p><p>{{summary}}</p><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> – {{company}} ({{start}}–{{end}})<br>{{description}}</p>{{/experience}}<h3>Skills</h3><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div>`,
-  modern: `<div class="cv-template cv-modern"><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}} | {{email}} | {{phone}}</p><p>{{summary}}</p><div class="columns"><div><h3>Skills</h3><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div><div><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}}<br>{{description}}</p>{{/experience}}</div></div></div>`,
-  card: `<div class="cv-template cv-card"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}} | {{email}} | {{phone}}</p><p>{{summary}}</p><div class="main"><div><h3>Education</h3>{{#education}}<p>{{degree}} – {{institution}} ({{start}}–{{end}})</p>{{/education}}</div><div><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}}<br>{{description}}</p>{{/experience}}</div></div></div>`,
-  classic: `<div class="cv-template cv-classic"><div class="left"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><h2>{{firstName}} {{lastName}}</h2><p>{{jobTitle}}</p><p><strong>Contact</strong><br>{{email}}<br>{{phone}}<br>{{address}}</p></div><div><p>{{summary}}</p><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}} ({{start}}–{{end}})<br>{{description}}</p>{{/experience}}<h3>Skills</h3><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div></div>`
-};
-
-function renderTemplate(templateName, data) {
-  let tpl = templates[templateName];
-  if (!tpl) return '<p>Template not found</p>';
-  tpl = tpl.replace(/{{#(\w+)}}([\s\S]*?){{\/\1}}/g, (match, key, inner) => {
-    const items = data[key] || [];
-    return items.map(item => {
-      let sub = inner;
-      Object.keys(item).forEach(k => { sub = sub.replace(new RegExp(`{{${k}}}`, 'g'), item[k] || ''); });
-      return sub;
-    }).join('');
-  });
-  Object.keys(data).forEach(key => {
-    const val = typeof data[key] === 'string' ? data[key] : (Array.isArray(data[key]) ? data[key].join(', ') : '');
-    tpl = tpl.replace(new RegExp(`{{${key}}}`, 'g'), val);
-  });
-  return tpl;
-}
-
-function updatePreview() {
-  const skillsArr = document.getElementById('skills').value.split(',').map(s=>s.trim());
-  const langsArr = document.getElementById('languages').value.split(',').map(l=>l.trim());
-  const exp = parseExperience(document.getElementById('experience').value);
-  const edu = parseEducation(document.getElementById('education').value);
-  const aw = parseAwards(document.getElementById('awards').value);
-  const ref = parseReferences(document.getElementById('references').value);
-  const data = {
-    firstName: document.getElementById('firstName').value,
-    lastName: document.getElementById('lastName').value,
-    jobTitle: document.getElementById('jobTitle').value,
-    phone: document.getElementById('phone').value,
-    email: document.getElementById('email').value,
-    address: document.getElementById('address').value,
-    summary: document.getElementById('summary').value,
-    skills: skillsArr,
-    languages: langsArr,
-    experience: exp,
-    education: edu,
-    awards: aw,
-    references: ref,
-    photoUrl: currentPhotoUrl
-  };
-  const tplName = document.getElementById('templateSelect').value;
-  const html = renderTemplate(tplName, data);
-  document.getElementById('cvPreview').innerHTML = html;
-  document.querySelectorAll('.photoUpload').forEach(inp => {
-    inp.removeEventListener('change', handlePhoto);
-    inp.addEventListener('change', handlePhoto);
-  });
-}
-
-function handlePhoto(e) {
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => { currentPhotoUrl = ev.target.result; updatePreview(); };
-  reader.readAsDataURL(file);
-}
-
-async function downloadPDF() {
-  const element = document.querySelector('#cvPreview .cv-template');
-  if (!element) {
-    alert('No resume preview to download.');
-    return;
+  .logo-link img {
+    max-height: 180px;
   }
-  try {
-    const canvas = await html2canvas(element, { scale: 3, backgroundColor: '#ffffff', logging: false });
-    const imgData = canvas.toDataURL('image/png');
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const imgWidth = pdfWidth - 20;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-    pdf.save('resume_9to5.pdf');
-  } catch(err) {
-    console.error(err);
-    alert('PDF generation failed. Please try again.');
+  .nav-menu a {
+    font-size: 0.75rem;
+  }
+  .feature-content {
+    flex-direction: column;
+    align-items: center;
+  }
+  .feature-image {
+    flex: auto;
+    max-width: 250px;
+  }
+  .order-card {
+    flex: auto;
+    width: 100%;
+    max-width: 250px;
+  }
+  .cv-sidebar .left, .cv-sidebar .right,
+  .cv-elegant .left, .cv-elegant .right,
+  .cv-classic .left {
+    width: 100%;
+    border-radius: 16px;
+  }
+  .cv-sidebar {
+    flex-direction: column;
+  }
+  .cv-minimal .left, .cv-minimal .right {
+    width: 100%;
+  }
+  .chores-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+  .partners-grid {
+    flex-direction: column;
   }
 }
 
-// ==================== INITIALIZATION ====================
-document.addEventListener('DOMContentLoaded', async () => {
-  await checkUser();
-
-  // Attach navigation listeners to all elements with data-page attribute
-  attachNavListeners();
-
-  // Logo home link
-  const logoHome = document.getElementById('logoHomeLink');
-  if (logoHome) {
-    logoHome.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.switchPage('home');
-    });
+@media (max-width: 480px) {
+  .hero-text h1 {
+    font-size: 1.8rem;
   }
-
-  // Sign in icon
-  const signinIcon = document.getElementById('signinIcon');
-  if (signinIcon) {
-    signinIcon.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.switchPage('profile');
-    });
+  .stat-number {
+    font-size: 1.4rem;
   }
-
-  // Nominate button alert
-  const nominateBtn = document.getElementById('nominateBtn');
-  if (nominateBtn) {
-    nominateBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      alert('Send nominations to mphelamlangeni@gmail.com with story and contact.');
-    });
+  .section-header h2 {
+    font-size: 1.4rem;
   }
-
-  // Ensure resume builder is ready if resume page is active
-  if (document.getElementById('resume-page').classList.contains('active-page')) {
-    reloadResumeBuilder();
+  .service-card {
+    max-width: 100%;
   }
-});
+  .profile-container {
+    padding: 1rem;
+  }
+  .footer-grid {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}

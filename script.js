@@ -1,10 +1,10 @@
-// script.js – Fully functional with fixed navigation
+// script.js – All errors fixed, globally accessible switchPage
 const SUPABASE_URL = 'YOUR_SUPABASE_URL';       // Replace with your actual Supabase URL
 const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Replace with your actual anon key
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ==================== PAGE SWITCHING ====================
-function switchPage(pageId) {
+window.switchPage = function(pageId) {
   // Hide all sections
   document.querySelectorAll('.page-section').forEach(section => {
     section.classList.remove('active-page');
@@ -21,18 +21,45 @@ function switchPage(pageId) {
   });
   window.scrollTo(0, 0);
 
-  // If profile page, render dynamic content
+  // Special handling for resume page to reattach dynamic listeners
+  if (pageId === 'resume') {
+    reloadResumeBuilder();
+  }
   if (pageId === 'profile') renderProfilePage();
-}
+};
 
 // Attach navigation listeners
 document.querySelectorAll('.nav-link').forEach(link => {
   link.addEventListener('click', (e) => {
     e.preventDefault();
     const page = link.dataset.page;
-    if (page) switchPage(page);
+    if (page) window.switchPage(page);
   });
 });
+
+// ==================== RESUME BUILDER ====================
+function reloadResumeBuilder() {
+  // Re‑attach listeners that might have been lost
+  const templateSelect = document.getElementById('templateSelect');
+  if (templateSelect) templateSelect.addEventListener('change', updatePreview);
+
+  const saveBtn = document.getElementById('saveResumeBtn');
+  if (saveBtn) saveBtn.addEventListener('click', saveCurrentResume);
+
+  const downloadBtn = document.getElementById('downloadPdfBtn');
+  if (downloadBtn) downloadBtn.addEventListener('click', downloadPDF);
+
+  // Input listeners
+  const inputIds = ['firstName','lastName','jobTitle','phone','email','address','summary','experience','education','skills','languages','awards','references'];
+  inputIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.removeEventListener('input', updatePreview);
+    if (el) el.addEventListener('input', updatePreview);
+  });
+
+  // Refresh preview
+  updatePreview();
+}
 
 // ==================== AUTH & PROFILE ====================
 let currentUser = null;
@@ -121,7 +148,7 @@ async function login() {
   const password = document.getElementById('loginPassword').value;
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) alert(error.message);
-  else switchPage('profile');
+  else window.switchPage('profile');
 }
 
 async function signup() {
@@ -135,21 +162,21 @@ async function signup() {
       await supabase.from('profiles').update({ full_name }).eq('id', data.user.id);
     }
     alert('Sign-up successful! Please check your email to confirm your account.');
-    switchPage('profile');
+    window.switchPage('profile');
   }
 }
 
 async function logout() {
   await supabase.auth.signOut();
-  switchPage('profile');
+  window.switchPage('profile');
 }
 
-// ==================== RESUME SAVING ====================
+// ==================== RESUME SAVING & LOADING ====================
 async function saveCurrentResume() {
   const user = await checkUser();
   if (!user) {
     alert('Please sign in to save your resume.');
-    switchPage('profile');
+    window.switchPage('profile');
     return;
   }
 
@@ -204,7 +231,7 @@ window.loadResume = async function(resumeId) {
     document.getElementById('references').value = d.references || '';
     if (d.template) document.getElementById('templateSelect').value = d.template;
     updatePreview();
-    switchPage('resume');
+    window.switchPage('resume');
     alert('Resume loaded!');
   }
 };
@@ -305,14 +332,12 @@ function handlePhoto(e) {
   reader.readAsDataURL(file);
 }
 
-document.querySelectorAll('#firstName,#lastName,#jobTitle,#phone,#email,#address,#summary,#experience,#education,#skills,#languages,#awards,#references').forEach(el => el.addEventListener('input', updatePreview));
-document.getElementById('templateSelect').addEventListener('change', updatePreview);
-updatePreview();
-
-// PDF DOWNLOAD
-document.getElementById('downloadPdfBtn').addEventListener('click', async () => {
+async function downloadPDF() {
   const element = document.querySelector('#cvPreview .cv-template');
-  if (!element) return;
+  if (!element) {
+    alert('No resume preview to download.');
+    return;
+  }
   try {
     const canvas = await html2canvas(element, { scale: 3, backgroundColor: '#ffffff', logging: false });
     const imgData = canvas.toDataURL('image/png');
@@ -323,16 +348,18 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async () => 
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
     pdf.save('resume_9to5.pdf');
-  } catch(err) { console.error(err); alert('PDF generation failed. Please try again.'); }
-});
+  } catch(err) {
+    console.error(err);
+    alert('PDF generation failed. Please try again.');
+  }
+}
 
-// Save Resume Button
-document.getElementById('saveResumeBtn').addEventListener('click', saveCurrentResume);
-
-// Auto-check session on load
+// ==================== INITIALIZATION ====================
 window.addEventListener('load', async () => {
   await checkUser();
-  // Ensure the active page is displayed (home by default)
+  // Ensure resume builder listeners are attached
+  reloadResumeBuilder();
+  // Ensure the default active page is home (if not already)
   const activePage = document.querySelector('.page-section.active-page');
-  if (!activePage) switchPage('home');
+  if (!activePage) window.switchPage('home');
 });

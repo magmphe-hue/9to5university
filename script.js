@@ -1,18 +1,8 @@
-// script.js – Fully functional, navigation and resume builder fixed
-// Supabase configuration (replace with your own)
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+// script.js – Fully functional with your Supabase credentials
+const SUPABASE_URL = 'https://pfqpyzfqwsksepoohive.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXB5emZxd3Nrc2Vwb29oaXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM1MTMsImV4cCI6MjA4OTk0OTUxM30.NPbcOFUPS_2zYg-2MjH1ukHrHqN8AjXRDrP1OpU4nNs';
 
-let supabase = null;
-if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-} else {
-  console.warn('Supabase not configured. Profile features will be disabled.');
-  supabase = {
-    auth: { getUser: async () => ({ data: { user: null } }) },
-    from: () => ({ select: () => ({ eq: () => ({ single: async () => ({ data: null }) }) }) })
-  };
-}
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ==================== GLOBAL PAGE SWITCHING ====================
 window.switchPage = function(pageId) {

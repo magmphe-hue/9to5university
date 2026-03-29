@@ -1,244 +1,243 @@
-// ==================== SUPABASE SETUP ====================
+// ==================== SUPABASE ====================
 const SUPABASE_URL = 'https://pfqpyzfqwsksepoohive.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE'; // keep same or rotate later
+const SUPABASE_ANON_KEY = 'YOUR_KEY';
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ==================== GLOBAL PAGE SWITCHING ====================
+let currentUser = null;
+
+// ==================== PAGE SWITCHING ====================
 window.switchPage = function(pageId) {
-  document.querySelectorAll('.page-section').forEach(section => {
-    section.classList.remove('active-page');
-  });
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active-page'));
 
   const target = document.getElementById(pageId + '-page');
-  if (target) target.classList.add('active-page');
+  if (!target) return console.error("Page not found:", pageId);
+
+  target.classList.add('active-page');
 
   document.querySelectorAll('.nav-link').forEach(link => {
-    link.classList.remove('active');
-    if (link.dataset.page === pageId) link.classList.add('active');
+    link.classList.toggle('active', link.dataset.page === pageId);
   });
 
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
   if (pageId === 'resume') reloadResumeBuilder();
   if (pageId === 'profile') renderProfilePage();
 };
 
-document.body.addEventListener('click', (e) => {
-  let target = e.target.closest('[data-page]');
-  if (target && target.dataset.page) {
-    e.preventDefault();
-    window.switchPage(target.dataset.page);
-  }
+// ==================== GLOBAL CLICK FIX ====================
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-page]');
+  if (!btn) return;
+
+  e.preventDefault();
+  const page = btn.dataset.page;
+  if (page) switchPage(page);
 });
 
-// ==================== REFERRAL SYSTEM ====================
-function generateReferralCode() {
-  return 'ref_' + Math.random().toString(36).substring(2, 10);
-}
-
-function getReferralFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get('ref');
-}
-
-// ==================== AUTH ====================
-let currentUser = null;
-
-async function checkUser() {
-  const { data: { user } } = await supabase.auth.getUser();
-  currentUser = user;
-  return user;
-}
-
-// LOGIN
-async function login() {
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error) alert(error.message);
-  else window.switchPage('profile');
-}
-
-// SIGNUP WITH REFERRAL TRACKING
-async function signup() {
-  const email = document.getElementById('signupEmail').value;
-  const password = document.getElementById('signupPassword').value;
-  const full_name = document.getElementById('signupName').value;
-
-  const { error, data } = await supabase.auth.signUp({ email, password });
-
-  if (error) {
-    alert(error.message);
-    return;
-  }
-
-  if (data.user) {
-    const referral_code = generateReferralCode();
-
-    // CREATE PROFILE
-    await supabase.from('profiles').insert({
-      id: data.user.id,
-      full_name,
-      referral_code
-    });
-
-    // HANDLE REFERRAL
-    const refCode = getReferralFromURL();
-
-    if (refCode) {
-      const { data: referrer } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('referral_code', refCode)
-        .single();
-
-      if (referrer) {
-        await supabase.from('referrals').insert({
-          referrer_id: referrer.id,
-          referred_user_id: data.user.id,
-          amount: 500,
-          status: 'pending'
-        });
-      }
-    }
-  }
-
-  alert('Sign-up successful!');
-  window.switchPage('profile');
-}
-
-// LOGOUT
-async function logout() {
-  await supabase.auth.signOut();
-  window.switchPage('profile');
-}
-
-// ==================== PROFILE PAGE ====================
-async function renderProfilePage() {
-  const container = document.getElementById('profileContainer');
-  const user = await checkUser();
-
-  if (!user) {
-    container.innerHTML = `
-      <h2>Access Your Profile</h2>
-      <div style="display:flex; gap:2rem; flex-wrap:wrap;">
-        <div class="auth-form">
-          <h3>Sign In</h3>
-          <input type="email" id="loginEmail" placeholder="Email">
-          <input type="password" id="loginPassword" placeholder="Password">
-          <button class="btn-primary" id="loginBtn">Sign In</button>
-        </div>
-
-        <div class="auth-form">
-          <h3>Create Account</h3>
-          <input type="email" id="signupEmail" placeholder="Email">
-          <input type="password" id="signupPassword" placeholder="Password">
-          <input type="text" id="signupName" placeholder="Full Name">
-          <button class="btn-primary" id="signupBtn">Sign Up</button>
-        </div>
-      </div>
-    `;
-
-    document.getElementById('loginBtn')?.addEventListener('click', login);
-    document.getElementById('signupBtn')?.addEventListener('click', signup);
-    return;
-  }
-
-  // LOAD PROFILE
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single();
-
-  // LOAD REFERRALS
-  const { data: referrals } = await supabase
-    .from('referrals')
-    .select('*')
-    .eq('referrer_id', user.id);
-
-  const totalEarnings = referrals?.reduce((sum, r) => sum + r.amount, 0) || 0;
-
-  const referralLink = `${window.location.origin}?ref=${profile.referral_code}`;
-
-  container.innerHTML = `
-    <h2>Welcome, ${profile?.full_name || user.email}</h2>
-
-    <button class="btn-outline" id="logoutBtn">Sign Out</button>
-
-    <div style="margin-top:2rem;">
-      <h3>💰 Your Earnings</h3>
-      <p><strong>R${totalEarnings}</strong></p>
-      <p>${referrals?.length || 0} referrals</p>
-    </div>
-
-    <div style="margin-top:2rem;">
-      <h3>🔗 Your Referral Link</h3>
-      <input type="text" value="${referralLink}" readonly style="width:100%; padding:10px;">
-      <button class="btn-primary" onclick="navigator.clipboard.writeText('${referralLink}')">
-        Copy Link
-      </button>
-    </div>
-  `;
-
-  document.getElementById('logoutBtn')?.addEventListener('click', logout);
-}
-
-// ==================== RESUME BUILDER (UNCHANGED CORE) ====================
+// ==================== RESUME BUILDER ====================
 let currentPhotoUrl = 'https://via.placeholder.com/120?text=Photo';
+
+function parseList(text, keys) {
+  return text.split('\n').filter(Boolean).map(line => {
+    const parts = line.split('|');
+    let obj = {};
+    keys.forEach((k, i) => obj[k] = parts[i] || '');
+    return obj;
+  });
+}
 
 function updatePreview() {
   const data = {
-    firstName: document.getElementById('firstName').value,
-    lastName: document.getElementById('lastName').value,
-    jobTitle: document.getElementById('jobTitle').value
+    firstName: val('firstName'),
+    lastName: val('lastName'),
+    jobTitle: val('jobTitle'),
+    phone: val('phone'),
+    email: val('email'),
+    address: val('address'),
+    summary: val('summary'),
+    skills: val('skills').split(',').map(s => s.trim()),
+    languages: val('languages').split(',').map(l => l.trim()),
+    experience: parseList(val('experience'), ['position','company','location','start','end','description']),
+    education: parseList(val('education'), ['institution','degree','start','end']),
+    awards: parseList(val('awards'), ['title','description','year']),
+    references: parseList(val('references'), ['name','company','phone','email']),
+    photoUrl: currentPhotoUrl
   };
 
-  document.getElementById('cvPreview').innerHTML = `
-    <div>
-      <h1>${data.firstName} ${data.lastName}</h1>
-      <p>${data.jobTitle}</p>
-    </div>
-  `;
+  const tpl = document.getElementById('templateSelect').value;
+  document.getElementById('cvPreview').innerHTML = renderTemplate(tpl, data);
+
+  bindPhotoUpload();
 }
 
-function reloadResumeBuilder() {
-  const inputs = ['firstName','lastName','jobTitle'];
+function val(id){ return document.getElementById(id)?.value || ''; }
 
-  inputs.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('input', updatePreview);
+// ==================== PHOTO ====================
+function bindPhotoUpload() {
+  document.querySelectorAll('.photoUpload').forEach(inp => {
+    inp.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = ev => {
+        currentPhotoUrl = ev.target.result;
+        updatePreview();
+      };
+      reader.readAsDataURL(file);
+    };
   });
+}
+
+// ==================== PDF ====================
+async function downloadPDF() {
+  const el = document.querySelector('#cvPreview .cv-template');
+  if (!el) return alert("No CV to download");
+
+  await new Promise(r => setTimeout(r, 300));
+
+  const canvas = await html2canvas(el, { scale: 2 });
+  const img = canvas.toDataURL('image/png');
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+
+  const width = pdf.internal.pageSize.getWidth() - 20;
+  const height = canvas.height * width / canvas.width;
+
+  pdf.addImage(img, 'PNG', 10, 10, width, height);
+  pdf.save('resume.pdf');
+}
+
+// ==================== INIT BUILDER ====================
+function reloadResumeBuilder() {
+  const inputs = document.querySelectorAll('#resume-page input, #resume-page textarea');
+
+  inputs.forEach(i => {
+    i.oninput = updatePreview;
+  });
+
+  document.getElementById('templateSelect').onchange = updatePreview;
+  document.getElementById('downloadPdfBtn').onclick = downloadPDF;
+  document.getElementById('saveResumeBtn').onclick = saveResume;
 
   updatePreview();
 }
 
-// ==================== SAVE RESUME ====================
-async function saveCurrentResume() {
-  const user = await checkUser();
+// ==================== AUTH ====================
+supabase.auth.onAuthStateChange((event, session) => {
+  currentUser = session?.user || null;
+});
+
+async function renderProfilePage() {
+  const container = document.getElementById('profileContainer');
+
+  const { data } = await supabase.auth.getUser();
+  const user = data.user;
 
   if (!user) {
-    alert('Login first');
+    container.innerHTML = `
+      <input id="loginEmail" placeholder="Email">
+      <input id="loginPassword" type="password">
+      <button id="loginBtn">Login</button>
+      <button id="signupBtn">Signup</button>
+    `;
+
+    document.getElementById('loginBtn').onclick = login;
+    document.getElementById('signupBtn').onclick = signup;
     return;
   }
 
-  await supabase.from('resumes').insert({
-    user_id: user.id,
-    name: 'Resume',
-    data: {}
-  });
+  const { data: resumes } = await supabase
+    .from('resumes')
+    .select('*')
+    .eq('user_id', user.id);
 
-  alert('Saved!');
+  container.innerHTML = `
+    <h2>${user.email}</h2>
+    <button id="logoutBtn">Logout</button>
+    <h3>Resumes</h3>
+    ${resumes.map(r => `<button onclick="loadResume('${r.id}')">${r.name}</button>`).join('')}
+  `;
+
+  document.getElementById('logoutBtn').onclick = logout;
 }
 
-// ==================== INIT ====================
-document.addEventListener('DOMContentLoaded', async () => {
-  await checkUser();
+async function login() {
+  const email = val('loginEmail');
+  const password = val('loginPassword');
 
-  if (document.getElementById('resume-page')?.classList.contains('active-page')) {
-    reloadResumeBuilder();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) alert(error.message);
+  else switchPage('profile');
+}
+
+async function signup() {
+  const email = val('signupEmail');
+  const password = val('signupPassword');
+  const name = val('signupName');
+
+  const { data, error } = await supabase.auth.signUp({ email, password });
+
+  if (error) return alert(error.message);
+
+  await supabase.from('profiles').insert({
+    id: data.user.id,
+    full_name: name
+  });
+
+  alert("Signup success");
+}
+
+async function logout() {
+  await supabase.auth.signOut();
+  switchPage('profile');
+}
+
+// ==================== SAVE RESUME ====================
+async function saveResume() {
+  if (!currentUser) {
+    alert("Login first");
+    return switchPage('profile');
   }
+
+  const data = {
+    name: val('firstName') + " " + val('lastName'),
+    user_id: currentUser.id,
+    data: {
+      firstName: val('firstName'),
+      lastName: val('lastName')
+    }
+  };
+
+  const { error } = await supabase.from('resumes').insert(data);
+
+  if (error) alert(error.message);
+  else alert("Saved!");
+}
+
+// ==================== LOAD ====================
+window.loadResume = async (id) => {
+  const { data } = await supabase.from('resumes').select('*').eq('id', id).single();
+
+  if (!data) return;
+
+  Object.keys(data.data).forEach(k => {
+    const el = document.getElementById(k);
+    if (el) el.value = data.data[k];
+  });
+
+  updatePreview();
+  switchPage('resume');
+};
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', () => {
+  console.log("App initialized ✅");
+
+  document.getElementById('nominateBtn')?.addEventListener('click', () => {
+    alert("Send nominations to email.");
+  });
 });

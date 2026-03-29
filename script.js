@@ -1,10 +1,15 @@
 // ==================== SUPABASE ====================
 const SUPABASE_URL = 'https://pfqpyzfqwsksepoohive.supabase.co';
-const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXB5emZxd3Nrc2Vwb29oaXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM1MTMsImV4cCI6MjA4OTk0OTUxM30.NPbcOFUPS_2zYg-2MjH1ukHrHqN8AjXRDrP1OpU4nNs;
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXB5emZxd3Nrc2Vwb29oaXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM1MTMsImV4cCI6MjA4OTk0OTUxM30.NPbcOFUPS_2zYg-2MjH1ukHrHqN8AjXRDrP1OpU4nNs';
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentUser = null;
+
+// ==================== AUTH STATE ====================
+supabase.auth.onAuthStateChange((event, session) => {
+  currentUser = session?.user || null;
+});
 
 // ==================== PAGE SWITCHING ====================
 window.switchPage = function(pageId) {
@@ -31,9 +36,13 @@ document.addEventListener('click', (e) => {
   if (!btn) return;
 
   e.preventDefault();
-  const page = btn.dataset.page;
-  if (page) switchPage(page);
+  switchPage(btn.dataset.page);
 });
+
+// ==================== HELPERS ====================
+function val(id) {
+  return document.getElementById(id)?.value || '';
+}
 
 // ==================== RESUME BUILDER ====================
 let currentPhotoUrl = 'https://via.placeholder.com/120?text=Photo';
@@ -71,8 +80,6 @@ function updatePreview() {
   bindPhotoUpload();
 }
 
-function val(id){ return document.getElementById(id)?.value || ''; }
-
 // ==================== PHOTO ====================
 function bindPhotoUpload() {
   document.querySelectorAll('.photoUpload').forEach(inp => {
@@ -107,16 +114,14 @@ async function downloadPDF() {
   const height = canvas.height * width / canvas.width;
 
   pdf.addImage(img, 'PNG', 10, 10, width, height);
-  pdf.save('resume.pdf');
+  pdf.save('resume_9to5.pdf');
 }
 
 // ==================== INIT BUILDER ====================
 function reloadResumeBuilder() {
   const inputs = document.querySelectorAll('#resume-page input, #resume-page textarea');
 
-  inputs.forEach(i => {
-    i.oninput = updatePreview;
-  });
+  inputs.forEach(i => i.oninput = updatePreview);
 
   document.getElementById('templateSelect').onchange = updatePreview;
   document.getElementById('downloadPdfBtn').onclick = downloadPDF;
@@ -125,11 +130,7 @@ function reloadResumeBuilder() {
   updatePreview();
 }
 
-// ==================== AUTH ====================
-supabase.auth.onAuthStateChange((event, session) => {
-  currentUser = session?.user || null;
-});
-
+// ==================== PROFILE ====================
 async function renderProfilePage() {
   const container = document.getElementById('profileContainer');
 
@@ -138,10 +139,15 @@ async function renderProfilePage() {
 
   if (!user) {
     container.innerHTML = `
+      <h2>Access Profile</h2>
       <input id="loginEmail" placeholder="Email">
-      <input id="loginPassword" type="password">
-      <button id="loginBtn">Login</button>
-      <button id="signupBtn">Signup</button>
+      <input id="loginPassword" type="password" placeholder="Password">
+      <button id="loginBtn" class="btn-primary">Login</button>
+      <br><br>
+      <input id="signupEmail" placeholder="Email">
+      <input id="signupPassword" type="password" placeholder="Password">
+      <input id="signupName" placeholder="Full Name">
+      <button id="signupBtn" class="btn-primary">Signup</button>
     `;
 
     document.getElementById('loginBtn').onclick = login;
@@ -155,20 +161,25 @@ async function renderProfilePage() {
     .eq('user_id', user.id);
 
   container.innerHTML = `
-    <h2>${user.email}</h2>
-    <button id="logoutBtn">Logout</button>
-    <h3>Resumes</h3>
-    ${resumes.map(r => `<button onclick="loadResume('${r.id}')">${r.name}</button>`).join('')}
+    <h2>Welcome, ${user.email}</h2>
+    <button id="logoutBtn" class="btn-outline">Logout</button>
+    <h3>Saved Resumes</h3>
+    ${resumes?.length ? resumes.map(r => `
+      <div>
+        <button onclick="loadResume('${r.id}')">${r.name}</button>
+      </div>
+    `).join('') : '<p>No resumes yet</p>'}
   `;
 
   document.getElementById('logoutBtn').onclick = logout;
 }
 
+// ==================== AUTH ====================
 async function login() {
-  const email = val('loginEmail');
-  const password = val('loginPassword');
-
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await supabase.auth.signInWithPassword({
+    email: val('loginEmail'),
+    password: val('loginPassword')
+  });
 
   if (error) alert(error.message);
   else switchPage('profile');
@@ -177,7 +188,7 @@ async function login() {
 async function signup() {
   const email = val('signupEmail');
   const password = val('signupPassword');
-  const name = val('signupName');
+  const full_name = val('signupName');
 
   const { data, error } = await supabase.auth.signUp({ email, password });
 
@@ -185,12 +196,13 @@ async function signup() {
 
   await supabase.from('profiles').insert({
     id: data.user.id,
-    full_name: name
+    full_name
   });
 
-  alert("Signup success");
+  alert("Signup successful!");
 }
 
+// ==================== LOGOUT ====================
 async function logout() {
   await supabase.auth.signOut();
   switchPage('profile');
@@ -199,23 +211,35 @@ async function logout() {
 // ==================== SAVE RESUME ====================
 async function saveResume() {
   if (!currentUser) {
-    alert("Login first");
+    alert("Please login first");
     return switchPage('profile');
   }
 
-  const data = {
-    name: val('firstName') + " " + val('lastName'),
-    user_id: currentUser.id,
-    data: {
-      firstName: val('firstName'),
-      lastName: val('lastName')
-    }
+  const resumeData = {
+    firstName: val('firstName'),
+    lastName: val('lastName'),
+    jobTitle: val('jobTitle'),
+    phone: val('phone'),
+    email: val('email'),
+    address: val('address'),
+    summary: val('summary'),
+    experience: val('experience'),
+    education: val('education'),
+    skills: val('skills'),
+    languages: val('languages'),
+    awards: val('awards'),
+    references: val('references'),
+    template: document.getElementById('templateSelect').value
   };
 
-  const { error } = await supabase.from('resumes').insert(data);
+  const { error } = await supabase.from('resumes').insert({
+    user_id: currentUser.id,
+    name: `${resumeData.firstName} ${resumeData.lastName}`,
+    data: resumeData
+  });
 
   if (error) alert(error.message);
-  else alert("Saved!");
+  else alert("Resume saved successfully!");
 }
 
 // ==================== LOAD ====================
@@ -235,9 +259,9 @@ window.loadResume = async (id) => {
 
 // ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("App initialized ✅");
+  console.log("9to5 University Loaded ✅");
 
   document.getElementById('nominateBtn')?.addEventListener('click', () => {
-    alert("Send nominations to email.");
+    alert("Send nominations to mphelamlangeni@gmail.com");
   });
 });

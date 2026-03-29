@@ -11,8 +11,34 @@ supabase.auth.onAuthStateChange((event, session) => {
   currentUser = session?.user || null;
 });
 
+// ==================== GLOBAL CLICK HANDLER ====================
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest('button, a');
+  if (!btn) return;
+
+  const page = btn.dataset.page;
+  const action = btn.dataset.action;
+
+  // ==================== PAGE SWITCH ====================
+  if (page) {
+    e.preventDefault();
+    switchPage(page);
+    return;
+  }
+
+  // ==================== ACTIONS ====================
+  switch(action) {
+    case 'saveResume': e.preventDefault(); saveResume(); break;
+    case 'downloadPDF': e.preventDefault(); downloadPDF(); break;
+    case 'login': e.preventDefault(); login(); break;
+    case 'signup': e.preventDefault(); signup(); break;
+    case 'logout': e.preventDefault(); logout(); break;
+    default: break;
+  }
+});
+
 // ==================== PAGE SWITCHING ====================
-window.switchPage = function(pageId) {
+function switchPage(pageId) {
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active-page'));
 
   const target = document.getElementById(pageId + '-page');
@@ -28,16 +54,7 @@ window.switchPage = function(pageId) {
 
   if (pageId === 'resume') reloadResumeBuilder();
   if (pageId === 'profile') renderProfilePage();
-};
-
-// ==================== GLOBAL CLICK FIX ====================
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('[data-page]');
-  if (!btn) return;
-
-  e.preventDefault();
-  switchPage(btn.dataset.page);
-});
+}
 
 // ==================== HELPERS ====================
 function val(id) {
@@ -74,7 +91,7 @@ function updatePreview() {
     photoUrl: currentPhotoUrl
   };
 
-  const tpl = document.getElementById('templateSelect').value;
+  const tpl = document.getElementById('templateSelect')?.value || 'default';
   document.getElementById('cvPreview').innerHTML = renderTemplate(tpl, data);
 
   bindPhotoUpload();
@@ -120,38 +137,32 @@ async function downloadPDF() {
 // ==================== INIT BUILDER ====================
 function reloadResumeBuilder() {
   const inputs = document.querySelectorAll('#resume-page input, #resume-page textarea');
-
   inputs.forEach(i => i.oninput = updatePreview);
 
-  document.getElementById('templateSelect').onchange = updatePreview;
-  document.getElementById('downloadPdfBtn').onclick = downloadPDF;
-  document.getElementById('saveResumeBtn').onclick = saveResume;
-
+  document.getElementById('templateSelect')?.addEventListener('change', updatePreview);
   updatePreview();
 }
 
 // ==================== PROFILE ====================
 async function renderProfilePage() {
   const container = document.getElementById('profileContainer');
-
   const { data } = await supabase.auth.getUser();
   const user = data.user;
+
+  currentUser = user;
 
   if (!user) {
     container.innerHTML = `
       <h2>Access Profile</h2>
       <input id="loginEmail" placeholder="Email">
       <input id="loginPassword" type="password" placeholder="Password">
-      <button id="loginBtn" class="btn-primary">Login</button>
+      <button data-action="login">Login</button>
       <br><br>
       <input id="signupEmail" placeholder="Email">
       <input id="signupPassword" type="password" placeholder="Password">
       <input id="signupName" placeholder="Full Name">
-      <button id="signupBtn" class="btn-primary">Signup</button>
+      <button data-action="signup">Signup</button>
     `;
-
-    document.getElementById('loginBtn').onclick = login;
-    document.getElementById('signupBtn').onclick = signup;
     return;
   }
 
@@ -162,7 +173,7 @@ async function renderProfilePage() {
 
   container.innerHTML = `
     <h2>Welcome, ${user.email}</h2>
-    <button id="logoutBtn" class="btn-outline">Logout</button>
+    <button data-action="logout">Logout</button>
     <h3>Saved Resumes</h3>
     ${resumes?.length ? resumes.map(r => `
       <div>
@@ -170,8 +181,6 @@ async function renderProfilePage() {
       </div>
     `).join('') : '<p>No resumes yet</p>'}
   `;
-
-  document.getElementById('logoutBtn').onclick = logout;
 }
 
 // ==================== AUTH ====================
@@ -191,18 +200,13 @@ async function signup() {
   const full_name = val('signupName');
 
   const { data, error } = await supabase.auth.signUp({ email, password });
-
   if (error) return alert(error.message);
 
-  await supabase.from('profiles').insert({
-    id: data.user.id,
-    full_name
-  });
-
+  await supabase.from('profiles').insert({ id: data.user.id, full_name });
   alert("Signup successful!");
+  switchPage('profile');
 }
 
-// ==================== LOGOUT ====================
 async function logout() {
   await supabase.auth.signOut();
   switchPage('profile');
@@ -229,7 +233,7 @@ async function saveResume() {
     languages: val('languages'),
     awards: val('awards'),
     references: val('references'),
-    template: document.getElementById('templateSelect').value
+    template: document.getElementById('templateSelect')?.value || 'default'
   };
 
   const { error } = await supabase.from('resumes').insert({
@@ -242,10 +246,9 @@ async function saveResume() {
   else alert("Resume saved successfully!");
 }
 
-// ==================== LOAD ====================
+// ==================== LOAD RESUME ====================
 window.loadResume = async (id) => {
   const { data } = await supabase.from('resumes').select('*').eq('id', id).single();
-
   if (!data) return;
 
   Object.keys(data.data).forEach(k => {
@@ -260,8 +263,4 @@ window.loadResume = async (id) => {
 // ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', () => {
   console.log("9to5 University Loaded ✅");
-
-  document.getElementById('nominateBtn')?.addEventListener('click', () => {
-    alert("Send nominations to mphelamlangeni@gmail.com");
-  });
 });

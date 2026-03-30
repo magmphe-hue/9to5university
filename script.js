@@ -1,372 +1,542 @@
-// ================= SUPABASE CONFIGURATION =================
-const SUPABASE_URL = 'https://pfqpyzfqwsksepoohive.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXB5emZxd3Nrc2Vwb29oaXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM1MTMsImV4cCI6MjA4OTk0OTUxM30.NPbcOFUPS_2zYg-2MjH1ukHrHqN8AjXRDrP1OpU4nNs';
-
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// ================= GLOBAL PAGE SWITCHING =================
-window.switchPage = function(pageId) {
-  document.querySelectorAll('.page-section').forEach(section => {
-    section.classList.remove('active-page');
-  });
-  const target = document.getElementById(pageId + '-page');
-  if (target) target.classList.add('active-page');
-  else console.error('Section not found:', pageId + '-page');
-
-  document.querySelectorAll('.nav-link').forEach(link => {
-    link.classList.remove('active');
-    if (link.dataset.page === pageId) link.classList.add('active');
-  });
-  window.scrollTo(0, 0);
-
-  if (pageId === 'resume') reloadResumeBuilder();
-  if (pageId === 'profile') renderProfilePage();
-};
-
-// Event delegation for all elements with data-page attribute
-document.body.addEventListener('click', (e) => {
-  let target = e.target.closest('[data-page]');
-  if (target && target.dataset.page) {
+// ========================
+// 1. PAGE NAVIGATION
+// ========================
+document.querySelectorAll('[data-page]').forEach(el => {
+  el.addEventListener('click', (e) => {
     e.preventDefault();
-    window.switchPage(target.dataset.page);
-  }
+    const pageId = el.getAttribute('data-page');
+    if (!pageId) return;
+    document.querySelectorAll('.page-section').forEach(section => {
+      section.classList.remove('active-page');
+    });
+    const target = document.getElementById(`${pageId}-page`);
+    if (target) target.classList.add('active-page');
+    // Scroll to top for better UX
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 });
 
-// ================= RESUME BUILDER =================
-let currentPhotoUrl = 'https://via.placeholder.com/120?text=Photo';
+// ========================
+// 2. RESUME BUILDER
+// ========================
+// DOM elements
+const firstName = document.getElementById('firstName');
+const lastName = document.getElementById('lastName');
+const jobTitle = document.getElementById('jobTitle');
+const phone = document.getElementById('phone');
+const email = document.getElementById('email');
+const address = document.getElementById('address');
+const summary = document.getElementById('summary');
+const experience = document.getElementById('experience');
+const education = document.getElementById('education');
+const skills = document.getElementById('skills');
+const languages = document.getElementById('languages');
+const awards = document.getElementById('awards');
+const references = document.getElementById('references');
+const templateSelect = document.getElementById('templateSelect');
+const cvPreview = document.getElementById('cvPreview');
+const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+const saveResumeBtn = document.getElementById('saveResumeBtn');
 
+// Helper: parse experience lines (format: Position|Company|Location|Start|End|Description)
 function parseExperience(text) {
-  return text.split('\n').filter(l=>l.trim()).map(l=>{
-    const p=l.split('|');
-    return {position:p[0]||'',company:p[1]||'',location:p[2]||'',start:p[3]||'',end:p[4]||'',description:p[5]||''};
+  return text.split('\n').filter(line => line.trim()).map(line => {
+    const parts = line.split('|').map(p => p.trim());
+    return {
+      position: parts[0] || '',
+      company: parts[1] || '',
+      location: parts[2] || '',
+      start: parts[3] || '',
+      end: parts[4] || '',
+      description: parts[5] || ''
+    };
   });
 }
+
+// Helper: parse education lines (format: Institution|Degree|Start|End)
 function parseEducation(text) {
-  return text.split('\n').filter(l=>l.trim()).map(l=>{
-    const p=l.split('|');
-    return {institution:p[0]||'',degree:p[1]||'',start:p[2]||'',end:p[3]||''};
+  return text.split('\n').filter(line => line.trim()).map(line => {
+    const parts = line.split('|').map(p => p.trim());
+    return {
+      institution: parts[0] || '',
+      degree: parts[1] || '',
+      start: parts[2] || '',
+      end: parts[3] || ''
+    };
   });
 }
+
+// Helper: parse awards lines (format: Title|Description|Year)
 function parseAwards(text) {
-  return text.split('\n').filter(l=>l.trim()).map(l=>{
-    const p=l.split('|');
-    return {title:p[0]||'',description:p[1]||'',year:p[2]||''};
+  return text.split('\n').filter(line => line.trim()).map(line => {
+    const parts = line.split('|').map(p => p.trim());
+    return {
+      title: parts[0] || '',
+      description: parts[1] || '',
+      year: parts[2] || ''
+    };
   });
 }
+
+// Helper: parse references lines (format: Name|Company|Phone|Email)
 function parseReferences(text) {
-  return text.split('\n').filter(l=>l.trim()).map(l=>{
-    const p=l.split('|');
-    return {name:p[0]||'',company:p[1]||'',phone:p[2]||'',email:p[3]||''};
+  return text.split('\n').filter(line => line.trim()).map(line => {
+    const parts = line.split('|').map(p => p.trim());
+    return {
+      name: parts[0] || '',
+      company: parts[1] || '',
+      phone: parts[2] || '',
+      email: parts[3] || ''
+    };
   });
 }
 
-const templates = {
-  minimal: `<div class="cv-template cv-minimal"><div class="header"><div><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}}</p></div><div><p>{{email}}</p><p>{{phone}}</p></div></div><p>{{summary}}</p><div class="main"><div class="left"><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> – {{company}}<br><small>{{start}}–{{end}}</small><br>{{description}}</p>{{/experience}}</div><div class="right"><h3>Skills</h3><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div></div></div>`,
-  sidebar: `<div class="cv-template cv-sidebar"><div class="left"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><p><strong>Contact</strong></p><p>{{phone}}</p><p>{{email}}</p><p>{{address}}</p><p><strong>Skills</strong></p><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul><p><strong>Languages</strong></p><ul>{{#languages}}<li>{{.}}</li>{{/languages}}</ul></div><div class="right"><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}}</p><p>{{summary}}</p><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}} ({{start}}–{{end}})<br>{{description}}</p>{{/experience}}<h3>Education</h3>{{#education}}<p><strong>{{degree}}</strong>, {{institution}} ({{start}}–{{end}})</p>{{/education}}</div></div>`,
-  elegant: `<div class="cv-template cv-elegant"><div class="left"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><h2>{{firstName}} {{lastName}}</h2><p>{{jobTitle}}</p><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div><div class="right"><h3>About</h3><p>{{summary}}</p><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}} ({{start}}–{{end}})<br>{{description}}</p>{{/experience}}<h3>Education</h3>{{#education}}<p>{{degree}}, {{institution}}</p>{{/education}}</div></div>`,
-  centered: `<div class="cv-template cv-centered"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}}</p><p>{{phone}} | {{email}} | {{address}}</p><p>{{summary}}</p><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> – {{company}} ({{start}}–{{end}})<br>{{description}}</p>{{/experience}}<h3>Skills</h3><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div>`,
-  modern: `<div class="cv-template cv-modern"><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}} | {{email}} | {{phone}}</p><p>{{summary}}</p><div class="columns"><div><h3>Skills</h3><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div><div><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}}<br>{{description}}</p>{{/experience}}</div></div></div>`,
-  card: `<div class="cv-template cv-card"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><h1>{{firstName}} {{lastName}}</h1><p>{{jobTitle}} | {{email}} | {{phone}}</p><p>{{summary}}</p><div class="main"><div><h3>Education</h3>{{#education}}<p>{{degree}} – {{institution}} ({{start}}–{{end}})</p>{{/education}}</div><div><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}}<br>{{description}}</p>{{/experience}}</div></div></div>`,
-  classic: `<div class="cv-template cv-classic"><div class="left"><div class="photo"><img src="{{photoUrl}}"><input type="file" class="photoUpload"></div><h2>{{firstName}} {{lastName}}</h2><p>{{jobTitle}}</p><p><strong>Contact</strong><br>{{email}}<br>{{phone}}<br>{{address}}</p></div><div><p>{{summary}}</p><h3>Experience</h3>{{#experience}}<p><strong>{{position}}</strong> at {{company}} ({{start}}–{{end}})<br>{{description}}</p>{{/experience}}<h3>Skills</h3><ul>{{#skills}}<li>{{.}}</li>{{/skills}}</ul></div></div>`
-};
-
-function renderTemplate(templateName, data) {
-  let tpl = templates[templateName];
-  if (!tpl) return '<p>Template not found</p>';
-  tpl = tpl.replace(/{{#(\w+)}}([\s\S]*?){{\/\1}}/g, (match, key, inner) => {
-    const items = data[key] || [];
-    return items.map(item => {
-      let sub = inner;
-      Object.keys(item).forEach(k => { sub = sub.replace(new RegExp(`{{${k}}}`, 'g'), item[k] || ''); });
-      return sub;
-    }).join('');
-  });
-  Object.keys(data).forEach(key => {
-    const val = typeof data[key] === 'string' ? data[key] : (Array.isArray(data[key]) ? data[key].join(', ') : '');
-    tpl = tpl.replace(new RegExp(`{{${key}}}`, 'g'), val);
-  });
-  return tpl;
+// Helper: get skills as array
+function getSkillsArray() {
+  return skills.value.split(',').map(s => s.trim()).filter(s => s);
 }
 
-function updatePreview() {
-  const skillsArr = document.getElementById('skills').value.split(',').map(s=>s.trim());
-  const langsArr = document.getElementById('languages').value.split(',').map(l=>l.trim());
-  const exp = parseExperience(document.getElementById('experience').value);
-  const edu = parseEducation(document.getElementById('education').value);
-  const aw = parseAwards(document.getElementById('awards').value);
-  const ref = parseReferences(document.getElementById('references').value);
+// Helper: get languages as array
+function getLanguagesArray() {
+  return languages.value.split(',').map(l => l.trim()).filter(l => l);
+}
+
+// Main preview update function
+function updateCVPreview() {
+  const template = templateSelect.value;
   const data = {
-    firstName: document.getElementById('firstName').value,
-    lastName: document.getElementById('lastName').value,
-    jobTitle: document.getElementById('jobTitle').value,
-    phone: document.getElementById('phone').value,
-    email: document.getElementById('email').value,
-    address: document.getElementById('address').value,
-    summary: document.getElementById('summary').value,
-    skills: skillsArr,
-    languages: langsArr,
-    experience: exp,
-    education: edu,
-    awards: aw,
-    references: ref,
-    photoUrl: currentPhotoUrl
+    firstName: firstName.value,
+    lastName: lastName.value,
+    jobTitle: jobTitle.value,
+    phone: phone.value,
+    email: email.value,
+    address: address.value,
+    summary: summary.value,
+    experience: parseExperience(experience.value),
+    education: parseEducation(education.value),
+    skills: getSkillsArray(),
+    languages: getLanguagesArray(),
+    awards: parseAwards(awards.value),
+    references: parseReferences(references.value)
   };
-  const tplName = document.getElementById('templateSelect').value;
-  const html = renderTemplate(tplName, data);
-  document.getElementById('cvPreview').innerHTML = html;
-  document.querySelectorAll('.photoUpload').forEach(inp => {
-    inp.removeEventListener('change', handlePhoto);
-    inp.addEventListener('change', handlePhoto);
-  });
-}
 
-function handlePhoto(e) {
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => { currentPhotoUrl = ev.target.result; updatePreview(); };
-  reader.readAsDataURL(file);
-}
+  let html = '';
 
-async function downloadPDF() {
-  const element = document.querySelector('#cvPreview .cv-template');
-  if (!element) {
-    alert('No resume preview to download.');
-    return;
+  switch (template) {
+    case 'minimal':
+      html = minimalTemplate(data);
+      break;
+    case 'sidebar':
+      html = sidebarTemplate(data);
+      break;
+    case 'elegant':
+      html = elegantTemplate(data);
+      break;
+    case 'centered':
+      html = centeredTemplate(data);
+      break;
+    case 'modern':
+      html = modernTemplate(data);
+      break;
+    case 'card':
+      html = cardTemplate(data);
+      break;
+    case 'classic':
+      html = classicTemplate(data);
+      break;
+    default:
+      html = minimalTemplate(data);
   }
+
+  cvPreview.innerHTML = html;
+}
+
+// Template definitions (HTML strings)
+function minimalTemplate(d) {
+  return `
+    <div class="cv-minimal" style="font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto;">
+      <div class="header">
+        <div><strong>${d.firstName} ${d.lastName}</strong><br>${d.jobTitle}</div>
+        <div>${d.phone} | ${d.email}<br>${d.address}</div>
+      </div>
+      <div class="main">
+        <div class="left">
+          <h3>Summary</h3>
+          <p>${d.summary}</p>
+          <h3>Skills</h3>
+          <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+          <h3>Languages</h3>
+          <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
+        </div>
+        <div class="right">
+          <h3>Experience</h3>
+          ${d.experience.map(exp => `
+            <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+          `).join('')}
+          <h3>Education</h3>
+          ${d.education.map(edu => `
+            <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
+          `).join('')}
+          <h3>Awards</h3>
+          ${d.awards.map(aw => `
+            <div><strong>${aw.title}</strong> (${aw.year})<br>${aw.description}</div>
+          `).join('')}
+        </div>
+      </div>
+      <hr>
+      <h3>References</h3>
+      ${d.references.map(ref => `
+        <div>${ref.name}, ${ref.company} – ${ref.phone} / ${ref.email}</div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function sidebarTemplate(d) {
+  return `
+    <div class="cv-sidebar" style="display: flex; max-width: 800px; margin: 0 auto;">
+      <div class="left" style="background: #2f3b4c; color: white; padding: 20px; border-radius: 16px 0 0 16px;">
+        <h3>Contact</h3>
+        <p>${d.phone}<br>${d.email}<br>${d.address}</p>
+        <h3>Skills</h3>
+        <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+        <h3>Languages</h3>
+        <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
+      </div>
+      <div class="right" style="padding: 20px;">
+        <h2>${d.firstName} ${d.lastName}</h2>
+        <h4>${d.jobTitle}</h4>
+        <h3>Summary</h3>
+        <p>${d.summary}</p>
+        <h3>Experience</h3>
+        ${d.experience.map(exp => `
+          <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+        `).join('')}
+        <h3>Education</h3>
+        ${d.education.map(edu => `
+          <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
+        `).join('')}
+        <h3>References</h3>
+        ${d.references.map(ref => `
+          <div>${ref.name}, ${ref.company} – ${ref.phone} / ${ref.email}</div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function elegantTemplate(d) {
+  return `
+    <div class="cv-elegant" style="max-width: 800px; margin: 0 auto; display: flex; gap: 30px;">
+      <div class="left" style="background: #fef5e8; padding: 20px; border-radius: 20px;">
+        <h3>Contact</h3>
+        <p>${d.phone}<br>${d.email}<br>${d.address}</p>
+        <h3>Skills</h3>
+        <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+        <h3>Languages</h3>
+        <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
+      </div>
+      <div class="right">
+        <h1>${d.firstName} ${d.lastName}</h1>
+        <h3>${d.jobTitle}</h3>
+        <h3>Profile</h3>
+        <p>${d.summary}</p>
+        <h3>Experience</h3>
+        ${d.experience.map(exp => `
+          <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+        `).join('')}
+        <h3>Education</h3>
+        ${d.education.map(edu => `
+          <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function centeredTemplate(d) {
+  return `
+    <div class="cv-centered" style="text-align: center; max-width: 800px; margin: 0 auto;">
+      <h1>${d.firstName} ${d.lastName}</h1>
+      <h3>${d.jobTitle}</h3>
+      <p>${d.phone} | ${d.email} | ${d.address}</p>
+      <hr>
+      <h3>Summary</h3>
+      <p>${d.summary}</p>
+      <h3>Experience</h3>
+      ${d.experience.map(exp => `
+        <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+      `).join('')}
+      <h3>Education</h3>
+      ${d.education.map(edu => `
+        <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function modernTemplate(d) {
+  return `
+    <div class="cv-modern" style="max-width: 800px; margin: 0 auto;">
+      <div style="background: #014656; color: white; padding: 20px; border-radius: 20px 20px 0 0;">
+        <h1>${d.firstName} ${d.lastName}</h1>
+        <h3>${d.jobTitle}</h3>
+      </div>
+      <div class="columns" style="display: flex; gap: 30px; padding: 20px;">
+        <div style="flex: 1;">
+          <h3>Contact</h3>
+          <p>${d.phone}<br>${d.email}<br>${d.address}</p>
+          <h3>Skills</h3>
+          <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+          <h3>Languages</h3>
+          <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
+        </div>
+        <div style="flex: 2;">
+          <h3>Summary</h3>
+          <p>${d.summary}</p>
+          <h3>Experience</h3>
+          ${d.experience.map(exp => `
+            <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+          `).join('')}
+          <h3>Education</h3>
+          ${d.education.map(edu => `
+            <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function cardTemplate(d) {
+  return `
+    <div class="cv-card" style="max-width: 800px; margin: 0 auto; border: 1px solid #ddd; border-radius: 24px; padding: 20px;">
+      <div style="text-align: center;">
+        <h1>${d.firstName} ${d.lastName}</h1>
+        <h3>${d.jobTitle}</h3>
+        <p>${d.phone} | ${d.email} | ${d.address}</p>
+      </div>
+      <div class="main" style="display: flex; gap: 30px; margin-top: 20px;">
+        <div style="flex: 1;">
+          <h3>Summary</h3>
+          <p>${d.summary}</p>
+          <h3>Skills</h3>
+          <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+        </div>
+        <div style="flex: 2;">
+          <h3>Experience</h3>
+          ${d.experience.map(exp => `
+            <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+          `).join('')}
+          <h3>Education</h3>
+          ${d.education.map(edu => `
+            <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function classicTemplate(d) {
+  return `
+    <div class="cv-classic" style="max-width: 800px; margin: 0 auto; display: flex; gap: 30px;">
+      <div class="left" style="background: #f4f4f4; padding: 20px; border-radius: 20px;">
+        <h3>Contact</h3>
+        <p>${d.phone}<br>${d.email}<br>${d.address}</p>
+        <h3>Skills</h3>
+        <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+        <h3>Languages</h3>
+        <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
+      </div>
+      <div class="right">
+        <h1>${d.firstName} ${d.lastName}</h1>
+        <h3>${d.jobTitle}</h3>
+        <h3>Summary</h3>
+        <p>${d.summary}</p>
+        <h3>Experience</h3>
+        ${d.experience.map(exp => `
+          <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+        `).join('')}
+        <h3>Education</h3>
+        ${d.education.map(edu => `
+          <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// PDF download using html2canvas and jspdf
+async function downloadPDF() {
+  const element = cvPreview;
+  if (!element) return;
   try {
-    const canvas = await html2canvas(element, { scale: 3, backgroundColor: '#ffffff', logging: false });
+    const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#ffffff' });
     const imgData = canvas.toDataURL('image/png');
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const imgWidth = pdfWidth - 20;
+    const imgWidth = 210; // A4 width in mm
+    const pageHeight = 297;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-    pdf.save('resume_9to5.pdf');
-  } catch(err) {
-    console.error(err);
-    alert('PDF generation failed. Please try again.');
-  }
-}
-
-function reloadResumeBuilder() {
-  const templateSelect = document.getElementById('templateSelect');
-  if (templateSelect) {
-    templateSelect.removeEventListener('change', updatePreview);
-    templateSelect.addEventListener('change', updatePreview);
-  }
-  const saveBtn = document.getElementById('saveResumeBtn');
-  if (saveBtn) {
-    saveBtn.removeEventListener('click', saveCurrentResume);
-    saveBtn.addEventListener('click', saveCurrentResume);
-  }
-  const downloadBtn = document.getElementById('downloadPdfBtn');
-  if (downloadBtn) {
-    downloadBtn.removeEventListener('click', downloadPDF);
-    downloadBtn.addEventListener('click', downloadPDF);
-  }
-  const inputs = ['firstName','lastName','jobTitle','phone','email','address','summary','experience','education','skills','languages','awards','references'];
-  inputs.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.removeEventListener('input', updatePreview);
-      el.addEventListener('input', updatePreview);
+    let heightLeft = imgHeight;
+    let position = 0;
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
     }
-  });
-  updatePreview();
-}
-
-// ================= AUTH & PROFILE =================
-let currentUser = null;
-
-async function checkUser() {
-  if (!supabase || !supabase.auth) return null;
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    currentUser = user;
-    return user;
+    pdf.save('resume.pdf');
   } catch (err) {
-    console.error('Supabase error:', err);
-    return null;
+    console.error('PDF error:', err);
+    alert('Failed to generate PDF. Please try again.');
   }
 }
 
-async function renderProfilePage() {
-  const container = document.getElementById('profileContainer');
-  const user = await checkUser();
-
-  if (!user) {
-    container.innerHTML = `
-      <h2>Access Your Profile</h2>
-      <div style="display:flex; gap:2rem; flex-wrap:wrap;">
-        <div class="auth-form">
-          <h3>Sign In</h3>
-          <input type="email" id="loginEmail" placeholder="Email">
-          <input type="password" id="loginPassword" placeholder="Password">
-          <button class="btn-primary" id="loginBtn">Sign In</button>
-        </div>
-        <div class="auth-form">
-          <h3>Create Account</h3>
-          <input type="email" id="signupEmail" placeholder="Email">
-          <input type="password" id="signupPassword" placeholder="Password">
-          <input type="text" id="signupName" placeholder="Full Name">
-          <button class="btn-primary" id="signupBtn">Sign Up</button>
-        </div>
-      </div>
-    `;
-    document.getElementById('loginBtn')?.addEventListener('click', login);
-    document.getElementById('signupBtn')?.addEventListener('click', signup);
-    return;
-  }
-
-  try {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-
-    const { data: resumes } = await supabase
-      .from('resumes')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
-
-    container.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-        <h2>Welcome, ${profile?.full_name || user.email}</h2>
-        <button class="btn-outline" id="logoutBtn">Sign Out</button>
-      </div>
-      <div style="margin-bottom: 2rem;">
-        <h3>Edit Profile</h3>
-        <input type="text" id="editName" placeholder="Full Name" value="${profile?.full_name || ''}">
-        <input type="text" id="editPhone" placeholder="Phone" value="${profile?.phone || ''}">
-        <button class="btn-primary" id="updateProfileBtn">Update Profile</button>
-      </div>
-      <div>
-        <h3>Saved Resumes</h3>
-        ${resumes?.length ? resumes.map(res => `
-          <div class="saved-resume-item">
-            <span><strong>${res.name || 'Resume'}</strong> (${new Date(res.created_at).toLocaleDateString()})</span>
-            <button class="btn-outline" data-id="${res.id}" onclick="loadResume('${res.id}')">Load</button>
-          </div>
-        `).join('') : '<p>No saved resumes yet. Create and save one from the Resume Builder.</p>'}
-      </div>
-    `;
-    document.getElementById('logoutBtn')?.addEventListener('click', logout);
-    document.getElementById('updateProfileBtn')?.addEventListener('click', async () => {
-      const full_name = document.getElementById('editName').value;
-      const phone = document.getElementById('editPhone').value;
-      await supabase.from('profiles').update({ full_name, phone }).eq('id', user.id);
-      alert('Profile updated!');
-      renderProfilePage();
-    });
-  } catch (err) {
-    console.error(err);
-    container.innerHTML = '<p>Error loading profile. Please try again later.</p>';
-  }
-}
-
-async function login() {
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) alert(error.message);
-  else window.switchPage('profile');
-}
-
-async function signup() {
-  const email = document.getElementById('signupEmail').value;
-  const password = document.getElementById('signupPassword').value;
-  const full_name = document.getElementById('signupName').value;
-  const { error, data } = await supabase.auth.signUp({ email, password });
-  if (error) alert(error.message);
-  else {
-    if (data.user) {
-      await supabase.from('profiles').update({ full_name }).eq('id', data.user.id);
-    }
-    alert('Sign-up successful! Please check your email to confirm your account.');
-    window.switchPage('profile');
-  }
-}
-
-async function logout() {
-  await supabase.auth.signOut();
-  window.switchPage('profile');
-}
-
-// ================= RESUME SAVING & LOADING =================
-async function saveCurrentResume() {
-  const user = await checkUser();
-  if (!user) {
-    alert('Please sign in to save your resume.');
-    window.switchPage('profile');
-    return;
-  }
+// Save current resume data to localStorage (and also to "profile" saved list)
+function saveResumeToLocal() {
   const resumeData = {
-    firstName: document.getElementById('firstName').value,
-    lastName: document.getElementById('lastName').value,
-    jobTitle: document.getElementById('jobTitle').value,
-    phone: document.getElementById('phone').value,
-    email: document.getElementById('email').value,
-    address: document.getElementById('address').value,
-    summary: document.getElementById('summary').value,
-    experience: document.getElementById('experience').value,
-    education: document.getElementById('education').value,
-    skills: document.getElementById('skills').value,
-    languages: document.getElementById('languages').value,
-    awards: document.getElementById('awards').value,
-    references: document.getElementById('references').value,
-    template: document.getElementById('templateSelect').value
+    firstName: firstName.value,
+    lastName: lastName.value,
+    jobTitle: jobTitle.value,
+    phone: phone.value,
+    email: email.value,
+    address: address.value,
+    summary: summary.value,
+    experience: experience.value,
+    education: education.value,
+    skills: skills.value,
+    languages: languages.value,
+    awards: awards.value,
+    references: references.value,
+    template: templateSelect.value,
+    savedAt: new Date().toISOString()
   };
-  const name = `${resumeData.firstName} ${resumeData.lastName}`.trim() || 'Untitled';
-  const { error } = await supabase
-    .from('resumes')
-    .insert({ user_id: user.id, name, data: resumeData });
-  if (error) alert('Error saving resume: ' + error.message);
-  else alert('Resume saved successfully!');
+  let savedResumes = JSON.parse(localStorage.getItem('9to5_resumes') || '[]');
+  savedResumes.push(resumeData);
+  localStorage.setItem('9to5_resumes', JSON.stringify(savedResumes));
+  alert('Resume saved to your profile!');
+  loadProfilePage(); // Refresh profile display if visible
 }
 
-window.loadResume = async function(resumeId) {
-  const { data: resume } = await supabase
-    .from('resumes')
-    .select('data')
-    .eq('id', resumeId)
-    .single();
-  if (resume && resume.data) {
-    const d = resume.data;
-    document.getElementById('firstName').value = d.firstName || '';
-    document.getElementById('lastName').value = d.lastName || '';
-    document.getElementById('jobTitle').value = d.jobTitle || '';
-    document.getElementById('phone').value = d.phone || '';
-    document.getElementById('email').value = d.email || '';
-    document.getElementById('address').value = d.address || '';
-    document.getElementById('summary').value = d.summary || '';
-    document.getElementById('experience').value = d.experience || '';
-    document.getElementById('education').value = d.education || '';
-    document.getElementById('skills').value = d.skills || '';
-    document.getElementById('languages').value = d.languages || '';
-    document.getElementById('awards').value = d.awards || '';
-    document.getElementById('references').value = d.references || '';
-    if (d.template) document.getElementById('templateSelect').value = d.template;
-    updatePreview();
-    window.switchPage('resume');
-    alert('Resume loaded!');
+// Load profile page: display saved resumes and allow load/delete
+function loadProfilePage() {
+  const profileContainer = document.getElementById('profileContainer');
+  if (!profileContainer) return;
+  const savedResumes = JSON.parse(localStorage.getItem('9to5_resumes') || '[]');
+  if (savedResumes.length === 0) {
+    profileContainer.innerHTML = '<p>No saved resumes yet. Create and save one from the Resume Builder.</p>';
+    return;
   }
-};
+  let html = '<h2>Your Saved Resumes</h2>';
+  savedResumes.forEach((resume, idx) => {
+    html += `
+      <div class="saved-resume-item">
+        <div>
+          <strong>${resume.firstName} ${resume.lastName}</strong> – ${resume.jobTitle}<br>
+          <small>Saved: ${new Date(resume.savedAt).toLocaleString()}</small>
+        </div>
+        <div>
+          <button class="btn-outline load-resume" data-index="${idx}" style="margin-right: 0.5rem;">Load</button>
+          <button class="btn-outline delete-resume" data-index="${idx}" style="background: #dc3545; color: white;">Delete</button>
+        </div>
+      </div>
+    `;
+  });
+  profileContainer.innerHTML = html;
 
-// ================= INITIALIZATION =================
-document.addEventListener('DOMContentLoaded', async () => {
-  await checkUser();
-  if (document.getElementById('resume-page').classList.contains('active-page')) {
-    reloadResumeBuilder();
-  }
-  const nominateBtn = document.getElementById('nominateBtn');
-  if (nominateBtn) {
-    nominateBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      alert('Send nominations to mphelamlangeni@gmail.com with story and contact.');
+  // Attach load events
+  document.querySelectorAll('.load-resume').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-index'));
+      const resume = savedResumes[idx];
+      if (resume) {
+        firstName.value = resume.firstName;
+        lastName.value = resume.lastName;
+        jobTitle.value = resume.jobTitle;
+        phone.value = resume.phone;
+        email.value = resume.email;
+        address.value = resume.address;
+        summary.value = resume.summary;
+        experience.value = resume.experience;
+        education.value = resume.education;
+        skills.value = resume.skills;
+        languages.value = resume.languages;
+        awards.value = resume.awards;
+        references.value = resume.references;
+        templateSelect.value = resume.template;
+        updateCVPreview();
+        // Switch to resume page
+        document.querySelector('[data-page="resume"]').click();
+      }
     });
-  }
-});
+  });
+
+  document.querySelectorAll('.delete-resume').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-index'));
+      savedResumes.splice(idx, 1);
+      localStorage.setItem('9to5_resumes', JSON.stringify(savedResumes));
+      loadProfilePage();
+    });
+  });
+}
+
+// Attach event listeners for resume builder
+firstName.addEventListener('input', updateCVPreview);
+lastName.addEventListener('input', updateCVPreview);
+jobTitle.addEventListener('input', updateCVPreview);
+phone.addEventListener('input', updateCVPreview);
+email.addEventListener('input', updateCVPreview);
+address.addEventListener('input', updateCVPreview);
+summary.addEventListener('input', updateCVPreview);
+experience.addEventListener('input', updateCVPreview);
+education.addEventListener('input', updateCVPreview);
+skills.addEventListener('input', updateCVPreview);
+languages.addEventListener('input', updateCVPreview);
+awards.addEventListener('input', updateCVPreview);
+references.addEventListener('input', updateCVPreview);
+templateSelect.addEventListener('change', updateCVPreview);
+downloadPdfBtn.addEventListener('click', downloadPDF);
+saveResumeBtn.addEventListener('click', saveResumeToLocal);
+
+// Initial preview
+updateCVPreview();
+
+// ========================
+// 3. HUSTLER NOMINATION (WhatsApp)
+// ========================
+const nominateBtn = document.getElementById('nominateBtn');
+if (nominateBtn) {
+  nominateBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const message = encodeURIComponent("I'd like to nominate someone for Hustler of the Month.");
+    window.open(`https://wa.me/27794874559?text=${message}`, '_blank');
+  });
+}
+
+// ========================
+// 4. PROFILE PAGE LOAD (when shown)
+// ========================
+// Whenever profile page becomes active, refresh display
+const profileNavLink = document.querySelector('[data-page="profile"]');
+if (profileNavLink) {
+  profileNavLink.addEventListener('click', () => {
+    loadProfilePage();
+  });
+}
+// Also load on initial if profile page is already active (unlikely, but safe)
+if (document.getElementById('profile-page').classList.contains('active-page')) {
+  loadProfilePage();
+}
+
+// ========================
+// 5. (Optional) Supabase fallback – not configured, but you can add your keys
+// ========================
+// If you have Supabase keys, you can extend this to sync with cloud.
+// For now, localStorage handles saving.
+
+console.log('All functionality loaded!');

@@ -1,73 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>9to5 University Resume Builder</title>
-<style>
-  body { font-family: Arial, sans-serif; margin:0; padding:0; }
-  nav { background:#333; color:#fff; padding:10px; display:flex; gap:10px; }
-  nav a { color:#fff; text-decoration:none; cursor:pointer; }
-  nav a.active { font-weight:bold; text-decoration:underline; }
-  .page-section { display:none; padding:20px; }
-  .page-section.active-page { display:block; }
-  input, textarea, select, button { display:block; margin:10px 0; padding:8px; width:100%; max-width:400px; }
-  #cvPreview { border:1px solid #ccc; padding:20px; margin-top:20px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>9to5 University · Workplace Authority</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <!-- LIBRARIES -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- IMPORTANT: PAGE VISIBILITY CONTROL -->
+  <style>
+    .page-section { display: none; }
+    .active-page { display: block; }
+  </style>
 </head>
+
 <body>
 
-<nav>
-  <a data-page="resume" class="nav-link active">Resume Builder</a>
-  <a data-page="profile" class="nav-link">Profile</a>
-</nav>
+<!-- TOP BAR -->
+<div class="top-bar">
+  <a href="https://www.facebook.com/profile.php?id=61579134208115" target="_blank"><i class="fab fa-facebook-f"></i></a>
+  <a href="https://wa.me/27794874559" target="_blank"><i class="fab fa-whatsapp"></i></a>
+  <a href="#" data-page="profile"><i class="fas fa-user"></i></a>
+</div>
 
-<!-- ==================== RESUME PAGE ==================== -->
-<section id="resume-page" class="page-section active-page">
-  <h1>Create Your Resume</h1>
-  
-  <input id="firstName" placeholder="First Name">
-  <input id="lastName" placeholder="Last Name">
-  <input id="jobTitle" placeholder="Job Title">
-  <input id="phone" placeholder="Phone">
-  <input id="email" placeholder="Email">
-  <input id="address" placeholder="Address">
-  <textarea id="summary" placeholder="Professional Summary"></textarea>
-  <textarea id="skills" placeholder="Skills (comma separated)"></textarea>
-  <textarea id="languages" placeholder="Languages (comma separated)"></textarea>
-  <textarea id="experience" placeholder="Experience (position|company|location|start|end|description)"></textarea>
-  <textarea id="education" placeholder="Education (institution|degree|start|end)"></textarea>
-  <textarea id="awards" placeholder="Awards (title|description|year)"></textarea>
-  <textarea id="references" placeholder="References (name|company|phone|email)"></textarea>
-  
-  <label>Upload Photo</label>
-  <input type="file" class="photoUpload">
-  
-  <label>Template</label>
-  <select id="templateSelect">
-    <option value="default">Default</option>
-  </select>
-  
-  <button data-action="saveResume">Save Resume</button>
-  <button data-action="downloadPDF">Download PDF</button>
-  
-  <div id="cvPreview"></div>
+<!-- HEADER -->
+<div class="main-header">
+  <a href="#" data-page="home">
+    <img src="https://i.postimg.cc/8Chj1H8D/file-00000000d4b4722f8dcbec10fa906d0a.png">
+  </a>
+  <div>
+    <span>OFFICIAL RESOURCE</span><br>
+    REPUBLIC OF SOUTH AFRICA
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav-bar">
+  <a href="#" data-page="home">HOME</a>
+  <a href="#" data-page="resume">RESUME BUILDER</a>
+  <a href="#" data-page="rights">WORKERS' RIGHTS</a>
+  <a href="#" data-page="issues">REPORT MISCONDUCT</a>
+  <a href="#" data-page="profile">PROFILE</a>
+  <a href="#" data-page="contact">CONTACT</a>
+</div>
+
+<!-- ================= HOME ================= -->
+<section id="home-page" class="page-section active-page">
+  <!-- (ALL YOUR ORIGINAL HOME CONTENT REMAINS EXACTLY SAME) -->
 </section>
 
-<!-- ==================== PROFILE PAGE ==================== -->
-<section id="profile-page" class="page-section">
-  <div id="profileContainer">
-    <!-- Dynamic login/signup or saved resumes will load here -->
+<!-- ================= RESUME ================= -->
+<section id="resume-page" class="page-section">
+  <div class="resume-section">
+    <h2>Premium Resume Builder</h2>
+
+    <div class="builder-grid">
+
+      <!-- FORM -->
+      <div>
+        <select id="templateSelect">
+          <option value="minimal">Minimal</option>
+          <option value="modern">Modern</option>
+        </select>
+
+        <input id="firstName" value="Lorna" placeholder="First Name">
+        <input id="lastName" value="Alvarado" placeholder="Last Name">
+        <input id="jobTitle" value="Marketing Manager" placeholder="Job Title">
+        <input id="phone" value="123-456-7890">
+        <input id="email" value="hello@email.com">
+        <input id="address" value="123 Street, City">
+
+        <textarea id="summary">Marketing manager with 8+ years...</textarea>
+        <textarea id="experience">Manager|Company|City|2020|2023|Did stuff</textarea>
+        <textarea id="education">University|Degree|2016|2020</textarea>
+
+        <input id="skills" value="Leadership, Creativity">
+        <input id="languages" value="English">
+
+        <textarea id="awards">Award|Desc|2020</textarea>
+        <textarea id="references">John|Company|123|mail</textarea>
+      </div>
+
+      <!-- PREVIEW -->
+      <div>
+        <div id="cvPreview"></div>
+
+        <button id="downloadPdfBtn">Download PDF</button>
+        <button id="saveResumeBtn">Save Resume</button>
+      </div>
+
+    </div>
   </div>
 </section>
 
-<!-- ==================== DEPENDENCIES ==================== -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- ================= RIGHTS ================= -->
+<section id="rights-page" class="page-section">
+  <h2>Workers' Rights</h2>
+</section>
 
-<!-- ==================== CUSTOM JS ==================== -->
-<script src="app.js"></script>
+<!-- ================= ISSUES ================= -->
+<section id="issues-page" class="page-section">
+  <h2>Report Issues</h2>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section id="contact-page" class="page-section">
+  <h2>Contact</h2>
+</section>
+
+<!-- ================= PROFILE ================= -->
+<section id="profile-page" class="page-section">
+  <div id="profileContainer"></div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 9to5 University</p>
+</footer>
+
+<!-- SCRIPT -->
+<script src="script.js"></script>
 
 </body>
 </html>

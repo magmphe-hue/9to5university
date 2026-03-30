@@ -1,185 +1,223 @@
-// ==================== CONFIG ====================
+// ================= GLOBAL ERROR LOGGER =================
+window.addEventListener("error", (e) => {
+  console.error("🔥 Global Error:", e.message);
+});
+
+// ================= SUPABASE INIT =================
 const SUPABASE_URL = 'https://pfqpyzfqwsksepoohive.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXB5emZxd3Nrc2Vwb29oaXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM1MTMsImV4cCI6MjA4OTk0OTUxM30.NPbcOFUPS_2zYg-2MjH1ukHrHqN8AjXRDrP1OpU4nNs'; // move to env in production
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_KEY';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// ==================== GLOBAL STATE ====================
+let supabase = null;
 let currentUser = null;
+let currentPhotoUrl = 'https://via.placeholder.com/120?text=Photo';
 
-// ==================== NAVIGATION ====================
-window.switchPage = function (pageId) {
-  const sections = document.querySelectorAll('.page-section');
-  sections.forEach(s => s.classList.remove('active-page'));
+// ================= APP INIT =================
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    if (!window.supabase) throw new Error("Supabase not loaded");
 
-  const target = document.getElementById(`${pageId}-page`);
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    await checkUser();
+    initNavigation();
+
+    console.log("✅ App initialized");
+  } catch (err) {
+    console.error("Init failed:", err);
+    alert("App failed to load.");
+  }
+});
+
+// ================= NAVIGATION =================
+function initNavigation() {
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('[data-page]');
+    if (!link) return;
+
+    e.preventDefault();
+    const pageId = link.dataset.page;
+    if (!pageId) return;
+
+    switchPage(pageId);
+  });
+}
+
+window.switchPage = function(pageId) {
+  const target = document.getElementById(pageId + '-page');
 
   if (!target) {
-    console.error('❌ Page not found:', pageId);
+    alert("Page not found: " + pageId);
     return;
   }
 
-  target.classList.add('active-page');
+  document.querySelectorAll('.page-section')
+    .forEach(sec => sec.classList.remove('active-page'));
 
-  document.querySelectorAll('.nav-link').forEach(link => {
-    link.classList.toggle('active', link.dataset.page === pageId);
-  });
+  target.classList.add('active-page');
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  if (pageId === 'resume') initResumeBuilder();
+  if (pageId === 'resume') reloadResumeBuilder();
   if (pageId === 'profile') renderProfilePage();
 };
 
-// GLOBAL CLICK HANDLER
-document.addEventListener('click', (e) => {
-  const el = e.target.closest('[data-page]');
-  if (!el) return;
-
-  const page = el.dataset.page;
-  if (!page) return;
-
-  e.preventDefault();
-  switchPage(page);
-});
-
-// ==================== AUTH ====================
-async function getUser() {
+// ================= AUTH =================
+async function checkUser() {
   try {
     const { data } = await supabase.auth.getUser();
-    currentUser = data?.user || null;
-    return currentUser;
+    currentUser = data.user;
   } catch (err) {
-    console.error(err);
-    return null;
+    console.error("Auth error:", err);
   }
 }
 
 async function login() {
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
+  const email = document.getElementById('loginEmail')?.value;
+  const password = document.getElementById('loginPassword')?.value;
 
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) return alert(error.message);
 
+  alert("Login successful");
   switchPage('profile');
 }
 
 async function signup() {
-  const email = document.getElementById('signupEmail').value;
-  const password = document.getElementById('signupPassword').value;
-  const full_name = document.getElementById('signupName').value;
+  const email = document.getElementById('signupEmail')?.value;
+  const password = document.getElementById('signupPassword')?.value;
+  const full_name = document.getElementById('signupName')?.value;
 
   const { data, error } = await supabase.auth.signUp({ email, password });
 
   if (error) return alert(error.message);
 
-  // FIXED: UPSERT PROFILE
   await supabase.from('profiles').upsert({
     id: data.user.id,
     full_name
   });
 
-  alert('Check your email to confirm.');
+  alert("Account created. Check your email.");
 }
 
 async function logout() {
   await supabase.auth.signOut();
-  switchPage('home');
+  location.reload();
 }
 
-// ==================== PROFILE ====================
+// ================= PROFILE =================
 async function renderProfilePage() {
   const container = document.getElementById('profileContainer');
-  const user = await getUser();
+  if (!container) return;
 
-  if (!user) {
+  if (!currentUser) {
     container.innerHTML = `
-      <h2>Account</h2>
+      <h2>Access Your Profile</h2>
       <input id="loginEmail" placeholder="Email">
       <input id="loginPassword" type="password" placeholder="Password">
-      <button class="btn-primary" id="loginBtn">Login</button>
-      <hr>
-      <input id="signupEmail" placeholder="Email">
-      <input id="signupPassword" type="password" placeholder="Password">
-      <input id="signupName" placeholder="Full Name">
-      <button class="btn-primary" id="signupBtn">Sign Up</button>
-    `;
+      <button onclick="login()">Login</button>
 
-    document.getElementById('loginBtn').onclick = login;
-    document.getElementById('signupBtn').onclick = signup;
+      <h3>Create Account</h3>
+      <input id="signupEmail" placeholder="Email">
+      <input id="signupPassword" type="password">
+      <input id="signupName" placeholder="Full Name">
+      <button onclick="signup()">Sign Up</button>
+    `;
     return;
   }
 
-  container.innerHTML = `
-    <h2>Welcome ${user.email}</h2>
-    <button class="btn-outline" id="logoutBtn">Logout</button>
-  `;
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', currentUser.id)
+    .single();
 
-  document.getElementById('logoutBtn').onclick = logout;
+  container.innerHTML = `
+    <h2>Welcome ${profile?.full_name || currentUser.email}</h2>
+    <button onclick="logout()">Logout</button>
+  `;
 }
 
-// ==================== RESUME ====================
-function initResumeBuilder() {
-  const inputs = document.querySelectorAll('#resume-page input, #resume-page textarea');
+// ================= RESUME BUILDER =================
+function reloadResumeBuilder() {
+  const inputs = document.querySelectorAll('#resume-page input, #resume-page textarea, #resume-page select');
 
   inputs.forEach(input => {
-    input.oninput = updatePreview;
+    input.removeEventListener('input', updatePreview);
+    input.addEventListener('input', updatePreview);
   });
 
-  document.getElementById('downloadPdfBtn').onclick = downloadPDF;
-  document.getElementById('saveResumeBtn').onclick = saveResume;
+  document.getElementById('downloadPdfBtn')?.addEventListener('click', downloadPDF);
+  document.getElementById('saveResumeBtn')?.addEventListener('click', saveCurrentResume);
 
   updatePreview();
 }
 
 function updatePreview() {
-  const name = document.getElementById('firstName').value || '';
-  document.getElementById('cvPreview').innerHTML = `<h1>${name}</h1>`;
+  const preview = document.getElementById('cvPreview');
+  if (!preview) return;
+
+  const firstName = document.getElementById('firstName')?.value || '';
+  const lastName = document.getElementById('lastName')?.value || '';
+
+  preview.innerHTML = `
+    <div>
+      <h1>${firstName} ${lastName}</h1>
+      <p>Resume Preview</p>
+    </div>
+  `;
 }
 
-// ==================== SAVE RESUME ====================
-async function saveResume() {
-  const user = await getUser();
+// ================= PHOTO UPLOAD =================
+function handlePhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
 
-  if (!user) {
-    alert('Login first');
-    return switchPage('profile');
-  }
-
-  const data = {
-    name: document.getElementById('firstName').value,
-    user_id: user.id,
-    data: {}
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    currentPhotoUrl = ev.target.result;
+    updatePreview();
   };
-
-  const { error } = await supabase.from('resumes').insert(data);
-
-  if (error) {
-    console.error(error);
-    return alert('Save failed');
-  }
-
-  alert('Saved!');
+  reader.readAsDataURL(file);
 }
 
-// ==================== PDF ====================
+// ================= PDF =================
 async function downloadPDF() {
-  const el = document.getElementById('cvPreview');
+  const element = document.querySelector('#cvPreview');
 
-  const canvas = await html2canvas(el);
-  const img = canvas.toDataURL();
+  if (!element) {
+    alert("No preview found");
+    return;
+  }
+
+  const canvas = await html2canvas(element, { scale: 2 });
+  const imgData = canvas.toDataURL('image/png');
 
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF();
 
-  pdf.addImage(img, 'PNG', 10, 10);
-  pdf.save('cv.pdf');
+  pdf.addImage(imgData, 'PNG', 10, 10, 180, 0);
+  pdf.save('resume.pdf');
 }
 
-// ==================== INIT ====================
-document.addEventListener('DOMContentLoaded', async () => {
-  await getUser();
-  switchPage('home');
-});
+// ================= SAVE RESUME =================
+async function saveCurrentResume() {
+  if (!currentUser) {
+    alert('Please sign in first');
+    switchPage('profile');
+    return;
+  }
+
+  const data = {
+    firstName: document.getElementById('firstName')?.value
+  };
+
+  const { error } = await supabase.from('resumes').insert({
+    user_id: currentUser.id,
+    data
+  });
+
+  if (error) return alert(error.message);
+
+  alert("Resume saved!");
+}

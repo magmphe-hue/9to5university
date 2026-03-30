@@ -1,4 +1,4 @@
-/* style.css – Fully responsive, hustler section with separate containers */
+/* style.css – Fully responsive, includes Empty Store */
 * {
   margin: 0;
   padding: 0;
@@ -514,18 +514,6 @@ body {
   background: rgba(255,255,255,0.03);
   border-radius: 30px;
 }
-@media (max-width: 768px) {
-  .empty-store-section {
-    margin: 1rem 5%;
-    padding: 2rem 1rem;
-  }
-  .empty-store-content h2 {
-    font-size: 1.6rem;
-  }
-  .store-placeholder {
-    gap: 0.5rem;
-  }
-}
 
 /* Resume builder */
 .resume-section {
@@ -824,6 +812,16 @@ body {
   }
   .partners-grid {
     flex-direction: column;
+  }
+  .empty-store-section {
+    margin: 1rem 5%;
+    padding: 2rem 1rem;
+  }
+  .empty-store-content h2 {
+    font-size: 1.6rem;
+  }
+  .store-placeholder {
+    gap: 0.5rem;
   }
 }
 

@@ -1,5 +1,5 @@
 /* =========================
-   GLOBAL RESET (SAFE)
+   GLOBAL RESET
 ========================= */
 * {
   margin: 0;
@@ -8,19 +8,21 @@
 }
 
 /* =========================
-   BODY BASE
+   BASE STYLES
 ========================= */
-body {
-  font-family: 'Inter', sans-serif;
-  line-height: 1.5;
+html, body {
+  width: 100%;
+  min-height: 100%;
   overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
   background: #fff;
   color: #111;
+  line-height: 1.5;
 }
 
 /* =========================
    IMAGE FIX (CRITICAL)
-   → Stops overlap + overflow
+   → Stops overlap, stacking, overflow
 ========================= */
 img {
   max-width: 100%;
@@ -28,8 +30,16 @@ img {
   display: block;
 }
 
+/* Prevent image containers from collapsing */
+.img-container,
+.image-wrapper {
+  width: 100%;
+  display: block;
+  overflow: hidden;
+}
+
 /* =========================
-   PAGE SYSTEM (JS CONTROLLED)
+   PAGE SYSTEM (YOUR JS NAV)
 ========================= */
 .page-section {
   display: none;
@@ -42,24 +52,7 @@ img {
 }
 
 /* =========================
-   FLEX SAFETY NET
-========================= */
-.flex {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-/* =========================
-   GRID SAFETY NET
-========================= */
-.grid {
-  display: grid;
-  gap: 16px;
-}
-
-/* =========================
-   MAIN CONTAINERS
+   MAIN LAYOUT CONTAINERS
 ========================= */
 .container {
   width: 100%;
@@ -68,48 +61,110 @@ img {
   padding: 16px;
 }
 
-/* Prevent content collision */
+/* Prevent layout collisions */
 section, div {
   position: relative;
 }
 
 /* =========================
-   FORM ELEMENTS (SAFE UI)
+   FLEX SYSTEM SAFETY
 ========================= */
-input, textarea, select {
-  width: 100%;
-  max-width: 100%;
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
 }
 
 /* =========================
-   CV PREVIEW SAFETY
+   GRID SYSTEM SAFETY
+========================= */
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+/* =========================
+   FORM ELEMENTS (CV BUILDER SAFE)
+========================= */
+input,
+textarea,
+select {
+  width: 100%;
+  max-width: 100%;
+  font-family: inherit;
+}
+
+/* Prevent textarea overflow issues */
+textarea {
+  resize: vertical;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+button {
+  cursor: pointer;
+  max-width: 100%;
+  font-family: inherit;
+}
+
+/* =========================
+   CV PREVIEW AREA
+   (VERY IMPORTANT FOR YOUR PROJECT)
 ========================= */
 #cvPreview {
   width: 100%;
+  max-width: 100%;
   overflow: hidden;
   position: relative;
   background: #fff;
 }
 
 /* =========================
-   BUTTON SAFETY
+   TEMPLATE CONTENT SAFETY
 ========================= */
-button {
-  cursor: pointer;
-  max-width: 100%;
-}
-
-/* =========================
-   IMAGE WRAPPER FIX
-========================= */
-.img-container {
+.cv-template,
+.resume-template {
   width: 100%;
-  display: block;
-  overflow: hidden;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* =========================
-   RESPONSIVE FIXES
+   TYPOGRAPHY SAFETY
+========================= */
+p, h1, h2, h3, h4, h5, h6 {
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+/* =========================
+   NAV / HEADER SAFETY (IF USED)
+========================= */
+nav {
+  width: 100%;
+  position: relative;
+}
+
+/* =========================
+   IMAGE STABILITY FIX (IMPORTANT)
+========================= */
+img {
+  vertical-align: middle;
+  object-fit: cover;
+}
+
+/* =========================
+   OVERFLOW PROTECTION
+========================= */
+html, body {
+  overflow-x: hidden;
+}
+
+/* =========================
+   MOBILE RESPONSIVENESS
 ========================= */
 @media (max-width: 768px) {
   .flex {
@@ -119,11 +174,28 @@ button {
   .container {
     padding: 12px;
   }
+
+  #cvPreview {
+    padding: 8px;
+  }
 }
 
 /* =========================
-   EXTRA SAFETY (OVERFLOW STOP)
+   SMALL MOBILE (EXTRA SAFETY)
 ========================= */
-html, body {
-  overflow-x: hidden;
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+}
+
+/* =========================
+   SAFETY OVERRIDES (LAST LINE DEFENSE)
+========================= */
+* {
+  max-width: 100%;
 }

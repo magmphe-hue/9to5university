@@ -1,372 +1,208 @@
-/* =========================
-   RESET & BASE
-========================= */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  max-width: 100%;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>9to5 University · Workplace Authority</title>
 
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-  font-family: 'Inter', sans-serif;
-  background: #f9f7f6;
-  color: #1f2937;
-  line-height: 1.5;
-  scroll-behavior: smooth;
-}
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-/* =========================
-   COLOR VARIABLES (original identity)
-========================= */
-:root {
-  --primary: #014656;
-  --primary-dark: #013544;
-  --accent: #00a2ad;
-  --accent-light: #2fb8c2;
-  --gold-light: #fdd65d;
-  --gold: #f6a801;
-  --bg-light: #f9f7f6;
-  --white: #ffffff;
-  --text-dark: #1f2937;
-  --gray-border: #e5e7eb;
-}
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-/* =========================
-   TYPOGRAPHY
-========================= */
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-  line-height: 1.2;
-  color: var(--primary);
-  margin-bottom: 0.5rem;
-}
+<div class="top-bar">
+  <a href="https://www.facebook.com/profile.php?id=61579134208115" target="_blank" class="facebook-icon"><i class="fab fa-facebook-f"></i></a>
+  <a href="https://wa.me/27794874559" target="_blank" class="whatsapp-icon"><i class="fab fa-whatsapp"></i></a>
+  <a href="#" class="signin-icon" data-page="profile"><i class="fas fa-user"></i></a>
+</div>
 
-h1 { font-size: 2.5rem; }
-h2 { font-size: 1.8rem; }
-h3 { font-size: 1.4rem; }
-h4 { font-size: 1.2rem; }
+<div class="main-header">
+  <a href="#" class="logo-link" data-page="home">
+    <img src="https://i.postimg.cc/8Chj1H8D/file-00000000d4b4722f8dcbec10fa906d0a.png" alt="9to5 University Logo">
+  </a>
+  <div class="crest-right">
+    <span>OFFICIAL RESOURCE</span><br>
+    REPUBLIC OF SOUTH AFRICA
+  </div>
+</div>
 
-p, li {
-  color: var(--text-dark);
-  margin-bottom: 1rem;
-}
+<div class="nav-bar">
+  <div class="nav-menu">
+    <a href="#" class="nav-link" data-page="home">HOME</a>
+    <a href="#" class="nav-link" data-page="resume">RESUME BUILDER</a>
+    <a href="#" class="nav-link" data-page="rights">WORKERS' RIGHTS</a>
+    <a href="#" class="nav-link" data-page="issues">REPORT MISCONDUCT</a>
+    <a href="#" class="nav-link" data-page="profile">PROFILE</a>
+    <a href="#" class="nav-link" data-page="contact">CONTACT</a>
+  </div>
+</div>
 
-a {
-  text-decoration: none;
-  color: var(--accent);
-  transition: color 0.2s;
-}
+<!-- HOME PAGE -->
+<section id="home-page" class="page-section active-page">
+  <div class="hero">
+    <div class="hero-text">
+      <h1>Workplace Empowerment<br>for Every South African</h1>
+      <p>9to5 University is a first‑of‑its‑kind public resource providing free professional tools, labour law guidance, entrepreneurial recognition, and a trusted partner network.</p>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-number">500+</div><div>Resumes Created</div></div>
+        <div class="stat-card"><div class="stat-number">24/7</div><div>Resource Access</div></div>
+        <div class="stat-card"><div class="stat-number">R500+</div><div>Commission Opportunities</div></div>
+      </div>
+      <div><button data-page="resume" class="btn-primary">Create Professional CV →</button><button class="btn-outline" style="margin-left:1rem;" data-page="rights">Know Your Rights</button></div>
+    </div>
+    <div class="hero-card">
+      <i class="fas fa-info-circle" style="font-size:2rem;"></i>
+      <h3 style="margin:0.5rem 0;">Official Notice</h3>
+      <p>9to5 University is not an educational institution nor an agency. All tools are provided free of charge as a public service. Information aligned with BCEA & LRA.</p>
+    </div>
+  </div>
 
-a:hover {
-  color: var(--gold);
-}
+  <div class="section-header"><i class="fas fa-briefcase"></i><h2>Official Services</h2></div>
+  <div class="card-grid">
+    <div class="service-card"><div class="service-icon"><i class="fas fa-file-alt"></i></div><h3>Resume Builder</h3><p>7 professional CV templates. Free PDF download.</p><a href="#" data-page="resume" class="service-link">Access Tool →</a></div>
+    <div class="service-card"><div class="service-icon"><i class="fas fa-gavel"></i></div><h3>Labour Rights Guide</h3><p>Comprehensive South African labour law resource. BCEA & LRA.</p><a href="#" data-page="rights" class="service-link">Read Guide →</a></div>
+    <div class="service-card"><div class="service-icon"><i class="fas fa-flag-checkered"></i></div><h3>Misconduct Reporting</h3><p>Official channels for CCMA, Department of Labour, and legal recourse.</p><a href="#" data-page="issues" class="service-link">Report →</a></div>
+  </div>
 
-/* =========================
-   LAYOUT CONTAINERS
-========================= */
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-}
+  <!-- CHORES CORNER -->
+  <div class="chores-card">
+    <div class="chores-header"><i class="fas fa-hand-holding-heart"></i><h3>Chores Corner</h3></div>
+    <div class="chores-content">
+      <div class="chores-grid">
+        <div class="chore-item"><i class="fas fa-code"></i><h4>Web Design Referral</h4><div class="chore-amount">R500</div><p>Refer a client who needs a website, hosting, or management.</p><a href="https://www.facebook.com/ondablock1" target="_blank" class="btn-primary">Refer Now →</a></div>
+        <div class="chore-item"><i class="fas fa-mobile-alt"></i><h4>Tech Trade-in Referral</h4><div class="chore-amount">R300</div><p>Refer someone selling or buying pre-owned electronics.</p><a href="https://www.facebook.com/profile.php?id=100085596154873" target="_blank" class="btn-primary">Learn More →</a></div>
+        <div class="chore-item"><i class="fas fa-crown"></i><h4>Hustler Nomination</h4><div class="chore-amount">R300</div><p>Nominate an entrepreneur to be featured as Hustler of the Month.</p><a href="#" class="btn-primary" id="nominateBtn">Nominate →</a></div>
+      </div>
+    </div>
+  </div>
 
-/* =========================
-   PAGE SWITCHING (JS)
-========================= */
-.page-section {
-  display: none;
-  width: 100%;
-  min-height: 100vh;
-  position: relative;
-  z-index: 1;
-}
-.page-section.active-page {
-  display: block;
-}
+  <!-- HUSTLER OF THE MONTH -->
+  <div class="feature-card">
+    <div class="feature-header"><i class="fas fa-crown"></i><span>HUSTLER OF THE MONTH</span><span>MARCH 2025</span></div>
+    <div class="feature-content">
+      <div class="feature-image-container">
+        <img src="https://i.ibb.co/zW8y8KKb/FB-IMG-17740408166780955.jpg" alt="Ericsson Dorra Watch">
+      </div>
+      <div class="feature-story-container">
+        <div class="founder-name">Buhle Gotsha</div>
+        <div class="brand-tag">Founder, Ericsson Dorra Timepiece</div>
+        <p>At 19 years old, Buhle Gotsha from KwaZulu-Natal has built a luxury watch brand that now ships internationally. Starting in 2022, Ericsson Dorra—named for his parents Eric and Theodorra—has achieved 50+ monthly sales and recently recorded its first international order to Australia.</p>
+        <div class="stats-row">
+          <span class="stat-pill"><i class="fas fa-chart-line"></i> 50 watches (June 2024)</span>
+          <span class="stat-pill"><i class="fas fa-globe"></i> International Sales</span>
+          <span class="stat-pill"><i class="fas fa-tag"></i> R850 Premium Steel</span>
+        </div>
+        <div class="social-links">
+          <a href="https://www.facebook.com/profile.php?id=100076952310995" target="_blank" class="social-btn"><i class="fab fa-facebook-f"></i> Founder Profile</a>
+          <a href="https://www.facebook.com/profile.php?id=100084787077819" target="_blank" class="social-btn"><i class="fab fa-facebook-f"></i> Brand Page</a>
+        </div>
+      </div>
+      <div class="order-container">
+        <img src="https://i.ibb.co/6cxQk8z3/FB-IMG-17740410967114200.jpg" alt="Ericsson Dorra">
+        <div class="watch-price">R850.00</div>
+        <a href="tel:+27760390570" class="order-btn"><i class="fas fa-shopping-cart"></i> ORDER: 076 039 0570</a>
+      </div>
+    </div>
+  </div>
 
-/* =========================
-   FLEX & GRID UTILITIES
-========================= */
-.flex {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: center;
-  justify-content: flex-start;
-}
+  <!-- PARTNERS -->
+  <div class="partners-grid">
+    <div class="partner-card">
+      <div class="partner-header"><img src="https://i.ibb.co/gZz5TSD7/FB-IMG-17740358367251388.jpg" alt="ON-DA BLOCK" class="partner-logo"><div><div class="partner-badge">OFFICIAL REFERRAL PARTNER</div><h3>ON-DA BLOCK</h3><p>Web Development · Hosting · SEO · Landline Solutions</p></div></div>
+      <p><strong>R500 Commission:</strong> Refer a client for website, domain, hosting, or management services.</p>
+      <div class="contact-links"><a href="mailto:Info@ondablock.co.za" class="contact-link"><i class="fas fa-envelope"></i> Info@ondablock.co.za</a><a href="tel:+27875100132" class="contact-link"><i class="fas fa-phone-alt"></i> (+27)87 5100 132</a><a href="https://www.facebook.com/ondablock1" target="_blank" class="contact-link"><i class="fab fa-facebook-f"></i> ON-DA BLOCK</a><a href="https://www.ondablock.co.za" target="_blank" class="contact-link"><i class="fas fa-external-link-alt"></i> Website</a></div>
+    </div>
+    <div class="partner-card">
+      <div class="partner-header"><img src="https://i.postimg.cc/xCLmk2Wy/img-2-1774048963827.jpg" alt="Judacelia" class="partner-logo"><div><div class="partner-badge">PROUD PARTNER</div><h3>Judacelia</h3><p>Pre-owned Electronics · Trade-ins · Nationwide Delivery</p></div></div>
+      <p>Specializing in buying and selling pre-owned laptops, smartphones, tablets, cameras, and gaming consoles. 3-month warranty, trade-ins available, and lay-by options.</p>
+      <div class="contact-links"><a href="https://www.facebook.com/profile.php?id=100085596154873" target="_blank" class="contact-link"><i class="fab fa-facebook-f"></i> Judacelia Store</a><a href="https://www.instagram.com/judacelia" target="_blank" class="contact-link"><i class="fab fa-instagram"></i> @judacelia</a><a href="https://www.tiktok.com/@judacelia_store" target="_blank" class="contact-link"><i class="fab fa-tiktok"></i> @judacelia_store</a><a href="https://judacelia.co.za" target="_blank" class="contact-link"><i class="fas fa-external-link-alt"></i> judacelia.co.za</a></div>
+      <p><i class="fas fa-map-marker-alt"></i> Germiston Goldenwalk Mall, Johannesburg | Nationwide delivery</p>
+    </div>
+  </div>
 
-.grid {
-  display: grid;
-  gap: 1.5rem;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-}
+  <!-- THE EMPTY STORE -->
+  <div class="empty-store-section">
+    <div class="empty-store-content">
+      <i class="fas fa-store"></i>
+      <h2>The Empty Store</h2>
+      <p>Official 9to5 University merchandise is coming soon.</p>
+      <div class="store-notice">
+        <i class="fas fa-box-open"></i> <span>Stay tuned – we're preparing something special.</span>
+      </div>
+      <div class="store-placeholder">
+        <span>⚡ Hoodies</span> <span>• Caps •</span> <span>Notebooks •</span> <span>Mugs</span>
+      </div>
+    </div>
+  </div>
+</section>
 
-/* =========================
-   NAVIGATION
-========================= */
-nav {
-  background: var(--white);
-  padding: 1rem 5%;
-  border-bottom: 1px solid var(--gray-border);
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-nav a {
-  color: var(--text-dark);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-size: 0.85rem;
-  padding-bottom: 4px;
-  border-bottom: 2px solid transparent;
-  transition: 0.2s;
-}
-nav a:hover,
-nav a.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-}
+<!-- RESUME BUILDER PAGE -->
+<section id="resume-page" class="page-section">
+  <div class="resume-section">
+    <div class="section-header"><i class="fas fa-file-pdf"></i><h2>Premium Resume Builder</h2></div>
+    <div class="builder-grid">
+      <div class="form-panel">
+        <div class="template-selector"><select id="templateSelect"><option value="minimal">Minimal</option><option value="sidebar">Sidebar</option><option value="elegant">Elegant</option><option value="centered">Centered</option><option value="modern">Modern</option><option value="card">Card</option><option value="classic">Classic</option></select></div>
+        <div class="form-group"><label>First Name</label><input type="text" id="firstName" value="Lorna"></div>
+        <div class="form-group"><label>Last Name</label><input type="text" id="lastName" value="Alvarado"></div>
+        <div class="form-group"><label>Job Title</label><input type="text" id="jobTitle" value="Marketing Manager"></div>
+        <div class="form-group"><label>Phone</label><input type="text" id="phone" value="123-456-7890"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="email" value="hello@email.com"></div>
+        <div class="form-group"><label>Address</label><input type="text" id="address" value="123 Street, City"></div>
+        <div class="form-group"><label>Summary</label><textarea id="summary" rows="3">Marketing manager with 8+ years of experience in digital strategy and brand development. Proven track record of increasing engagement by 40%.</textarea></div>
+        <div class="form-group"><label>Experience (Position|Company|Location|Start|End|Description)</label><textarea id="experience" rows="4">Product Design Manager|Arowwai Industries|Any City|2020|2023|Led design strategy for 10+ products, increasing user satisfaction by 35%.&#10;Marketing Coordinator|Creative Studio|City|2018|2020|Coordinated campaigns across social media, boosting followers by 200%.</textarea></div>
+        <div class="form-group"><label>Education (Institution|Degree|Start|End)</label><textarea id="education" rows="2">Borcelle University|Bachelor of Business Management|2016|2020</textarea></div>
+        <div class="form-group"><label>Skills (comma separated)</label><input type="text" id="skills" value="Organized, Creativity, Teamwork, Leadership"></div>
+        <div class="form-group"><label>Languages (comma separated)</label><input type="text" id="languages" value="English, Spanish"></div>
+        <div class="form-group"><label>Awards (Title|Description|Year)</label><textarea id="awards" rows="2">Best Designer Award|Excellence in design|2016</textarea></div>
+        <div class="form-group"><label>References (Name|Company|Phone|Email)</label><textarea id="references" rows="2">John Doe|ABC Corp|+123456|john@email.com</textarea></div>
+      </div>
+      <div class="preview-panel">
+        <div id="cvPreview" class="cv-preview"></div>
+        <div class="download-btn"><button class="btn-primary" id="downloadPdfBtn"><i class="fas fa-download"></i> Download PDF (A4)</button></div>
+        <div class="download-btn"><button class="btn-primary" id="saveResumeBtn" style="background:var(--gold);"><i class="fas fa-save"></i> Save Resume to Profile</button></div>
+      </div>
+    </div>
+  </div>
+</section>
 
-/* =========================
-   BUTTONS (original style)
-========================= */
-button, .btn {
-  display: inline-block;
-  padding: 12px 28px;
-  border-radius: 40px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-  border: none;
-  font-size: 0.9rem;
-  background: var(--accent);
-  color: white;
-}
-button:hover, .btn:hover {
-  background: var(--gold);
-  transform: translateY(-2px);
-}
-button:active, .btn:active {
-  transform: translateY(0);
-}
+<!-- WORKERS' RIGHTS PAGE -->
+<section id="rights-page" class="page-section">
+  <div class="content-page"><h2>Workers' Rights – South Africa</h2><ul><li><i class="fas fa-check-circle"></i> Maximum ordinary hours: 45 per week</li><li><i class="fas fa-check-circle"></i> Overtime: 1.5x normal wage, max 10 hrs/week</li><li><i class="fas fa-check-circle"></i> Annual leave: 21 consecutive days</li><li><i class="fas fa-check-circle"></i> Sick leave: 6 weeks paid over 36-month cycle</li><li><i class="fas fa-check-circle"></i> Maternity leave: 4 consecutive months</li></ul><div class="report-links"><h4><i class="fas fa-scale-balanced"></i> Official Reporting Channels</h4><p><strong>CCMA:</strong> www.ccma.org.za | 012 123 4567</p><p><strong>Department of Employment and Labour:</strong> 0800 222 333</p><p><strong>Direct Advice:</strong> 079 487 4559 (WhatsApp)</p></div></div>
+</section>
 
-/* secondary style (if needed) */
-.btn-outline {
-  background: transparent;
-  border: 2px solid var(--accent);
-  color: var(--accent);
-}
-.btn-outline:hover {
-  background: var(--accent);
-  color: white;
-}
+<!-- ISSUES PAGE -->
+<section id="issues-page" class="page-section">
+  <div class="content-page"><h2>Workplace Misconduct Reporting</h2><p><strong>Unpaid wages / UIF:</strong> Contact Department of Labour</p><p><strong>Discrimination / harassment:</strong> CCMA (within 6 months)</p><p><strong>Unsafe working conditions:</strong> Department of Employment and Labour (OHS)</p><div class="report-links"><h4>Immediate Contacts</h4><p>CCMA: 011 123 4567 | labour.gov.za | Fraud hotline: 0800 123 456</p></div></div>
+</section>
 
-/* =========================
-   FORM ELEMENTS
-========================= */
-input, textarea, select {
-  width: 100%;
-  padding: 0.7rem 1rem;
-  border-radius: 40px;
-  border: 1px solid var(--gray-border);
-  font-family: inherit;
-  font-size: 1rem;
-  background: var(--white);
-  transition: border-color 0.2s;
-}
-input:focus, textarea:focus, select:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(0,162,173,0.2);
-}
-textarea {
-  resize: vertical;
-  border-radius: 20px;
-  min-height: 80px;
-}
+<!-- CONTACT PAGE -->
+<section id="contact-page" class="page-section">
+  <div class="content-page"><h2>Official Enquiries</h2><p><i class="fas fa-phone-alt"></i> 079 487 4559 (Call / WhatsApp)</p><p><i class="fas fa-envelope"></i> mphelamlangeni@gmail.com</p><p><i class="fas fa-map-pin"></i> Remote service – South Africa</p><hr><p><i class="fas fa-info-circle"></i> 9to5 University is not an educational institution nor an agency. All tools provided free of charge.</p><h3>Areas of Operation</h3><div class="city-list"><span>Johannesburg</span><span>Cape Town</span><span>Durban</span><span>Pretoria</span><span>Port Elizabeth</span><span>Bloemfontein</span><span>Polokwane</span><span>Nelspruit</span></div></div>
+</section>
 
-/* =========================
-   RESUME BUILDER LAYOUT
-========================= */
-#resume-page .container > .flex {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
+<!-- PROFILE PAGE -->
+<section id="profile-page" class="page-section">
+  <div class="profile-container" id="profileContainer"></div>
+</section>
 
-/* Two‑column layout for builder */
-#resume-page .builder-grid {
-  display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 2rem;
-}
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-col"><h4>9to5 UNIVERSITY</h4><p>South Africa's first integrated workplace resource. Free tools, legal guidance, and entrepreneurial recognition.</p></div>
+    <div class="footer-col"><h4>RESOURCES</h4><a href="#" data-page="resume" class="footer-link">Resume Builder</a><br><a href="#" data-page="rights" class="footer-link">Workers' Rights</a><br><a href="#" data-page="issues" class="footer-link">Report Misconduct</a></div>
+    <div class="footer-col"><h4>PARTNERS</h4><a href="https://www.facebook.com/ondablock1" target="_blank">ON-DA BLOCK</a><br><a href="https://www.facebook.com/profile.php?id=100085596154873" target="_blank">Judacelia</a></div>
+    <div class="footer-col"><h4>CONTACT</h4><p>079 487 4559</p><p>mphelamlangeni@gmail.com</p></div>
+  </div>
+  <div class="footer-copyright">© 2025 9to5 University — South Africa's Workplace Authority. Not an educational institution.</div>
+</footer>
 
-/* Form panel */
-.form-panel {
-  background: var(--white);
-  border-radius: 28px;
-  padding: 1.5rem;
-  border: 1px solid var(--gray-border);
-}
-
-/* Preview panel */
-.preview-panel {
-  background: var(--white);
-  border-radius: 28px;
-  padding: 1.5rem;
-  border: 1px solid var(--gray-border);
-}
-
-#cvPreview {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 20px;
-  overflow-x: auto;
-  min-height: 300px;
-  border: 1px solid #eee;
-  margin-top: 1rem;
-}
-
-/* Template selector */
-.template-selector {
-  margin-bottom: 1rem;
-}
-.template-selector select {
-  width: 100%;
-}
-
-/* Form groups */
-.form-group {
-  margin-bottom: 1rem;
-}
-.form-group label {
-  display: block;
-  font-weight: 600;
-  font-size: 0.8rem;
-  margin-bottom: 0.3rem;
-  color: var(--primary);
-}
-
-/* =========================
-   CARD & SERVICE STYLES (for home page)
-========================= */
-.service-card, .chore-item, .partner-card {
-  background: var(--white);
-  border-radius: 24px;
-  padding: 1.5rem;
-  border: 1px solid var(--gray-border);
-  transition: transform 0.2s, border-color 0.2s;
-}
-.service-card:hover, .chore-item:hover, .partner-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--accent);
-}
-
-.service-icon {
-  font-size: 2.2rem;
-  color: var(--accent);
-  margin-bottom: 1rem;
-}
-
-/* =========================
-   PROFILE PAGE
-========================= */
-#profileContainer {
-  background: var(--white);
-  border-radius: 28px;
-  padding: 2rem;
-  border: 1px solid var(--gray-border);
-}
-.auth-form {
-  max-width: 400px;
-  margin: 0 auto;
-}
-.auth-form input {
-  margin-bottom: 1rem;
-}
-.saved-resume-item {
-  background: #f8fafc;
-  padding: 1rem;
-  margin-bottom: 0.5rem;
-  border-radius: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-/* =========================
-   FOOTER (simple version)
-========================= */
-footer {
-  margin-top: 3rem;
-  padding: 2rem 1rem;
-  background: var(--primary);
-  color: white;
-  text-align: center;
-  border-radius: 16px 16px 0 0;
-}
-footer p {
-  color: #ccc;
-  margin-bottom: 0;
-}
-
-/* =========================
-   RESPONSIVE DESIGN
-========================= */
-@media (max-width: 1024px) {
-  #resume-page .builder-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  nav {
-    padding: 0.8rem 1rem;
-    gap: 1rem;
-  }
-  nav a {
-    font-size: 0.75rem;
-  }
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.6rem; }
-  .container {
-    padding: 1.5rem;
-  }
-  .flex {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .grid {
-    gap: 1rem;
-  }
-  .saved-resume-item {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-
-@media (max-width: 480px) {
-  body {
-    font-size: 14px;
-  }
-  .container {
-    padding: 1rem;
-  }
-  button {
-    padding: 10px 20px;
-  }
-  .form-panel, .preview-panel {
-    padding: 1rem;
-  }
-}
+<script src="script.js"></script>
+</body>
+</html>

@@ -12,11 +12,18 @@ html, body {
   width: 100%;
   height: 100%;
   overflow-x: hidden;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background: #f9f7f6;
   color: #1f2937;
   line-height: 1.5;
   scroll-behavior: smooth;
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 /* =========================
@@ -561,7 +568,7 @@ a:hover {
 }
 .empty-store-content p {
   font-size: 1.1rem;
-  color: #b0b8c5;
+  color: #e0e4e9; /* increased contrast slightly */
   margin-bottom: 1.5rem;
 }
 .store-notice {
@@ -649,7 +656,7 @@ a:hover {
   margin-top: 1rem;
 }
 
-/* CV Templates */
+/* CV Templates – base styles (overridden by inline styles, but we keep for structure) */
 .cv-minimal .header {
   display: flex;
   justify-content: space-between;
@@ -820,7 +827,15 @@ a:hover {
 }
 
 /* =========================
-   RESPONSIVE
+   FOCUS & ACCESSIBILITY
+========================= */
+:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* =========================
+   RESPONSIVE DESIGN
 ========================= */
 @media (max-width: 1024px) {
   .builder-grid {
@@ -839,6 +854,10 @@ a:hover {
 }
 
 @media (max-width: 768px) {
+  /* General */
+  button, .btn-primary, .btn-outline {
+    padding: 14px 24px; /* larger touch target */
+  }
   .main-header {
     flex-direction: column;
     text-align: center;
@@ -862,16 +881,19 @@ a:hover {
     width: 100%;
     max-width: 280px;
   }
-  .cv-sidebar .left, .cv-sidebar .right,
-  .cv-elegant .left, .cv-elegant .right,
+
+  /* Resume template overrides – force border-radius to be consistent */
+  .cv-sidebar .left,
+  .cv-elegant .left,
   .cv-classic .left {
     width: 100%;
-    border-radius: 16px;
+    border-radius: 16px !important;
   }
   .cv-sidebar {
     flex-direction: column;
   }
-  .cv-minimal .left, .cv-minimal .right {
+  .cv-minimal .left,
+  .cv-minimal .right {
     width: 100%;
   }
   .chores-grid {
@@ -891,9 +913,18 @@ a:hover {
   .store-placeholder {
     gap: 0.5rem;
   }
+  .flex {
+    flex-direction: column;
+  }
+  .container {
+    padding: 12px;
+  }
 }
 
 @media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
   .hero-text h1 {
     font-size: 1.8rem;
   }
@@ -913,5 +944,8 @@ a:hover {
     flex-direction: column;
     align-items: center;
     text-align: center;
+  }
+  .container {
+    padding: 10px;
   }
 }

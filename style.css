@@ -17,6 +17,7 @@ html, body {
   color: #1f2937;
   line-height: 1.5;
   scroll-behavior: smooth;
+  position: relative;
 }
 
 /* Respect reduced motion preferences */
@@ -43,21 +44,25 @@ html, body {
 }
 
 /* =========================
-   TYPOGRAPHY
+   TYPOGRAPHY & TEXT SAFETY
 ========================= */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   line-height: 1.2;
   color: var(--primary);
   margin-bottom: 0.5rem;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 h1 { font-size: 2.5rem; }
 h2 { font-size: 1.8rem; }
 h3 { font-size: 1.4rem; }
 h4 { font-size: 1.2rem; }
-p, li {
+p, li, .text {
   color: var(--text-dark);
   margin-bottom: 1rem;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 a {
   text-decoration: none;
@@ -568,7 +573,7 @@ a:hover {
 }
 .empty-store-content p {
   font-size: 1.1rem;
-  color: #e0e4e9; /* increased contrast slightly */
+  color: #e0e4e9;
   margin-bottom: 1.5rem;
 }
 .store-notice {
@@ -650,13 +655,14 @@ a:hover {
   border-radius: 20px;
   min-height: 400px;
   overflow-x: auto;
+  max-width: 100%;
 }
 .download-btn {
   text-align: center;
   margin-top: 1rem;
 }
 
-/* CV Templates – base styles (overridden by inline styles, but we keep for structure) */
+/* CV Templates – base styles */
 .cv-minimal .header {
   display: flex;
   justify-content: space-between;
@@ -881,6 +887,9 @@ a:hover {
     width: 100%;
     max-width: 280px;
   }
+  .hero-card {
+    width: 100%; /* ensure it never overflows */
+  }
 
   /* Resume template overrides – force border-radius to be consistent */
   .cv-sidebar .left,
@@ -947,5 +956,32 @@ a:hover {
   }
   .container {
     padding: 10px;
+  }
+}
+
+@media (max-width: 320px) {
+  body {
+    font-size: 13px;
+  }
+  .hero {
+    padding: 2rem 1rem;
+  }
+  .hero-card {
+    padding: 1rem;
+  }
+  .section-header {
+    margin: 1.5rem 1rem 0.5rem;
+  }
+  .card-grid {
+    padding: 0 1rem 1rem;
+  }
+  .chores-content {
+    padding: 1rem;
+  }
+  .feature-content {
+    padding: 1rem;
+  }
+  .footer {
+    padding: 2rem 1rem;
   }
 }

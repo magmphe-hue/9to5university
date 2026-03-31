@@ -1,5 +1,5 @@
 /* =========================
-   GLOBAL RESET
+   GLOBAL RESET (HARD STABLE BASE)
 ========================= */
 * {
   margin: 0;
@@ -8,11 +8,11 @@
 }
 
 /* =========================
-   BASE STYLES
+   BASE DOCUMENT STABILITY
 ========================= */
 html, body {
   width: 100%;
-  min-height: 100%;
+  height: 100%;
   overflow-x: hidden;
   font-family: 'Inter', sans-serif;
   background: #fff;
@@ -21,30 +21,33 @@ html, body {
 }
 
 /* =========================
-   IMAGE FIX (CRITICAL)
-   → Stops overlap, stacking, overflow
+   IMAGE SYSTEM (FULL FIX)
+   → Stops overlap completely
 ========================= */
 img {
   max-width: 100%;
   height: auto;
   display: block;
-}
-
-/* Prevent image containers from collapsing */
-.img-container,
-.image-wrapper {
-  width: 100%;
-  display: block;
-  overflow: hidden;
+  object-fit: contain;
+  position: relative !important;
 }
 
 /* =========================
-   PAGE SYSTEM (YOUR JS NAV)
+   LAYOUT CONTAINERS SAFETY
+========================= */
+section, div {
+  position: relative;
+}
+
+/* =========================
+   PAGE SYSTEM (JS CONTROLLED)
 ========================= */
 .page-section {
   display: none;
   width: 100%;
   min-height: 100vh;
+  position: relative;
+  z-index: 1;
 }
 
 .page-section.active-page {
@@ -52,22 +55,19 @@ img {
 }
 
 /* =========================
-   MAIN LAYOUT CONTAINERS
+   MAIN WRAPPER SYSTEM
 ========================= */
 .container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 16px;
-}
-
-/* Prevent layout collisions */
-section, div {
   position: relative;
+  z-index: 2;
 }
 
 /* =========================
-   FLEX SYSTEM SAFETY
+   FLEX SYSTEM (SAFE + CONTROLLED)
 ========================= */
 .flex {
   display: flex;
@@ -77,7 +77,7 @@ section, div {
 }
 
 /* =========================
-   GRID SYSTEM SAFETY
+   GRID SYSTEM (SAFE)
 ========================= */
 .grid {
   display: grid;
@@ -85,7 +85,7 @@ section, div {
 }
 
 /* =========================
-   FORM ELEMENTS (CV BUILDER SAFE)
+   FORM ELEMENTS STABILITY
 ========================= */
 input,
 textarea,
@@ -95,76 +95,90 @@ select {
   font-family: inherit;
 }
 
-/* Prevent textarea overflow issues */
 textarea {
   resize: vertical;
 }
 
 /* =========================
-   BUTTONS
+   BUTTON STABILITY
 ========================= */
 button {
   cursor: pointer;
-  max-width: 100%;
   font-family: inherit;
+  max-width: 100%;
 }
 
 /* =========================
-   CV PREVIEW AREA
-   (VERY IMPORTANT FOR YOUR PROJECT)
+   CV PREVIEW (CRITICAL FIX ZONE)
+   → Locks layout completely
 ========================= */
 #cvPreview {
   width: 100%;
   max-width: 100%;
-  overflow: hidden;
+  min-height: 100vh;
   position: relative;
+  z-index: 10;
   background: #fff;
+  overflow: hidden;
 }
 
 /* =========================
-   TEMPLATE CONTENT SAFETY
+   TEMPLATE ISOLATION SYSTEM
+   → Prevents overlap between designs
 ========================= */
+#cvPreview > * {
+  position: relative;
+  z-index: 1;
+}
+
 .cv-template,
 .resume-template {
   width: 100%;
   max-width: 100%;
-  overflow-wrap: break-word;
+  position: relative;
+  overflow: hidden;
   word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* =========================
-   TYPOGRAPHY SAFETY
+   TEXT SAFETY
 ========================= */
 p, h1, h2, h3, h4, h5, h6 {
   max-width: 100%;
+  word-break: break-word;
   overflow-wrap: break-word;
 }
 
 /* =========================
-   NAV / HEADER SAFETY (IF USED)
+   IMAGE CONTAINERS FIX
 ========================= */
-nav {
+.img-container,
+.image-wrapper {
   width: 100%;
+  display: block;
+  overflow: hidden;
   position: relative;
 }
 
 /* =========================
-   IMAGE STABILITY FIX (IMPORTANT)
+   NAVIGATION SYSTEM SAFETY
 ========================= */
-img {
-  vertical-align: middle;
-  object-fit: cover;
+nav {
+  width: 100%;
+  position: relative;
+  z-index: 5;
 }
 
 /* =========================
-   OVERFLOW PROTECTION
+   OVERFLOW PROTECTION (GLOBAL)
 ========================= */
 html, body {
   overflow-x: hidden;
 }
 
 /* =========================
-   MOBILE RESPONSIVENESS
+   MOBILE RESPONSIVE FIXES
 ========================= */
 @media (max-width: 768px) {
   .flex {
@@ -176,12 +190,12 @@ html, body {
   }
 
   #cvPreview {
-    padding: 8px;
+    padding: 10px;
   }
 }
 
 /* =========================
-   SMALL MOBILE (EXTRA SAFETY)
+   SMALL MOBILE OPTIMIZATION
 ========================= */
 @media (max-width: 480px) {
   body {
@@ -194,7 +208,7 @@ html, body {
 }
 
 /* =========================
-   SAFETY OVERRIDES (LAST LINE DEFENSE)
+   FINAL SAFETY LAYER
 ========================= */
 * {
   max-width: 100%;

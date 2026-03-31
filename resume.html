@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>9to5 University · Resume Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="https://www.facebook.com/profile.php?id=61579134208115" target="_blank" class="facebook-icon"><i class="fab fa-facebook-f"></i></a>
+  <a href="https://wa.me/27794874559" target="_blank" class="whatsapp-icon"><i class="fab fa-whatsapp"></i></a>
+  <a href="profile.html" class="signin-icon"><i class="fas fa-user"></i></a>
+</div>
+
+<div class="main-header">
+  <a href="index.html" class="logo-link">
+    <img src="https://i.postimg.cc/8Chj1H8D/file-00000000d4b4722f8dcbec10fa906d0a.png" alt="9to5 University Logo">
+  </a>
+  <div class="crest-right">
+    <span>OFFICIAL RESOURCE</span><br>
+    REPUBLIC OF SOUTH AFRICA
+  </div>
+</div>
+
+<div class="nav-bar">
+  <div class="nav-menu">
+    <a href="index.html" class="nav-link">HOME</a>
+    <a href="resume.html" class="nav-link active">RESUME BUILDER</a>
+    <a href="rights.html" class="nav-link">WORKERS' RIGHTS</a>
+    <a href="issues.html" class="nav-link">REPORT MISCONDUCT</a>
+    <a href="profile.html" class="nav-link">PROFILE</a>
+    <a href="contact.html" class="nav-link">CONTACT</a>
+  </div>
+</div>
+
+<div class="resume-section">
+  <div class="section-header"><i class="fas fa-file-pdf"></i><h2>Premium Resume Builder</h2></div>
+  <div class="builder-grid">
+    <div class="form-panel">
+      <div class="template-selector"><select id="templateSelect"><option value="minimal">Minimal</option><option value="sidebar">Sidebar</option><option value="elegant">Elegant</option><option value="centered">Centered</option><option value="modern">Modern</option><option value="card">Card</option><option value="classic">Classic</option></select></div>
+      <div class="form-group"><label>First Name</label><input type="text" id="firstName" value="Lorna"></div>
+      <div class="form-group"><label>Last Name</label><input type="text" id="lastName" value="Alvarado"></div>
+      <div class="form-group"><label>Job Title</label><input type="text" id="jobTitle" value="Marketing Manager"></div>
+      <div class="form-group"><label>Phone</label><input type="text" id="phone" value="123-456-7890"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="email" value="hello@email.com"></div>
+      <div class="form-group"><label>Address</label><input type="text" id="address" value="123 Street, City"></div>
+      <div class="form-group"><label>Summary</label><textarea id="summary" rows="3">Marketing manager with 8+ years of experience in digital strategy and brand development. Proven track record of increasing engagement by 40%.</textarea></div>
+      <div class="form-group"><label>Experience (Position|Company|Location|Start|End|Description)</label><textarea id="experience" rows="4">Product Design Manager|Arowwai Industries|Any City|2020|2023|Led design strategy for 10+ products, increasing user satisfaction by 35%.&#10;Marketing Coordinator|Creative Studio|City|2018|2020|Coordinated campaigns across social media, boosting followers by 200%.</textarea></div>
+      <div class="form-group"><label>Education (Institution|Degree|Start|End)</label><textarea id="education" rows="2">Borcelle University|Bachelor of Business Management|2016|2020</textarea></div>
+      <div class="form-group"><label>Skills (comma separated)</label><input type="text" id="skills" value="Organized, Creativity, Teamwork, Leadership"></div>
+      <div class="form-group"><label>Languages (comma separated)</label><input type="text" id="languages" value="English, Spanish"></div>
+      <div class="form-group"><label>Awards (Title|Description|Year)</label><textarea id="awards" rows="2">Best Designer Award|Excellence in design|2016</textarea></div>
+      <div class="form-group"><label>References (Name|Company|Phone|Email)</label><textarea id="references" rows="2">John Doe|ABC Corp|+123456|john@email.com</textarea></div>
+    </div>
+    <div class="preview-panel">
+      <div id="cvPreview" class="cv-preview"></div>
+      <div class="download-btn"><button class="btn-primary" id="downloadPdfBtn"><i class="fas fa-download"></i> Download PDF (A4)</button></div>
+      <div class="download-btn"><button class="btn-primary" id="saveResumeBtn" style="background:var(--gold);"><i class="fas fa-save"></i> Save Resume to Profile</button></div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-col"><h4>9to5 UNIVERSITY</h4><p>South Africa's first integrated workplace resource. Free tools, legal guidance, and entrepreneurial recognition.</p></div>
+    <div class="footer-col"><h4>RESOURCES</h4><a href="resume.html" class="footer-link">Resume Builder</a><br><a href="rights.html" class="footer-link">Workers' Rights</a><br><a href="issues.html" class="footer-link">Report Misconduct</a></div>
+    <div class="footer-col"><h4>PARTNERS</h4><a href="https://www.facebook.com/ondablock1" target="_blank">ON-DA BLOCK</a><br><a href="https://www.facebook.com/profile.php?id=100085596154873" target="_blank">Judacelia</a></div>
+    <div class="footer-col"><h4>CONTACT</h4><p>079 487 4559</p><p>mphelamlangeni@gmail.com</p></div>
+  </div>
+  <div class="footer-copyright">© 2025 9to5 University — South Africa's Workplace Authority. Not an educational institution.</div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

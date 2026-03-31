@@ -598,3 +598,220 @@ if (nominateBtn) {
 }
 
 console.log('9to5 University – fully loaded with Supabase!');
+
+// ==================== RESUME TEMPLATES ====================
+
+function minimalTemplate(d) {
+  return `
+    <div class="cv-minimal" style="font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto;">
+      <div class="header">
+        <div><strong>${d.firstName} ${d.lastName}</strong><br>${d.jobTitle}</div>
+        <div>${d.phone} | ${d.email}<br>${d.address}</div>
+      </div>
+      <div class="main">
+        <div class="left">
+          <h3>Summary</h3>
+          <p>${d.summary}</p>
+          <h3>Skills</h3>
+          <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+          <h3>Languages</h3>
+          <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
+        </div>
+        <div class="right">
+          <h3>Experience</h3>
+          ${d.experience.map(exp => `
+            <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+          `).join('')}
+          <h3>Education</h3>
+          ${d.education.map(edu => `
+            <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
+          `).join('')}
+          <h3>Awards</h3>
+          ${d.awards.map(aw => `
+            <div><strong>${aw.title}</strong> (${aw.year})<br>${aw.description}</div>
+          `).join('')}
+        </div>
+      </div>
+      <hr>
+      <h3>References</h3>
+      ${d.references.map(ref => `
+        <div>${ref.name}, ${ref.company} – ${ref.phone} / ${ref.email}</div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function sidebarTemplate(d) {
+  return `
+    <div class="cv-sidebar" style="display: flex; max-width: 800px; margin: 0 auto;">
+      <div class="left" style="background: #2f3b4c; color: white; padding: 20px; border-radius: 16px 0 0 16px;">
+        <h3>Contact</h3>
+        <p>${d.phone}<br>${d.email}<br>${d.address}</p>
+        <h3>Skills</h3>
+        <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+        <h3>Languages</h3>
+        <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
+      </div>
+      <div class="right" style="padding: 20px;">
+        <h2>${d.firstName} ${d.lastName}</h2>
+        <h4>${d.jobTitle}</h4>
+        <h3>Summary</h3>
+        <p>${d.summary}</p>
+        <h3>Experience</h3>
+        ${d.experience.map(exp => `
+          <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+        `).join('')}
+        <h3>Education</h3>
+        ${d.education.map(edu => `
+          <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
+        `).join('')}
+        <h3>References</h3>
+        ${d.references.map(ref => `
+          <div>${ref.name}, ${ref.company} – ${ref.phone} / ${ref.email}</div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function elegantTemplate(d) {
+  return `
+    <div class="cv-elegant" style="max-width: 800px; margin: 0 auto; display: flex; gap: 30px;">
+      <div class="left" style="background: #fef5e8; padding: 20px; border-radius: 20px;">
+        <h3>Contact</h3>
+        <p>${d.phone}<br>${d.email}<br>${d.address}</p>
+        <h3>Skills</h3>
+        <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+        <h3>Languages</h3>
+        <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
+      </div>
+      <div class="right">
+        <h1>${d.firstName} ${d.lastName}</h1>
+        <h3>${d.jobTitle}</h3>
+        <h3>Profile</h3>
+        <p>${d.summary}</p>
+        <h3>Experience</h3>
+        ${d.experience.map(exp => `
+          <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+        `).join('')}
+        <h3>Education</h3>
+        ${d.education.map(edu => `
+          <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function centeredTemplate(d) {
+  return `
+    <div class="cv-centered" style="text-align: center; max-width: 800px; margin: 0 auto;">
+      <h1>${d.firstName} ${d.lastName}</h1>
+      <h3>${d.jobTitle}</h3>
+      <p>${d.phone} | ${d.email} | ${d.address}</p>
+      <hr>
+      <h3>Summary</h3>
+      <p>${d.summary}</p>
+      <h3>Experience</h3>
+      ${d.experience.map(exp => `
+        <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+      `).join('')}
+      <h3>Education</h3>
+      ${d.education.map(edu => `
+        <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function modernTemplate(d) {
+  return `
+    <div class="cv-modern" style="max-width: 800px; margin: 0 auto;">
+      <div style="background: #014656; color: white; padding: 20px; border-radius: 20px 20px 0 0;">
+        <h1>${d.firstName} ${d.lastName}</h1>
+        <h3>${d.jobTitle}</h3>
+      </div>
+      <div class="columns" style="display: flex; gap: 30px; padding: 20px;">
+        <div style="flex: 1;">
+          <h3>Contact</h3>
+          <p>${d.phone}<br>${d.email}<br>${d.address}</p>
+          <h3>Skills</h3>
+          <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+          <h3>Languages</h3>
+          <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
+        </div>
+        <div style="flex: 2;">
+          <h3>Summary</h3>
+          <p>${d.summary}</p>
+          <h3>Experience</h3>
+          ${d.experience.map(exp => `
+            <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+          `).join('')}
+          <h3>Education</h3>
+          ${d.education.map(edu => `
+            <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function cardTemplate(d) {
+  return `
+    <div class="cv-card" style="max-width: 800px; margin: 0 auto; border: 1px solid #ddd; border-radius: 24px; padding: 20px;">
+      <div style="text-align: center;">
+        <h1>${d.firstName} ${d.lastName}</h1>
+        <h3>${d.jobTitle}</h3>
+        <p>${d.phone} | ${d.email} | ${d.address}</p>
+      </div>
+      <div class="main" style="display: flex; gap: 30px; margin-top: 20px;">
+        <div style="flex: 1;">
+          <h3>Summary</h3>
+          <p>${d.summary}</p>
+          <h3>Skills</h3>
+          <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+        </div>
+        <div style="flex: 2;">
+          <h3>Experience</h3>
+          ${d.experience.map(exp => `
+            <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+          `).join('')}
+          <h3>Education</h3>
+          ${d.education.map(edu => `
+            <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function classicTemplate(d) {
+  return `
+    <div class="cv-classic" style="max-width: 800px; margin: 0 auto; display: flex; gap: 30px;">
+      <div class="left" style="background: #f4f4f4; padding: 20px; border-radius: 20px;">
+        <h3>Contact</h3>
+        <p>${d.phone}<br>${d.email}<br>${d.address}</p>
+        <h3>Skills</h3>
+        <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+        <h3>Languages</h3>
+        <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
+      </div>
+      <div class="right">
+        <h1>${d.firstName} ${d.lastName}</h1>
+        <h3>${d.jobTitle}</h3>
+        <h3>Summary</h3>
+        <p>${d.summary}</p>
+        <h3>Experience</h3>
+        ${d.experience.map(exp => `
+          <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+        `).join('')}
+        <h3>Education</h3>
+        ${d.education.map(edu => `
+          <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}

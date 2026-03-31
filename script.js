@@ -1,287 +1,111 @@
-// ========================
-// 1. PAGE NAVIGATION
-// ========================
+// ==========================================
+// SUPABASE INITIALIZATION
+// ==========================================
+const SUPABASE_URL = 'https://pfqpyzfqwsksepoohive.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXB5emZxd3Nrc2Vwb29oaXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM1MTMsImV4cCI6MjA4OTk0OTUxM30.NPbcOFUPS_2zYg-2MjH1ukHrHqN8AjXRDrP1OpU4nNs';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ==========================================
+// PAGE NAVIGATION (works across all pages)
+// ==========================================
 document.querySelectorAll('[data-page]').forEach(el => {
   el.addEventListener('click', (e) => {
     e.preventDefault();
-    const pageId = el.dataset.page;
+    const pageId = el.getAttribute('data-page');
     if (!pageId) return;
-
     document.querySelectorAll('.page-section').forEach(section => {
       section.classList.remove('active-page');
     });
-
     const target = document.getElementById(`${pageId}-page`);
     if (target) target.classList.add('active-page');
-
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // If profile page is opened, load saved resumes
+    if (pageId === 'profile') loadProfilePage();
   });
 });
 
-// ========================
-// 2. SAFE HELPERS
-// ========================
-function escapeHTML(str = '') {
-  return str.replace(/[&<>"']/g, tag => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
-  }[tag]));
-}
+// ==========================================
+// RESUME BUILDER (only if elements exist)
+// ==========================================
+const firstName = document.getElementById('firstName');
+const lastName = document.getElementById('lastName');
+const jobTitle = document.getElementById('jobTitle');
+const phone = document.getElementById('phone');
+const emailField = document.getElementById('email');
+const address = document.getElementById('address');
+const summary = document.getElementById('summary');
+const experience = document.getElementById('experience');
+const education = document.getElementById('education');
+const skills = document.getElementById('skills');
+const languages = document.getElementById('languages');
+const awards = document.getElementById('awards');
+const references = document.getElementById('references');
+const templateSelect = document.getElementById('templateSelect');
+const cvPreview = document.getElementById('cvPreview');
+const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+const saveResumeBtn = document.getElementById('saveResumeBtn');
 
-function safeParse(key) {
-  try {
-    return JSON.parse(localStorage.getItem(key)) || [];
-  } catch {
-    return [];
-  }
-}
-
-// ========================
-// 3. RESUME BUILDER
-// ========================
-const ids = [
-  'firstName','lastName','jobTitle','phone','email','address',
-  'summary','experience','education','skills','languages','awards','references',
-  'templateSelect','cvPreview','downloadPdfBtn','saveResumeBtn'
-];
-
-const elements = {};
-ids.forEach(id => elements[id] = document.getElementById(id));
-
-const {
-  firstName,lastName,jobTitle,phone,email,address,
-  summary,experience,education,skills,languages,awards,references,
-  templateSelect,cvPreview,downloadPdfBtn,saveResumeBtn
-} = elements;
-
-// ========================
-// PARSERS
-// ========================
-const parseLines = (text, keys) =>
-  text.split('\n').filter(l => l.trim()).map(line => {
+// Helper functions
+function parseExperience(text) {
+  return text.split('\n').filter(line => line.trim()).map(line => {
     const parts = line.split('|').map(p => p.trim());
-    return keys.reduce((obj, key, i) => {
-      obj[key] = parts[i] || '';
-      return obj;
-    }, {});
-  });
-
-const getArray = (val) =>
-  val.split(',').map(v => v.trim()).filter(Boolean);
-
-// ========================
-// DEBOUNCE
-// ========================
-let debounceTimer;
-function debounceUpdate() {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(updateCVPreview, 150);
-}
-
-// ========================
-// PREVIEW
-// ========================
-function updateCVPreview() {
-  if (!cvPreview) return;
-
-  const data = {
-    firstName: escapeHTML(firstName?.value),
-    lastName: escapeHTML(lastName?.value),
-    jobTitle: escapeHTML(jobTitle?.value),
-    phone: escapeHTML(phone?.value),
-    email: escapeHTML(email?.value),
-    address: escapeHTML(address?.value),
-    summary: escapeHTML(summary?.value),
-    experience: parseLines(experience?.value || '', ['position','company','location','start','end','description']),
-    education: parseLines(education?.value || '', ['institution','degree','start','end']),
-    skills: getArray(skills?.value || ''),
-    languages: getArray(languages?.value || ''),
-    awards: parseLines(awards?.value || '', ['title','description','year']),
-    references: parseLines(references?.value || '', ['name','company','phone','email'])
-  };
-
-  let html = minimalTemplate(data); // fallback
-  const template = templateSelect?.value;
-
-  const templates = {
-    minimal: minimalTemplate,
-    sidebar: sidebarTemplate,
-    elegant: elegantTemplate,
-    centered: centeredTemplate,
-    modern: modernTemplate,
-    card: cardTemplate,
-    classic: classicTemplate
-  };
-
-  if (templates[template]) {
-    html = templates[template](data);
-  }
-
-  if (cvPreview.innerHTML !== html) {
-    cvPreview.innerHTML = html;
-  }
-}
-
-// ========================
-// TEMPLATES (UNCHANGED)
-// ========================
-// (All your template functions remain exactly the same here)
-
-// ========================
-// PDF DOWNLOAD
-// ========================
-async function downloadPDF() {
-  if (!cvPreview) return;
-
-  try {
-    const canvas = await html2canvas(cvPreview, { scale: 2, backgroundColor: '#ffffff' });
-    const imgData = canvas.toDataURL('image/png');
-    const { jsPDF } = window.jspdf;
-
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgWidth = 210;
-    const pageHeight = 297;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-    let heightLeft = imgHeight;
-    let position = 0;
-
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-    }
-
-    pdf.save('resume.pdf');
-  } catch (err) {
-    console.error(err);
-    alert('Failed to generate PDF.');
-  }
-}
-
-// ========================
-// SAVE RESUME
-// ========================
-function saveResumeToLocal() {
-  const resumeData = {
-    firstName: firstName?.value,
-    lastName: lastName?.value,
-    jobTitle: jobTitle?.value,
-    phone: phone?.value,
-    email: email?.value,
-    address: address?.value,
-    summary: summary?.value,
-    experience: experience?.value,
-    education: education?.value,
-    skills: skills?.value,
-    languages: languages?.value,
-    awards: awards?.value,
-    references: references?.value,
-    template: templateSelect?.value,
-    savedAt: new Date().toISOString()
-  };
-
-  const savedResumes = safeParse('9to5_resumes');
-  savedResumes.push(resumeData);
-  localStorage.setItem('9to5_resumes', JSON.stringify(savedResumes));
-
-  alert('Resume saved!');
-  loadProfilePage();
-}
-
-// ========================
-// PROFILE PAGE
-// ========================
-function loadProfilePage() {
-  const container = document.getElementById('profileContainer');
-  if (!container) return;
-
-  const savedResumes = safeParse('9to5_resumes');
-
-  if (!savedResumes.length) {
-    container.innerHTML = '<p>No saved resumes yet.</p>';
-    return;
-  }
-
-  container.innerHTML = savedResumes.map((r, i) => `
-    <div class="saved-resume-item">
-      <div>
-        <strong>${r.firstName} ${r.lastName}</strong> – ${r.jobTitle}<br>
-        <small>${new Date(r.savedAt).toLocaleString()}</small>
-      </div>
-      <div>
-        <button class="load-resume" data-i="${i}">Load</button>
-        <button class="delete-resume" data-i="${i}">Delete</button>
-      </div>
-    </div>
-  `).join('');
-
-  container.querySelectorAll('.load-resume').forEach(btn => {
-    btn.onclick = () => {
-      const r = savedResumes[btn.dataset.i];
-      if (!r) return;
-
-      Object.keys(r).forEach(key => {
-        if (elements[key]) elements[key].value = r[key];
-      });
-
-      updateCVPreview();
-      document.querySelector('[data-page="resume"]').click();
-    };
-  });
-
-  container.querySelectorAll('.delete-resume').forEach(btn => {
-    btn.onclick = () => {
-      if (!confirm('Delete this resume?')) return;
-      savedResumes.splice(btn.dataset.i, 1);
-      localStorage.setItem('9to5_resumes', JSON.stringify(savedResumes));
-      loadProfilePage();
+    return {
+      position: parts[0] || '',
+      company: parts[1] || '',
+      location: parts[2] || '',
+      start: parts[3] || '',
+      end: parts[4] || '',
+      description: parts[5] || ''
     };
   });
 }
 
-// ========================
-// EVENTS
-// ========================
-Object.values(elements).forEach(el => {
-  if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
-    el.addEventListener('input', debounceUpdate);
-  }
-});
-
-if (templateSelect) templateSelect.addEventListener('change', updateCVPreview);
-if (downloadPdfBtn) downloadPdfBtn.addEventListener('click', downloadPDF);
-if (saveResumeBtn) saveResumeBtn.addEventListener('click', saveResumeToLocal);
-
-// ========================
-// EXTRA
-// ========================
-const nominateBtn = document.getElementById('nominateBtn');
-if (nominateBtn) {
-  nominateBtn.onclick = () => {
-    const msg = encodeURIComponent("I'd like to nominate someone for Hustler of the Month.");
-    window.open(`https://wa.me/27794874559?text=${msg}`, '_blank');
-  };
+function parseEducation(text) {
+  return text.split('\n').filter(line => line.trim()).map(line => {
+    const parts = line.split('|').map(p => p.trim());
+    return {
+      institution: parts[0] || '',
+      degree: parts[1] || '',
+      start: parts[2] || '',
+      end: parts[3] || ''
+    };
+  });
 }
 
-document.querySelector('[data-page="profile"]')?.addEventListener('click', loadProfilePage);
+function parseAwards(text) {
+  return text.split('\n').filter(line => line.trim()).map(line => {
+    const parts = line.split('|').map(p => p.trim());
+    return {
+      title: parts[0] || '',
+      description: parts[1] || '',
+      year: parts[2] || ''
+    };
+  });
+}
 
-// Init
-updateCVPreview();
+function parseReferences(text) {
+  return text.split('\n').filter(line => line.trim()).map(line => {
+    const parts = line.split('|').map(p => p.trim());
+    return {
+      name: parts[0] || '',
+      company: parts[1] || '',
+      phone: parts[2] || '',
+      email: parts[3] || ''
+    };
+  });
+}
 
+function getSkillsArray() {
+  return skills.value.split(',').map(s => s.trim()).filter(s => s);
+}
 
-
-
+function getLanguagesArray() {
+  return languages.value.split(',').map(l => l.trim()).filter(l => l);
+}
 
 // ==================== RESUME TEMPLATES ====================
-
 function minimalTemplate(d) {
   return `
     <div class="cv-minimal" style="font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto;">
@@ -496,3 +320,281 @@ function classicTemplate(d) {
     </div>
   `;
 }
+
+// Update CV preview
+function updateCVPreview() {
+  const template = templateSelect.value;
+  const data = {
+    firstName: firstName.value,
+    lastName: lastName.value,
+    jobTitle: jobTitle.value,
+    phone: phone.value,
+    email: emailField.value,
+    address: address.value,
+    summary: summary.value,
+    experience: parseExperience(experience.value),
+    education: parseEducation(education.value),
+    skills: getSkillsArray(),
+    languages: getLanguagesArray(),
+    awards: parseAwards(awards.value),
+    references: parseReferences(references.value)
+  };
+
+  let html = '';
+  switch (template) {
+    case 'minimal': html = minimalTemplate(data); break;
+    case 'sidebar': html = sidebarTemplate(data); break;
+    case 'elegant': html = elegantTemplate(data); break;
+    case 'centered': html = centeredTemplate(data); break;
+    case 'modern': html = modernTemplate(data); break;
+    case 'card': html = cardTemplate(data); break;
+    case 'classic': html = classicTemplate(data); break;
+    default: html = minimalTemplate(data);
+  }
+  cvPreview.innerHTML = html;
+}
+
+// PDF download
+async function downloadPDF() {
+  const element = cvPreview;
+  if (!element) return;
+  try {
+    const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#ffffff' });
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const imgWidth = 210;
+    const pageHeight = 297;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
+    let position = 0;
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+    pdf.save('resume.pdf');
+  } catch (err) {
+    console.error('PDF error:', err);
+    alert('Failed to generate PDF. Please try again.');
+  }
+}
+
+// Save resume to Supabase
+async function saveResumeToSupabase() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    alert('You must be logged in to save resumes. Please sign in on the Profile page.');
+    return;
+  }
+
+  const resumeData = {
+    user_id: user.id,
+    first_name: firstName.value,
+    last_name: lastName.value,
+    job_title: jobTitle.value,
+    phone: phone.value,
+    email: emailField.value,
+    address: address.value,
+    summary: summary.value,
+    experience: experience.value,
+    education: education.value,
+    skills: skills.value,
+    languages: languages.value,
+    awards: awards.value,
+    references: references.value,
+    template: templateSelect.value,
+    created_at: new Date().toISOString()
+  };
+
+  const { error } = await supabase
+    .from('resumes')
+    .insert([resumeData]);
+
+  if (error) {
+    console.error('Supabase insert error:', error);
+    alert('Failed to save resume. ' + error.message);
+  } else {
+    alert('Resume saved to your cloud profile!');
+    loadProfilePage(); // refresh if profile page is open
+  }
+}
+
+// Attach resume builder events if elements exist
+if (firstName) {
+  firstName.addEventListener('input', updateCVPreview);
+  lastName.addEventListener('input', updateCVPreview);
+  jobTitle.addEventListener('input', updateCVPreview);
+  phone.addEventListener('input', updateCVPreview);
+  emailField.addEventListener('input', updateCVPreview);
+  address.addEventListener('input', updateCVPreview);
+  summary.addEventListener('input', updateCVPreview);
+  experience.addEventListener('input', updateCVPreview);
+  education.addEventListener('input', updateCVPreview);
+  skills.addEventListener('input', updateCVPreview);
+  languages.addEventListener('input', updateCVPreview);
+  awards.addEventListener('input', updateCVPreview);
+  references.addEventListener('input', updateCVPreview);
+  templateSelect.addEventListener('change', updateCVPreview);
+  downloadPdfBtn.addEventListener('click', downloadPDF);
+  saveResumeBtn.addEventListener('click', saveResumeToSupabase);
+  updateCVPreview();
+}
+
+// ==========================================
+// PROFILE PAGE
+// ==========================================
+async function renderAuthForm() {
+  const profileContainer = document.getElementById('profileContainer');
+  if (!profileContainer) return;
+  profileContainer.innerHTML = `
+    <div class="auth-form">
+      <h2>Sign In / Sign Up</h2>
+      <input type="email" id="authEmail" placeholder="Email" required>
+      <input type="password" id="authPassword" placeholder="Password" required>
+      <button id="loginBtn" class="btn-primary">Sign In</button>
+      <button id="signupBtn" class="btn-outline">Sign Up</button>
+      <button id="logoutBtn" class="btn-outline" style="margin-top:1rem; background:#dc3545; color:white;">Sign Out</button>
+    </div>
+  `;
+  document.getElementById('loginBtn').addEventListener('click', () => handleLogin());
+  document.getElementById('signupBtn').addEventListener('click', () => handleSignup());
+  document.getElementById('logoutBtn').addEventListener('click', () => handleLogout());
+}
+
+async function handleLogin() {
+  const email = document.getElementById('authEmail').value;
+  const password = document.getElementById('authPassword').value;
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) alert('Login failed: ' + error.message);
+  else {
+    alert('Logged in successfully!');
+    loadProfilePage();
+  }
+}
+
+async function handleSignup() {
+  const email = document.getElementById('authEmail').value;
+  const password = document.getElementById('authPassword').value;
+  const { error } = await supabase.auth.signUp({ email, password });
+  if (error) alert('Signup failed: ' + error.message);
+  else alert('Account created! You can now sign in.');
+}
+
+async function handleLogout() {
+  await supabase.auth.signOut();
+  alert('Signed out');
+  loadProfilePage();
+}
+
+async function loadProfilePage() {
+  const profileContainer = document.getElementById('profileContainer');
+  if (!profileContainer) return;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    renderAuthForm();
+    return;
+  }
+
+  const { data: resumes, error } = await supabase
+    .from('resumes')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching resumes:', error);
+    profileContainer.innerHTML = '<p>Error loading resumes. Please try again later.</p>';
+    return;
+  }
+
+  if (!resumes || resumes.length === 0) {
+    profileContainer.innerHTML = `
+      <h2>Your Saved Resumes</h2>
+      <p>No saved resumes yet. Create and save one from the Resume Builder.</p>
+      <button id="logoutBtnProfile" class="btn-outline" style="margin-top:1rem; background:#dc3545; color:white;">Sign Out</button>
+    `;
+    document.getElementById('logoutBtnProfile')?.addEventListener('click', () => handleLogout());
+    return;
+  }
+
+  let html = '<h2>Your Saved Resumes</h2>';
+  resumes.forEach((resume) => {
+    html += `
+      <div class="saved-resume-item">
+        <div>
+          <strong>${resume.first_name} ${resume.last_name}</strong> – ${resume.job_title}<br>
+          <small>Saved: ${new Date(resume.created_at).toLocaleString()}</small>
+        </div>
+        <div>
+          <button class="btn-outline load-resume" data-id="${resume.id}" style="margin-right: 0.5rem;">Load</button>
+          <button class="btn-outline delete-resume" data-id="${resume.id}" style="background: #dc3545; color: white;">Delete</button>
+        </div>
+      </div>
+    `;
+  });
+  html += `<button id="logoutBtnProfile" class="btn-outline" style="margin-top:1rem; background:#dc3545; color:white;">Sign Out</button>`;
+  profileContainer.innerHTML = html;
+
+  // Load resume handler
+  document.querySelectorAll('.load-resume').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const resumeId = btn.getAttribute('data-id');
+      const resume = resumes.find(r => r.id === resumeId);
+      if (resume) {
+        firstName.value = resume.first_name;
+        lastName.value = resume.last_name;
+        jobTitle.value = resume.job_title;
+        phone.value = resume.phone;
+        emailField.value = resume.email;
+        address.value = resume.address;
+        summary.value = resume.summary;
+        experience.value = resume.experience;
+        education.value = resume.education;
+        skills.value = resume.skills;
+        languages.value = resume.languages;
+        awards.value = resume.awards;
+        references.value = resume.references;
+        templateSelect.value = resume.template;
+        updateCVPreview();
+        document.querySelector('[data-page="resume"]').click();
+      }
+    });
+  });
+
+  // Delete resume handler
+  document.querySelectorAll('.delete-resume').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const resumeId = btn.getAttribute('data-id');
+      if (confirm('Delete this resume permanently?')) {
+        const { error } = await supabase.from('resumes').delete().eq('id', resumeId);
+        if (error) alert('Delete failed: ' + error.message);
+        else loadProfilePage();
+      }
+    });
+  });
+
+  document.getElementById('logoutBtnProfile')?.addEventListener('click', () => handleLogout());
+}
+
+// Initial profile load if on profile page
+if (document.getElementById('profile-page') && document.getElementById('profile-page').classList.contains('active-page')) {
+  loadProfilePage();
+}
+
+// ==========================================
+// HUSTLER NOMINATION (WhatsApp)
+// ==========================================
+const nominateBtn = document.getElementById('nominateBtn');
+if (nominateBtn) {
+  nominateBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const message = encodeURIComponent("I'd like to nominate someone for Hustler of the Month.");
+    window.open(`https://wa.me/27794874559?text=${message}`, '_blank');
+  });
+}
+
+console.log('9to5 University – fully loaded with Supabase!');

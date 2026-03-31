@@ -1,124 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>9to5 University · Workplace Authority</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>9to5 University</title>
 
-  <!-- Styles -->
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-  <!-- Scripts (Deferred for performance) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
 <body>
 
-<div class="top-bar">
-  <a href="https://www.facebook.com/profile.php?id=61579134208115" target="_blank" class="facebook-icon"><i class="fab fa-facebook-f"></i></a>
-  <a href="https://wa.me/27794874559" target="_blank" class="whatsapp-icon"><i class="fab fa-whatsapp"></i></a>
-  <a href="javascript:void(0)" class="signin-icon" data-page="profile"><i class="fas fa-user"></i></a>
-</div>
+<!-- ================= NAV ================= -->
+<nav class="flex">
+  <a href="#" data-page="home">HOME</a>
+  <a href="#" data-page="resume">RESUME BUILDER</a>
+  <a href="#" data-page="rights">WORKERS' RIGHTS</a>
+  <a href="#" data-page="report">REPORT MISCONDUCT</a>
+  <a href="#" data-page="profile">PROFILE</a>
+</nav>
 
-<div class="main-header">
-  <a href="javascript:void(0)" class="logo-link" data-page="home">
-    <img src="https://i.postimg.cc/8Chj1H8D/file-00000000d4b4722f8dcbec10fa906d0a.png" alt="9to5 University official logo">
-  </a>
-  <div class="crest-right">
-    <span>OFFICIAL RESOURCE</span><br>
-    REPUBLIC OF SOUTH AFRICA
-  </div>
-</div>
-
-<div class="nav-bar">
-  <div class="nav-menu">
-    <a href="javascript:void(0)" class="nav-link" data-page="home">HOME</a>
-    <a href="javascript:void(0)" class="nav-link" data-page="resume">RESUME BUILDER</a>
-    <a href="javascript:void(0)" class="nav-link" data-page="rights">WORKERS' RIGHTS</a>
-    <a href="javascript:void(0)" class="nav-link" data-page="issues">REPORT MISCONDUCT</a>
-    <a href="javascript:void(0)" class="nav-link" data-page="profile">PROFILE</a>
-    <a href="javascript:void(0)" class="nav-link" data-page="contact">CONTACT</a>
-  </div>
-</div>
-
-<!-- HOME PAGE -->
+<!-- ================= HOME PAGE ================= -->
 <section id="home-page" class="page-section active-page">
-  <div class="hero">
-    <div class="hero-text">
-      <h1>Workplace Empowerment<br>for Every South African</h1>
-      <p>9to5 University is a first-of-its-kind public resource providing free professional tools, labour law guidance, entrepreneurial recognition, and a trusted partner network.</p>
+  <div class="container">
 
-      <div class="stat-grid">
-        <div class="stat-card"><div class="stat-number">500+</div><div>Resumes Created</div></div>
-        <div class="stat-card"><div class="stat-number">24/7</div><div>Resource Access</div></div>
-        <div class="stat-card"><div class="stat-number">R500+</div><div>Commission Opportunities</div></div>
+    <!-- HEADER -->
+    <header>
+      <h1>9to5 University Logo</h1>
+      <p>OFFICIAL RESOURCE — REPUBLIC OF SOUTH AFRICA</p>
+    </header>
+
+    <h2>Workplace Empowerment for Every South African</h2>
+
+    <p>
+      9to5 University is a first-of-its-kind public resource providing free professional tools,
+      labour law guidance, entrepreneurial recognition, and a trusted partner network.
+    </p>
+
+    <div class="flex">
+      <div>500+ Resumes Created</div>
+      <div>24/7 Resource Access</div>
+      <div>R500+ Commission Opportunities</div>
+    </div>
+
+    <div class="flex">
+      <button data-page="resume">Create Professional CV →</button>
+      <button data-page="rights">Know Your Rights</button>
+    </div>
+
+    <hr>
+
+    <h3>Official Notice</h3>
+    <p>
+      9to5 University is not an educational institution nor an agency. All tools are provided free of charge
+      as a public service. Information aligned with BCEA & LRA.
+    </p>
+
+    <hr>
+
+    <h2>Official Services</h2>
+
+    <div class="grid">
+
+      <div>
+        <h3>Resume Builder</h3>
+        <p>7 professional CV templates. Free PDF download.</p>
       </div>
 
       <div>
-        <button data-page="resume" class="btn-primary">Create Professional CV →</button>
-        <button class="btn-outline" style="margin-left:1rem;" data-page="rights">Know Your Rights</button>
+        <h3>Labour Rights Guide</h3>
+        <p>Comprehensive South African labour law resource.</p>
       </div>
+
+      <div>
+        <h3>Misconduct Reporting</h3>
+        <p>Official channels for CCMA and Department of Labour.</p>
+      </div>
+
     </div>
 
-    <div class="hero-card">
-      <i class="fas fa-info-circle" style="font-size:2rem;"></i>
-      <h3 style="margin:0.5rem 0;">Official Notice</h3>
-      <p>9to5 University is not an educational institution nor an agency. All tools are provided free of charge as a public service. Information aligned with BCEA & LRA.</p>
+    <hr>
+
+    <h2>Chores Corner</h2>
+
+    <div class="grid">
+
+      <div>
+        <h4>Web Design Referral</h4>
+        <p>R500 referral commission</p>
+        <a href="#">Refer Now</a>
+      </div>
+
+      <div>
+        <h4>Tech Trade-in Referral</h4>
+        <p>R300 referral commission</p>
+      </div>
+
+      <div>
+        <h4>Hustler Nomination</h4>
+        <p>R300 reward</p>
+      </div>
+
     </div>
+
+    <hr>
+
+    <h2>Hustler of the Month — March 2025</h2>
+
+    <div>
+      <h3>Ericsson Dorra Watch</h3>
+      <p>Buhle Gotsha — Founder</p>
+      <p>
+        Young entrepreneur building a luxury watch brand with international sales.
+      </p>
+    </div>
+
+    <hr>
+
+    <h2>Partners</h2>
+
+    <div>
+      <h3>ON-DA BLOCK</h3>
+      <p>Web Development · Hosting · SEO</p>
+    </div>
+
+    <div>
+      <h3>Judacelia</h3>
+      <p>Pre-owned electronics & trade-ins</p>
+    </div>
+
+    <hr>
+
+    <h2>The Empty Store</h2>
+    <p>Official merchandise coming soon.</p>
+
+    <hr>
+
+    <footer>
+      <p>© 2025 9to5 University — South Africa's Workplace Authority</p>
+    </footer>
+
   </div>
+</section>
 
-  <div class="section-header"><i class="fas fa-briefcase"></i><h2>Official Services</h2></div>
+<!-- ================= RESUME PAGE ================= -->
+<section id="resume-page" class="page-section">
 
-  <div class="card-grid">
-    <div class="service-card"><div class="service-icon"><i class="fas fa-file-alt"></i></div><h3>Resume Builder</h3><p>7 professional CV templates. Free PDF download.</p><a href="javascript:void(0)" data-page="resume" class="service-link">Access Tool →</a></div>
-    <div class="service-card"><div class="service-icon"><i class="fas fa-gavel"></i></div><h3>Labour Rights Guide</h3><p>Comprehensive South African labour law resource. BCEA & LRA.</p><a href="javascript:void(0)" data-page="rights" class="service-link">Read Guide →</a></div>
-    <div class="service-card"><div class="service-icon"><i class="fas fa-flag-checkered"></i></div><h3>Misconduct Reporting</h3><p>Official channels for CCMA, Department of Labour, and legal recourse.</p><a href="javascript:void(0)" data-page="issues" class="service-link">Report →</a></div>
-  </div>
+  <div class="container">
 
-  <!-- HUSTLER OF THE MONTH – SEPARATE LAYOUT -->
-  <div class="feature-card">
-    <div class="feature-header">
-      <i class="fas fa-crown"></i>
-      <span>HUSTLER OF THE MONTH</span>
-      <span>MARCH 2026</span>
+    <h2>Premium Resume Builder</h2>
+
+    <div class="flex">
+
+      <input id="firstName" placeholder="First Name">
+      <input id="lastName" placeholder="Last Name">
+      <input id="jobTitle" placeholder="Job Title">
+      <input id="phone" placeholder="Phone">
+      <input id="email" placeholder="Email">
+      <input id="address" placeholder="Address">
+
+      <textarea id="summary" placeholder="Summary"></textarea>
+      <textarea id="experience" placeholder="Experience"></textarea>
+      <textarea id="education" placeholder="Education"></textarea>
+      <textarea id="skills" placeholder="Skills"></textarea>
+      <textarea id="languages" placeholder="Languages"></textarea>
+      <textarea id="awards" placeholder="Awards"></textarea>
+      <textarea id="references" placeholder="References"></textarea>
+
+      <select id="templateSelect">
+        <option value="minimal">Minimal</option>
+        <option value="sidebar">Sidebar</option>
+        <option value="elegant">Elegant</option>
+        <option value="centered">Centered</option>
+        <option value="modern">Modern</option>
+        <option value="card">Card</option>
+        <option value="classic">Classic</option>
+      </select>
+
+      <button id="downloadPdfBtn">Download PDF</button>
+      <button id="saveResumeBtn">Save Resume</button>
+
     </div>
 
-    <div class="feature-content">
-      <div class="feature-image-container">
-        <img src="https://i.ibb.co/zW8y8KKb/FB-IMG-17740408166780955.jpg" alt="Ericsson Dorra luxury watch display">
-      </div>
+    <div id="cvPreview"></div>
 
-      <div class="feature-story-container">
-        <div class="founder-name">Buhle Gotsha</div>
-        <div class="brand-tag">Founder, Ericsson Dorra Timepiece</div>
-
-        <p>At 19 years old, Buhle Gotsha from KwaZulu-Natal has built a luxury watch brand that now ships internationally...</p>
-
-        <div class="stats-row">
-          <span class="stat-pill"><i class="fas fa-chart-line"></i> 50 watches (June 2024)</span>
-          <span class="stat-pill"><i class="fas fa-globe"></i> International Sales</span>
-          <span class="stat-pill"><i class="fas fa-tag"></i> R850 Premium Steel</span>
-        </div>
-      </div>
-
-      <div class="order-container">
-        <img src="https://i.ibb.co/6cxQk8z3/FB-IMG-17740410967114200.jpg" alt="Ericsson Dorra watch product">
-        <div class="watch-price">R850.00</div>
-        <a href="tel:+27760390570" class="order-btn">
-          <i class="fas fa-shopping-cart"></i> ORDER: 076 039 0570
-        </a>
-      </div>
-    </div>
   </div>
 
 </section>
 
-<!-- SCRIPT -->
-<script src="script.js" defer></script>
+<!-- ================= WORKERS RIGHTS ================= -->
+<section id="rights-page" class="page-section">
+  <div class="container">
+
+    <h2>Workers' Rights – South Africa</h2>
+
+    <ul>
+      <li>Max 45 hours per week</li>
+      <li>Overtime: 1.5x pay</li>
+      <li>21 days annual leave</li>
+      <li>4 months maternity leave</li>
+    </ul>
+
+  </div>
+</section>
+
+<!-- ================= REPORT PAGE ================= -->
+<section id="report-page" class="page-section">
+  <div class="container">
+
+    <h2>Report Misconduct</h2>
+
+    <p>Contact CCMA or Department of Labour for disputes.</p>
+
+  </div>
+</section>
+
+<!-- ================= PROFILE PAGE ================= -->
+<section id="profile-page" class="page-section">
+  <div class="container">
+
+    <h2>Profile</h2>
+    <div id="profileContainer"></div>
+
+  </div>
+</section>
+
+<!-- ================= JS ================= -->
+<script src="script.js"></script>
 
 </body>
 </html>

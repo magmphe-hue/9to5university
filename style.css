@@ -12,7 +12,7 @@ html, body {
   width: 100%;
   height: 100%;
   overflow-x: hidden;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background: #f9f7f6;
   color: #1f2937;
   line-height: 1.5;
@@ -26,6 +26,14 @@ html, body {
   }
 }
 
+/* =========================
+   GOOGLE FONT IMPORT (Poppins)
+========================= */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* =========================
+   COLOR VARIABLES
+========================= */
 :root {
   --primary: #014656;
   --primary-dark: #013544;
@@ -37,9 +45,15 @@ html, body {
   --white: #ffffff;
   --text-dark: #1f2937;
   --gray-border: #e5e7eb;
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-hover: 0 25px 30px -12px rgba(0, 0, 0, 0.2);
 }
 
-/* Typography */
+/* =========================
+   TYPOGRAPHY
+========================= */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   line-height: 1.2;
@@ -59,23 +73,35 @@ p, li {
 a {
   text-decoration: none;
   color: var(--accent);
-  transition: color 0.2s;
+  transition: color 0.2s, transform 0.2s;
 }
-a:hover { color: var(--gold); }
+a:hover {
+  color: var(--gold);
+}
 
-/* Layout */
+/* =========================
+   LAYOUT CONTAINERS
+========================= */
 .container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
 }
+
+/* =========================
+   PAGE SWITCHING (for single-page mode, but kept for compatibility)
+========================= */
 .page-section {
   display: none;
   width: 100%;
   min-height: 100vh;
 }
 .page-section.active-page { display: block; }
+
+/* =========================
+   FLEX & GRID
+========================= */
 .flex {
   display: flex;
   flex-wrap: wrap;
@@ -88,16 +114,19 @@ a:hover { color: var(--gold); }
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
-/* Buttons */
+/* =========================
+   BUTTONS
+========================= */
 .btn-primary, .btn-outline, button {
   display: inline-block;
   padding: 12px 28px;
   border-radius: 40px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: none;
   font-size: 0.9rem;
+  box-shadow: var(--shadow-sm);
 }
 .btn-primary, button {
   background: var(--accent);
@@ -106,18 +135,27 @@ a:hover { color: var(--gold); }
 .btn-primary:hover, button:hover {
   background: var(--gold);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 .btn-outline {
   background: transparent;
   border: 2px solid var(--accent);
   color: var(--accent);
+  box-shadow: none;
 }
 .btn-outline:hover {
   background: var(--accent);
   color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+button:active, .btn-primary:active, .btn-outline:active {
+  transform: translateY(1px);
 }
 
-/* Top Bar & Header */
+/* =========================
+   TOP BAR & HEADER
+========================= */
 .top-bar {
   background: var(--primary);
   color: white;
@@ -127,18 +165,39 @@ a:hover { color: var(--gold); }
   gap: 1rem;
   flex-wrap: wrap;
 }
-.top-bar a { color: white; }
-.whatsapp-icon, .facebook-icon, .signin-icon {
-  width: 32px; height: 32px;
+.top-bar a {
+  color: white;
+  transition: transform 0.2s, background 0.2s;
+}
+.top-bar a:hover {
+  transform: scale(1.05);
+}
+.whatsapp-icon, .facebook-icon, .twitter-icon, .signin-icon {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  background: rgba(255,255,255,0.1);
+  transition: all 0.2s;
 }
 .whatsapp-icon { background: #25D366; }
 .facebook-icon { background: #1877f2; }
-.signin-icon { border: 1px solid white; background: transparent; }
-.signin-icon:hover { background: white; color: var(--primary); }
+.twitter-icon { background: #1DA1F2; }
+.signin-icon {
+  border: 1px solid white;
+  background: transparent;
+}
+.signin-icon:hover {
+  background: white;
+  color: var(--primary);
+  transform: scale(1.05);
+}
+.whatsapp-icon:hover, .facebook-icon:hover, .twitter-icon:hover {
+  filter: brightness(0.9);
+  transform: scale(1.05);
+}
 
 .main-header {
   background: var(--white);
@@ -150,7 +209,15 @@ a:hover { color: var(--gold); }
   gap: 1rem;
   border-bottom: 1px solid var(--gray-border);
 }
-.logo-link img { max-height: 320px; width: auto; }
+.logo-link {
+  display: inline-block;
+  transition: transform 0.2s;
+}
+.logo-link:hover { transform: scale(1.02); }
+.logo-link img {
+  max-height: 320px;
+  width: auto;
+}
 .crest-right {
   text-align: right;
   font-size: 0.85rem;
@@ -164,7 +231,9 @@ a:hover { color: var(--gold); }
   font-size: 0.95rem;
 }
 
-/* Navigation */
+/* =========================
+   NAVIGATION
+========================= */
 .nav-bar {
   background: var(--white);
   padding: 0.6rem 5%;
@@ -183,13 +252,17 @@ a:hover { color: var(--gold); }
   font-size: 0.85rem;
   padding-bottom: 4px;
   border-bottom: 2px solid transparent;
+  transition: all 0.2s;
 }
 .nav-menu a:hover, .nav-menu a.active {
   color: var(--accent);
   border-bottom-color: var(--accent);
+  transform: translateY(-1px);
 }
 
-/* Hero Section */
+/* =========================
+   HERO SECTION
+========================= */
 .hero {
   background: linear-gradient(135deg, var(--primary), var(--accent));
   color: white;
@@ -198,6 +271,7 @@ a:hover { color: var(--gold); }
   flex-wrap: wrap;
   gap: 2rem;
   justify-content: space-between;
+  animation: fadeInUp 0.6s ease-out;
 }
 .hero-text { flex: 2; min-width: 280px; }
 .hero-text h1 { font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 1rem; }
@@ -218,6 +292,11 @@ a:hover { color: var(--gold); }
   text-align: center;
   flex: 1;
   min-width: 100px;
+  transition: transform 0.2s, background 0.2s;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.25);
 }
 .stat-number { font-size: 1.8rem; font-weight: 700; }
 .hero-card {
@@ -227,9 +306,16 @@ a:hover { color: var(--gold); }
   padding: 1.5rem;
   backdrop-filter: blur(4px);
   min-width: 260px;
+  transition: transform 0.2s;
+}
+.hero-card:hover {
+  transform: translateY(-3px);
+  background: rgba(255,255,255,0.15);
 }
 
-/* Section Headers */
+/* =========================
+   SECTION HEADERS
+========================= */
 .section-header {
   display: flex;
   align-items: center;
@@ -239,7 +325,9 @@ a:hover { color: var(--gold); }
 .section-header i { font-size: 1.8rem; color: var(--accent); }
 .section-header h2 { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
 
-/* Service Cards */
+/* =========================
+   SERVICE CARDS
+========================= */
 .card-grid {
   display: flex;
   flex-wrap: wrap;
@@ -254,19 +342,32 @@ a:hover { color: var(--gold); }
   flex: 1 1 280px;
   max-width: 320px;
   border: 1px solid var(--gray-border);
-  transition: 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
 }
-.service-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+.service-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-hover);
+}
 .service-icon { font-size: 2.2rem; color: var(--accent); margin-bottom: 1rem; }
 .service-link { display: inline-block; margin-top: 0.5rem; font-weight: 600; }
 
-/* Chores, Feature, Partner Cards */
+/* =========================
+   CHORES, FEATURE, PARTNER CARDS
+========================= */
 .chores-card, .feature-card, .partner-card {
   background: var(--white);
   border-radius: 28px;
   border: 1px solid var(--gray-border);
   margin: 1.5rem 5% 2rem;
   overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+.chores-card:hover, .feature-card:hover, .partner-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
 }
 .chores-header, .feature-header {
   background: #fef7e6;
@@ -291,8 +392,15 @@ a:hover { color: var(--gold); }
   border-radius: 20px;
   padding: 1.5rem;
   text-align: center;
+  transition: all 0.2s;
+}
+.chore-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-sm);
 }
 .chore-amount { font-size: 1.8rem; font-weight: 700; margin: 0.5rem 0; }
+
+/* Hustler of the Month */
 .feature-content {
   display: flex;
   flex-wrap: wrap;
@@ -301,7 +409,12 @@ a:hover { color: var(--gold); }
   align-items: flex-start;
 }
 .feature-image-container { flex: 0 0 200px; text-align: center; }
-.feature-image-container img { width: 100%; border-radius: 16px; }
+.feature-image-container img {
+  width: 100%;
+  border-radius: 16px;
+  transition: transform 0.2s;
+}
+.feature-image-container img:hover { transform: scale(1.02); }
 .feature-story-container { flex: 2; }
 .order-container {
   flex: 0 0 200px;
@@ -309,7 +422,9 @@ a:hover { color: var(--gold); }
   border-radius: 20px;
   padding: 1rem;
   text-align: center;
+  transition: transform 0.2s;
 }
+.order-container:hover { transform: translateY(-2px); }
 .order-container img { max-width: 150px; margin-bottom: 0.5rem; }
 .founder-name { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
 .brand-tag {
@@ -330,7 +445,9 @@ a:hover { color: var(--gold); }
   padding: 0.3rem 1rem;
   border-radius: 30px;
   font-size: 0.75rem;
+  transition: background 0.2s;
 }
+.stat-pill:hover { background: #e2e8f0; }
 .social-links { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
 .social-btn {
   background: #eef2f6;
@@ -338,8 +455,9 @@ a:hover { color: var(--gold); }
   border-radius: 30px;
   font-size: 0.75rem;
   color: var(--text-dark);
+  transition: all 0.2s;
 }
-.social-btn:hover { background: var(--accent); color: white; }
+.social-btn:hover { background: var(--accent); color: white; transform: translateY(-1px); }
 .watch-price { font-size: 1.3rem; font-weight: 700; color: var(--primary); }
 .order-btn {
   background: var(--accent);
@@ -349,7 +467,9 @@ a:hover { color: var(--gold); }
   display: block;
   font-size: 0.75rem;
   margin-top: 0.5rem;
+  transition: all 0.2s;
 }
+.order-btn:hover { background: var(--gold); transform: translateY(-1px); }
 
 /* Partners Grid */
 .partners-grid {
@@ -391,8 +511,9 @@ a:hover { color: var(--gold); }
   border: 1px solid var(--gray-border);
   font-size: 0.75rem;
   color: var(--text-dark);
+  transition: all 0.2s;
 }
-.contact-link:hover { background: var(--accent); color: white; }
+.contact-link:hover { background: var(--accent); color: white; transform: translateY(-1px); }
 
 /* Empty Store */
 .empty-store-section {
@@ -401,6 +522,11 @@ a:hover { color: var(--gold); }
   border-radius: 32px;
   padding: 3rem 2rem;
   text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.empty-store-section:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 .empty-store-content i { font-size: 3rem; color: #ffb347; margin-bottom: 1rem; }
 .empty-store-content h2 { font-size: 2rem; color: #fff; margin-bottom: 0.5rem; }
@@ -431,7 +557,9 @@ a:hover { color: var(--gold); }
   border-radius: 30px;
 }
 
-/* Resume Builder */
+/* =========================
+   RESUME BUILDER
+========================= */
 .resume-section { padding: 2rem 5%; }
 .builder-grid {
   display: grid;
@@ -444,7 +572,9 @@ a:hover { color: var(--gold); }
   border-radius: 28px;
   padding: 1.5rem;
   border: 1px solid var(--gray-border);
+  transition: box-shadow 0.2s;
 }
+.form-panel:hover, .preview-panel:hover { box-shadow: var(--shadow-sm); }
 .template-selector select {
   width: 100%;
   padding: 0.6rem;
@@ -465,6 +595,12 @@ a:hover { color: var(--gold); }
   padding: 0.7rem;
   border-radius: 20px;
   border: 1px solid var(--gray-border);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-group input:focus, .form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(0,162,173,0.2);
 }
 .cv-preview {
   background: white;
@@ -475,14 +611,18 @@ a:hover { color: var(--gold); }
 }
 .download-btn { text-align: center; margin-top: 1rem; }
 
-/* Content Pages (Rights, Issues, Contact) */
+/* =========================
+   CONTENT PAGES
+========================= */
 .content-page {
   background: var(--white);
   border-radius: 28px;
   margin: 2rem 5%;
   padding: 2rem;
   border: 1px solid var(--gray-border);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
+.content-page:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
 .report-links {
   background: #fef7e6;
   border-radius: 20px;
@@ -497,7 +637,9 @@ a:hover { color: var(--gold); }
   margin-top: 1rem;
 }
 
-/* Profile Page */
+/* =========================
+   PROFILE PAGE
+========================= */
 .profile-container {
   max-width: 800px;
   margin: 2rem auto;
@@ -505,7 +647,9 @@ a:hover { color: var(--gold); }
   border-radius: 28px;
   padding: 2rem;
   border: 1px solid var(--gray-border);
+  transition: transform 0.2s;
 }
+.profile-container:hover { transform: translateY(-2px); }
 .auth-form { max-width: 400px; margin: 0 auto; }
 .auth-form input {
   width: 100%;
@@ -524,9 +668,16 @@ a:hover { color: var(--gold); }
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
+  transition: transform 0.2s, background 0.2s;
+}
+.saved-resume-item:hover {
+  transform: translateX(4px);
+  background: #f1f5f9;
 }
 
-/* Footer */
+/* =========================
+   FOOTER
+========================= */
 .footer {
   background: var(--primary);
   color: white;
@@ -544,7 +695,9 @@ a:hover { color: var(--gold); }
   color: #ccc;
   font-size: 0.85rem;
   line-height: 1.8;
+  transition: color 0.2s;
 }
+.footer-col a:hover { color: white; }
 .footer-copyright {
   text-align: center;
   margin-top: 2rem;
@@ -553,13 +706,37 @@ a:hover { color: var(--gold); }
   font-size: 0.7rem;
 }
 
-/* Focus & Accessibility */
+/* =========================
+   FOCUS & ACCESSIBILITY
+========================= */
 :focus {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* Responsive Design */
+/* =========================
+   ANIMATIONS
+========================= */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.page-section.active-page {
+  animation: fadeInUp 0.5s ease-out;
+}
+.hero, .card-grid, .chores-card, .feature-card, .partners-grid, .empty-store-section {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* =========================
+   RESPONSIVE DESIGN
+========================= */
 @media (max-width: 1024px) {
   .builder-grid { grid-template-columns: 1fr; }
   .hero { flex-direction: column; text-align: center; }

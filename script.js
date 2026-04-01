@@ -7,27 +7,20 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ==========================================
-// PAGE NAVIGATION (works across all pages)
+// PAGE NAVIGATION (for multi-page site)
 // ==========================================
+// Not needed because we use separate HTML files; but we keep for any in-page links
 document.querySelectorAll('[data-page]').forEach(el => {
   el.addEventListener('click', (e) => {
     e.preventDefault();
     const pageId = el.getAttribute('data-page');
     if (!pageId) return;
-    document.querySelectorAll('.page-section').forEach(section => {
-      section.classList.remove('active-page');
-    });
-    const target = document.getElementById(`${pageId}-page`);
-    if (target) target.classList.add('active-page');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // If profile page is opened, load saved resumes
-    if (pageId === 'profile') loadProfilePage();
+    window.location.href = `${pageId}.html`;
   });
 });
 
 // ==========================================
-// RESUME BUILDER (only if elements exist)
+// RESUME BUILDER (only if on resume.html)
 // ==========================================
 const firstName = document.getElementById('firstName');
 const lastName = document.getElementById('lastName');
@@ -47,7 +40,6 @@ const cvPreview = document.getElementById('cvPreview');
 const downloadPdfBtn = document.getElementById('downloadPdfBtn');
 const saveResumeBtn = document.getElementById('saveResumeBtn');
 
-// Helper functions
 function parseExperience(text) {
   return text.split('\n').filter(line => line.trim()).map(line => {
     const parts = line.split('|').map(p => p.trim());
@@ -105,75 +97,78 @@ function getLanguagesArray() {
   return languages.value.split(',').map(l => l.trim()).filter(l => l);
 }
 
-// ==================== RESUME TEMPLATES ====================
+// ==================== PROFESSIONAL RESUME TEMPLATES ====================
 function minimalTemplate(d) {
   return `
-    <div class="cv-minimal" style="font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto;">
-      <div class="header">
-        <div><strong>${d.firstName} ${d.lastName}</strong><br>${d.jobTitle}</div>
-        <div>${d.phone} | ${d.email}<br>${d.address}</div>
+    <div style="font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.05);">
+      <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border-bottom: 2px solid #00a2ad; padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <h1 style="font-size: 2rem; margin: 0; color: #014656;">${d.firstName} ${d.lastName}</h1>
+          <p style="font-size: 1.2rem; color: #00a2ad; margin: 0.25rem 0 0;">${d.jobTitle}</p>
+        </div>
+        <div style="text-align: right;">
+          <p style="margin: 0;">${d.phone}</p>
+          <p style="margin: 0;">${d.email}</p>
+          <p style="margin: 0;">${d.address}</p>
+        </div>
       </div>
-      <div class="main">
-        <div class="left">
-          <h3>Summary</h3>
+      <div style="display: flex; flex-wrap: wrap; gap: 2rem;">
+        <div style="flex: 1.5;">
+          <h3 style="color: #014656; border-left: 4px solid #00a2ad; padding-left: 0.75rem; margin: 1rem 0 0.5rem;">Summary</h3>
           <p>${d.summary}</p>
-          <h3>Skills</h3>
-          <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
-          <h3>Languages</h3>
-          <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
-        </div>
-        <div class="right">
-          <h3>Experience</h3>
+          <h3 style="color: #014656; border-left: 4px solid #00a2ad; padding-left: 0.75rem; margin: 1rem 0 0.5rem;">Experience</h3>
           ${d.experience.map(exp => `
-            <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+            <div style="margin-bottom: 1rem;">
+              <strong>${exp.position}</strong> at ${exp.company} (${exp.start} – ${exp.end})<br>
+              <span style="color: #666;">${exp.description}</span>
+            </div>
           `).join('')}
-          <h3>Education</h3>
+          <h3 style="color: #014656; border-left: 4px solid #00a2ad; padding-left: 0.75rem; margin: 1rem 0 0.5rem;">Education</h3>
           ${d.education.map(edu => `
-            <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
+            <div><strong>${edu.degree}</strong>, ${edu.institution} (${edu.start} – ${edu.end})</div>
           `).join('')}
-          <h3>Awards</h3>
-          ${d.awards.map(aw => `
-            <div><strong>${aw.title}</strong> (${aw.year})<br>${aw.description}</div>
-          `).join('')}
+        </div>
+        <div style="flex: 1;">
+          <h3 style="color: #014656; border-left: 4px solid #00a2ad; padding-left: 0.75rem; margin: 1rem 0 0.5rem;">Skills</h3>
+          <ul style="list-style: none; padding-left: 0;">${d.skills.map(s => `<li style="margin-bottom: 0.5rem;">✓ ${s}</li>`).join('')}</ul>
+          <h3 style="color: #014656; border-left: 4px solid #00a2ad; padding-left: 0.75rem; margin: 1rem 0 0.5rem;">Languages</h3>
+          <ul style="list-style: none; padding-left: 0;">${d.languages.map(l => `<li>• ${l}</li>`).join('')}</ul>
+          <h3 style="color: #014656; border-left: 4px solid #00a2ad; padding-left: 0.75rem; margin: 1rem 0 0.5rem;">Awards</h3>
+          ${d.awards.map(aw => `<div><strong>${aw.title}</strong> (${aw.year}) – ${aw.description}</div>`).join('')}
         </div>
       </div>
-      <hr>
-      <h3>References</h3>
-      ${d.references.map(ref => `
-        <div>${ref.name}, ${ref.company} – ${ref.phone} / ${ref.email}</div>
-      `).join('')}
+      <hr style="margin: 1.5rem 0 1rem;">
+      <h3 style="color: #014656;">References</h3>
+      ${d.references.map(ref => `<div>${ref.name}, ${ref.company} – ${ref.phone} / ${ref.email}</div>`).join('')}
     </div>
   `;
 }
 
 function sidebarTemplate(d) {
   return `
-    <div class="cv-sidebar" style="display: flex; max-width: 800px; margin: 0 auto;">
-      <div class="left" style="background: #2f3b4c; color: white; padding: 20px; border-radius: 16px 0 0 16px;">
-        <h3>Contact</h3>
+    <div style="display: flex; flex-wrap: wrap; max-width: 800px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.05);">
+      <div style="background: #014656; color: white; width: 33%; padding: 2rem 1.5rem;">
+        <h3 style="color: #f6a801; margin-bottom: 1rem;">Contact</h3>
         <p>${d.phone}<br>${d.email}<br>${d.address}</p>
-        <h3>Skills</h3>
-        <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
-        <h3>Languages</h3>
-        <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
+        <h3 style="color: #f6a801; margin-top: 2rem; margin-bottom: 1rem;">Skills</h3>
+        <ul style="list-style: none; padding-left: 0;">${d.skills.map(s => `<li>• ${s}</li>`).join('')}</ul>
+        <h3 style="color: #f6a801; margin-top: 2rem; margin-bottom: 1rem;">Languages</h3>
+        <ul style="list-style: none; padding-left: 0;">${d.languages.map(l => `<li>• ${l}</li>`).join('')}</ul>
       </div>
-      <div class="right" style="padding: 20px;">
-        <h2>${d.firstName} ${d.lastName}</h2>
-        <h4>${d.jobTitle}</h4>
-        <h3>Summary</h3>
+      <div style="width: 67%; padding: 2rem;">
+        <h1 style="font-size: 2rem; margin: 0 0 0.25rem; color: #014656;">${d.firstName} ${d.lastName}</h1>
+        <p style="color: #00a2ad; font-weight: 600; margin-bottom: 1.5rem;">${d.jobTitle}</p>
+        <h3 style="color: #014656;">Profile</h3>
         <p>${d.summary}</p>
-        <h3>Experience</h3>
+        <h3 style="color: #014656; margin-top: 1.5rem;">Experience</h3>
         ${d.experience.map(exp => `
-          <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+          <div style="margin-bottom: 1rem;">
+            <strong>${exp.position}</strong> at ${exp.company} (${exp.start} – ${exp.end})<br>
+            <span>${exp.description}</span>
+          </div>
         `).join('')}
-        <h3>Education</h3>
-        ${d.education.map(edu => `
-          <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
-        `).join('')}
-        <h3>References</h3>
-        ${d.references.map(ref => `
-          <div>${ref.name}, ${ref.company} – ${ref.phone} / ${ref.email}</div>
-        `).join('')}
+        <h3 style="color: #014656; margin-top: 1.5rem;">Education</h3>
+        ${d.education.map(edu => `<div><strong>${edu.degree}</strong>, ${edu.institution} (${edu.start} – ${edu.end})</div>`).join('')}
       </div>
     </div>
   `;
@@ -181,28 +176,31 @@ function sidebarTemplate(d) {
 
 function elegantTemplate(d) {
   return `
-    <div class="cv-elegant" style="max-width: 800px; margin: 0 auto; display: flex; gap: 30px;">
-      <div class="left" style="background: #fef5e8; padding: 20px; border-radius: 20px;">
-        <h3>Contact</h3>
-        <p>${d.phone}<br>${d.email}<br>${d.address}</p>
-        <h3>Skills</h3>
-        <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
-        <h3>Languages</h3>
-        <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
+    <div style="max-width: 800px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.05);">
+      <div style="background: #fef5e8; padding: 2rem; text-align: center;">
+        <h1 style="margin: 0; color: #014656;">${d.firstName} ${d.lastName}</h1>
+        <p style="color: #00a2ad; font-size: 1.2rem; margin: 0.5rem 0 0;">${d.jobTitle}</p>
       </div>
-      <div class="right">
-        <h1>${d.firstName} ${d.lastName}</h1>
-        <h3>${d.jobTitle}</h3>
-        <h3>Profile</h3>
-        <p>${d.summary}</p>
-        <h3>Experience</h3>
-        ${d.experience.map(exp => `
-          <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
-        `).join('')}
-        <h3>Education</h3>
-        ${d.education.map(edu => `
-          <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
-        `).join('')}
+      <div style="display: flex; flex-wrap: wrap; gap: 2rem; padding: 2rem;">
+        <div style="flex: 1;">
+          <h3 style="color: #014656;">Contact</h3>
+          <p>${d.phone}<br>${d.email}<br>${d.address}</p>
+          <h3 style="color: #014656; margin-top: 1.5rem;">Skills</h3>
+          <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+        </div>
+        <div style="flex: 2;">
+          <h3 style="color: #014656;">Profile</h3>
+          <p>${d.summary}</p>
+          <h3 style="color: #014656; margin-top: 1.5rem;">Experience</h3>
+          ${d.experience.map(exp => `
+            <div style="margin-bottom: 1rem;">
+              <strong>${exp.position}</strong> at ${exp.company} (${exp.start} – ${exp.end})<br>
+              ${exp.description}
+            </div>
+          `).join('')}
+          <h3 style="color: #014656; margin-top: 1.5rem;">Education</h3>
+          ${d.education.map(edu => `<div><strong>${edu.degree}</strong>, ${edu.institution} (${edu.start} – ${edu.end})</div>`).join('')}
+        </div>
       </div>
     </div>
   `;
@@ -210,52 +208,51 @@ function elegantTemplate(d) {
 
 function centeredTemplate(d) {
   return `
-    <div class="cv-centered" style="text-align: center; max-width: 800px; margin: 0 auto;">
-      <h1>${d.firstName} ${d.lastName}</h1>
-      <h3>${d.jobTitle}</h3>
-      <p>${d.phone} | ${d.email} | ${d.address}</p>
-      <hr>
-      <h3>Summary</h3>
+    <div style="max-width: 800px; margin: 0 auto; background: white; padding: 2rem; text-align: center; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.05);">
+      <h1 style="color: #014656; margin-bottom: 0.25rem;">${d.firstName} ${d.lastName}</h1>
+      <p style="color: #00a2ad; font-size: 1.2rem;">${d.jobTitle}</p>
+      <p style="margin: 1rem 0;">${d.phone} | ${d.email} | ${d.address}</p>
+      <hr style="margin: 1rem 0;">
+      <h3 style="color: #014656;">Summary</h3>
       <p>${d.summary}</p>
-      <h3>Experience</h3>
+      <h3 style="color: #014656;">Experience</h3>
       ${d.experience.map(exp => `
-        <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+        <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} – ${exp.end})<br>${exp.description}</div>
       `).join('')}
-      <h3>Education</h3>
-      ${d.education.map(edu => `
-        <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
-      `).join('')}
+      <h3 style="color: #014656;">Education</h3>
+      ${d.education.map(edu => `<div><strong>${edu.degree}</strong>, ${edu.institution} (${edu.start} – ${edu.end})</div>`).join('')}
     </div>
   `;
 }
 
 function modernTemplate(d) {
   return `
-    <div class="cv-modern" style="max-width: 800px; margin: 0 auto;">
-      <div style="background: #014656; color: white; padding: 20px; border-radius: 20px 20px 0 0;">
-        <h1>${d.firstName} ${d.lastName}</h1>
-        <h3>${d.jobTitle}</h3>
+    <div style="max-width: 800px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.05);">
+      <div style="background: #014656; color: white; padding: 2rem; border-radius: 8px 8px 0 0;">
+        <h1 style="margin: 0;">${d.firstName} ${d.lastName}</h1>
+        <p style="margin: 0.5rem 0 0; opacity: 0.9;">${d.jobTitle}</p>
       </div>
-      <div class="columns" style="display: flex; gap: 30px; padding: 20px;">
+      <div style="display: flex; flex-wrap: wrap; gap: 2rem; padding: 2rem;">
         <div style="flex: 1;">
-          <h3>Contact</h3>
+          <h3 style="color: #014656;">Contact</h3>
           <p>${d.phone}<br>${d.email}<br>${d.address}</p>
-          <h3>Skills</h3>
+          <h3 style="color: #014656; margin-top: 1.5rem;">Skills</h3>
           <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
-          <h3>Languages</h3>
+          <h3 style="color: #014656; margin-top: 1.5rem;">Languages</h3>
           <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
         </div>
         <div style="flex: 2;">
-          <h3>Summary</h3>
+          <h3 style="color: #014656;">Summary</h3>
           <p>${d.summary}</p>
-          <h3>Experience</h3>
+          <h3 style="color: #014656; margin-top: 1.5rem;">Experience</h3>
           ${d.experience.map(exp => `
-            <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+            <div style="margin-bottom: 1rem;">
+              <strong>${exp.position}</strong> at ${exp.company} (${exp.start} – ${exp.end})<br>
+              ${exp.description}
+            </div>
           `).join('')}
-          <h3>Education</h3>
-          ${d.education.map(edu => `
-            <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
-          `).join('')}
+          <h3 style="color: #014656; margin-top: 1.5rem;">Education</h3>
+          ${d.education.map(edu => `<div><strong>${edu.degree}</strong>, ${edu.institution} (${edu.start} – ${edu.end})</div>`).join('')}
         </div>
       </div>
     </div>
@@ -264,28 +261,29 @@ function modernTemplate(d) {
 
 function cardTemplate(d) {
   return `
-    <div class="cv-card" style="max-width: 800px; margin: 0 auto; border: 1px solid #ddd; border-radius: 24px; padding: 20px;">
+    <div style="max-width: 800px; margin: 0 auto; background: white; border-radius: 16px; padding: 2rem; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
       <div style="text-align: center;">
-        <h1>${d.firstName} ${d.lastName}</h1>
-        <h3>${d.jobTitle}</h3>
-        <p>${d.phone} | ${d.email} | ${d.address}</p>
+        <h1 style="color: #014656;">${d.firstName} ${d.lastName}</h1>
+        <p style="color: #00a2ad; font-size: 1.1rem;">${d.jobTitle}</p>
+        <p style="margin: 1rem 0;">${d.phone} | ${d.email} | ${d.address}</p>
       </div>
-      <div class="main" style="display: flex; gap: 30px; margin-top: 20px;">
+      <div style="display: flex; flex-wrap: wrap; gap: 2rem; margin-top: 1.5rem;">
         <div style="flex: 1;">
-          <h3>Summary</h3>
+          <h3 style="color: #014656;">Summary</h3>
           <p>${d.summary}</p>
-          <h3>Skills</h3>
+          <h3 style="color: #014656; margin-top: 1rem;">Skills</h3>
           <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
         </div>
         <div style="flex: 2;">
-          <h3>Experience</h3>
+          <h3 style="color: #014656;">Experience</h3>
           ${d.experience.map(exp => `
-            <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+            <div style="margin-bottom: 1rem;">
+              <strong>${exp.position}</strong> at ${exp.company} (${exp.start} – ${exp.end})<br>
+              ${exp.description}
+            </div>
           `).join('')}
-          <h3>Education</h3>
-          ${d.education.map(edu => `
-            <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
-          `).join('')}
+          <h3 style="color: #014656; margin-top: 1rem;">Education</h3>
+          ${d.education.map(edu => `<div><strong>${edu.degree}</strong>, ${edu.institution} (${edu.start} – ${edu.end})</div>`).join('')}
         </div>
       </div>
     </div>
@@ -294,34 +292,34 @@ function cardTemplate(d) {
 
 function classicTemplate(d) {
   return `
-    <div class="cv-classic" style="max-width: 800px; margin: 0 auto; display: flex; gap: 30px;">
-      <div class="left" style="background: #f4f4f4; padding: 20px; border-radius: 20px;">
-        <h3>Contact</h3>
+    <div style="max-width: 800px; margin: 0 auto; background: white; display: flex; flex-wrap: wrap; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.05);">
+      <div style="width: 35%; background: #f4f4f4; padding: 2rem; border-radius: 8px 0 0 8px;">
+        <h3 style="color: #014656;">Contact</h3>
         <p>${d.phone}<br>${d.email}<br>${d.address}</p>
-        <h3>Skills</h3>
-        <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
-        <h3>Languages</h3>
-        <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
+        <h3 style="color: #014656; margin-top: 1.5rem;">Skills</h3>
+        <ul style="list-style: none; padding-left: 0;">${d.skills.map(s => `<li>• ${s}</li>`).join('')}</ul>
+        <h3 style="color: #014656; margin-top: 1.5rem;">Languages</h3>
+        <ul style="list-style: none; padding-left: 0;">${d.languages.map(l => `<li>• ${l}</li>`).join('')}</ul>
       </div>
-      <div class="right">
-        <h1>${d.firstName} ${d.lastName}</h1>
-        <h3>${d.jobTitle}</h3>
-        <h3>Summary</h3>
+      <div style="width: 65%; padding: 2rem;">
+        <h1 style="font-size: 2rem; margin: 0 0 0.25rem; color: #014656;">${d.firstName} ${d.lastName}</h1>
+        <p style="color: #00a2ad; font-weight: 600; margin-bottom: 1.5rem;">${d.jobTitle}</p>
+        <h3 style="color: #014656;">Summary</h3>
         <p>${d.summary}</p>
-        <h3>Experience</h3>
+        <h3 style="color: #014656; margin-top: 1.5rem;">Experience</h3>
         ${d.experience.map(exp => `
-          <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
+          <div style="margin-bottom: 1rem;">
+            <strong>${exp.position}</strong> at ${exp.company} (${exp.start} – ${exp.end})<br>
+            ${exp.description}
+          </div>
         `).join('')}
-        <h3>Education</h3>
-        ${d.education.map(edu => `
-          <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
-        `).join('')}
+        <h3 style="color: #014656; margin-top: 1.5rem;">Education</h3>
+        ${d.education.map(edu => `<div><strong>${edu.degree}</strong>, ${edu.institution} (${edu.start} – ${edu.end})</div>`).join('')}
       </div>
     </div>
   `;
 }
 
-// Update CV preview
 function updateCVPreview() {
   const template = templateSelect.value;
   const data = {
@@ -354,7 +352,6 @@ function updateCVPreview() {
   cvPreview.innerHTML = html;
 }
 
-// PDF download
 async function downloadPDF() {
   const element = cvPreview;
   if (!element) return;
@@ -383,7 +380,6 @@ async function downloadPDF() {
   }
 }
 
-// Save resume to Supabase
 async function saveResumeToSupabase() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
@@ -419,25 +415,13 @@ async function saveResumeToSupabase() {
     alert('Failed to save resume. ' + error.message);
   } else {
     alert('Resume saved to your cloud profile!');
-    loadProfilePage(); // refresh if profile page is open
   }
 }
 
 // Attach resume builder events if elements exist
 if (firstName) {
-  firstName.addEventListener('input', updateCVPreview);
-  lastName.addEventListener('input', updateCVPreview);
-  jobTitle.addEventListener('input', updateCVPreview);
-  phone.addEventListener('input', updateCVPreview);
-  emailField.addEventListener('input', updateCVPreview);
-  address.addEventListener('input', updateCVPreview);
-  summary.addEventListener('input', updateCVPreview);
-  experience.addEventListener('input', updateCVPreview);
-  education.addEventListener('input', updateCVPreview);
-  skills.addEventListener('input', updateCVPreview);
-  languages.addEventListener('input', updateCVPreview);
-  awards.addEventListener('input', updateCVPreview);
-  references.addEventListener('input', updateCVPreview);
+  const inputs = [firstName, lastName, jobTitle, phone, emailField, address, summary, experience, education, skills, languages, awards, references];
+  inputs.forEach(input => input.addEventListener('input', updateCVPreview));
   templateSelect.addEventListener('change', updateCVPreview);
   downloadPdfBtn.addEventListener('click', downloadPDF);
   saveResumeBtn.addEventListener('click', saveResumeToSupabase);
@@ -539,7 +523,6 @@ async function loadProfilePage() {
   html += `<button id="logoutBtnProfile" class="btn-outline" style="margin-top:1rem; background:#dc3545; color:white;">Sign Out</button>`;
   profileContainer.innerHTML = html;
 
-  // Load resume handler
   document.querySelectorAll('.load-resume').forEach(btn => {
     btn.addEventListener('click', async () => {
       const resumeId = btn.getAttribute('data-id');
@@ -560,12 +543,11 @@ async function loadProfilePage() {
         references.value = resume.references;
         templateSelect.value = resume.template;
         updateCVPreview();
-        document.querySelector('[data-page="resume"]').click();
+        window.location.href = 'resume.html';
       }
     });
   });
 
-  // Delete resume handler
   document.querySelectorAll('.delete-resume').forEach(btn => {
     btn.addEventListener('click', async () => {
       const resumeId = btn.getAttribute('data-id');
@@ -580,13 +562,12 @@ async function loadProfilePage() {
   document.getElementById('logoutBtnProfile')?.addEventListener('click', () => handleLogout());
 }
 
-// Initial profile load if on profile page
-if (document.getElementById('profile-page') && document.getElementById('profile-page').classList.contains('active-page')) {
+if (document.getElementById('profileContainer')) {
   loadProfilePage();
 }
 
 // ==========================================
-// HUSTLER NOMINATION (WhatsApp)
+// HUSTLER NOMINATION
 // ==========================================
 const nominateBtn = document.getElementById('nominateBtn');
 if (nominateBtn) {
@@ -597,221 +578,4 @@ if (nominateBtn) {
   });
 }
 
-console.log('9to5 University – fully loaded with Supabase!');
-
-// ==================== RESUME TEMPLATES ====================
-
-function minimalTemplate(d) {
-  return `
-    <div class="cv-minimal" style="font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto;">
-      <div class="header">
-        <div><strong>${d.firstName} ${d.lastName}</strong><br>${d.jobTitle}</div>
-        <div>${d.phone} | ${d.email}<br>${d.address}</div>
-      </div>
-      <div class="main">
-        <div class="left">
-          <h3>Summary</h3>
-          <p>${d.summary}</p>
-          <h3>Skills</h3>
-          <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
-          <h3>Languages</h3>
-          <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
-        </div>
-        <div class="right">
-          <h3>Experience</h3>
-          ${d.experience.map(exp => `
-            <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
-          `).join('')}
-          <h3>Education</h3>
-          ${d.education.map(edu => `
-            <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
-          `).join('')}
-          <h3>Awards</h3>
-          ${d.awards.map(aw => `
-            <div><strong>${aw.title}</strong> (${aw.year})<br>${aw.description}</div>
-          `).join('')}
-        </div>
-      </div>
-      <hr>
-      <h3>References</h3>
-      ${d.references.map(ref => `
-        <div>${ref.name}, ${ref.company} – ${ref.phone} / ${ref.email}</div>
-      `).join('')}
-    </div>
-  `;
-}
-
-function sidebarTemplate(d) {
-  return `
-    <div class="cv-sidebar" style="display: flex; max-width: 800px; margin: 0 auto;">
-      <div class="left" style="background: #2f3b4c; color: white; padding: 20px; border-radius: 16px 0 0 16px;">
-        <h3>Contact</h3>
-        <p>${d.phone}<br>${d.email}<br>${d.address}</p>
-        <h3>Skills</h3>
-        <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
-        <h3>Languages</h3>
-        <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
-      </div>
-      <div class="right" style="padding: 20px;">
-        <h2>${d.firstName} ${d.lastName}</h2>
-        <h4>${d.jobTitle}</h4>
-        <h3>Summary</h3>
-        <p>${d.summary}</p>
-        <h3>Experience</h3>
-        ${d.experience.map(exp => `
-          <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
-        `).join('')}
-        <h3>Education</h3>
-        ${d.education.map(edu => `
-          <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
-        `).join('')}
-        <h3>References</h3>
-        ${d.references.map(ref => `
-          <div>${ref.name}, ${ref.company} – ${ref.phone} / ${ref.email}</div>
-        `).join('')}
-      </div>
-    </div>
-  `;
-}
-
-function elegantTemplate(d) {
-  return `
-    <div class="cv-elegant" style="max-width: 800px; margin: 0 auto; display: flex; gap: 30px;">
-      <div class="left" style="background: #fef5e8; padding: 20px; border-radius: 20px;">
-        <h3>Contact</h3>
-        <p>${d.phone}<br>${d.email}<br>${d.address}</p>
-        <h3>Skills</h3>
-        <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
-        <h3>Languages</h3>
-        <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
-      </div>
-      <div class="right">
-        <h1>${d.firstName} ${d.lastName}</h1>
-        <h3>${d.jobTitle}</h3>
-        <h3>Profile</h3>
-        <p>${d.summary}</p>
-        <h3>Experience</h3>
-        ${d.experience.map(exp => `
-          <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
-        `).join('')}
-        <h3>Education</h3>
-        ${d.education.map(edu => `
-          <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
-        `).join('')}
-      </div>
-    </div>
-  `;
-}
-
-function centeredTemplate(d) {
-  return `
-    <div class="cv-centered" style="text-align: center; max-width: 800px; margin: 0 auto;">
-      <h1>${d.firstName} ${d.lastName}</h1>
-      <h3>${d.jobTitle}</h3>
-      <p>${d.phone} | ${d.email} | ${d.address}</p>
-      <hr>
-      <h3>Summary</h3>
-      <p>${d.summary}</p>
-      <h3>Experience</h3>
-      ${d.experience.map(exp => `
-        <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
-      `).join('')}
-      <h3>Education</h3>
-      ${d.education.map(edu => `
-        <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
-      `).join('')}
-    </div>
-  `;
-}
-
-function modernTemplate(d) {
-  return `
-    <div class="cv-modern" style="max-width: 800px; margin: 0 auto;">
-      <div style="background: #014656; color: white; padding: 20px; border-radius: 20px 20px 0 0;">
-        <h1>${d.firstName} ${d.lastName}</h1>
-        <h3>${d.jobTitle}</h3>
-      </div>
-      <div class="columns" style="display: flex; gap: 30px; padding: 20px;">
-        <div style="flex: 1;">
-          <h3>Contact</h3>
-          <p>${d.phone}<br>${d.email}<br>${d.address}</p>
-          <h3>Skills</h3>
-          <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
-          <h3>Languages</h3>
-          <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
-        </div>
-        <div style="flex: 2;">
-          <h3>Summary</h3>
-          <p>${d.summary}</p>
-          <h3>Experience</h3>
-          ${d.experience.map(exp => `
-            <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
-          `).join('')}
-          <h3>Education</h3>
-          ${d.education.map(edu => `
-            <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
-          `).join('')}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function cardTemplate(d) {
-  return `
-    <div class="cv-card" style="max-width: 800px; margin: 0 auto; border: 1px solid #ddd; border-radius: 24px; padding: 20px;">
-      <div style="text-align: center;">
-        <h1>${d.firstName} ${d.lastName}</h1>
-        <h3>${d.jobTitle}</h3>
-        <p>${d.phone} | ${d.email} | ${d.address}</p>
-      </div>
-      <div class="main" style="display: flex; gap: 30px; margin-top: 20px;">
-        <div style="flex: 1;">
-          <h3>Summary</h3>
-          <p>${d.summary}</p>
-          <h3>Skills</h3>
-          <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
-        </div>
-        <div style="flex: 2;">
-          <h3>Experience</h3>
-          ${d.experience.map(exp => `
-            <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
-          `).join('')}
-          <h3>Education</h3>
-          ${d.education.map(edu => `
-            <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
-          `).join('')}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function classicTemplate(d) {
-  return `
-    <div class="cv-classic" style="max-width: 800px; margin: 0 auto; display: flex; gap: 30px;">
-      <div class="left" style="background: #f4f4f4; padding: 20px; border-radius: 20px;">
-        <h3>Contact</h3>
-        <p>${d.phone}<br>${d.email}<br>${d.address}</p>
-        <h3>Skills</h3>
-        <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
-        <h3>Languages</h3>
-        <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
-      </div>
-      <div class="right">
-        <h1>${d.firstName} ${d.lastName}</h1>
-        <h3>${d.jobTitle}</h3>
-        <h3>Summary</h3>
-        <p>${d.summary}</p>
-        <h3>Experience</h3>
-        ${d.experience.map(exp => `
-          <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} - ${exp.end})<br>${exp.description}</div>
-        `).join('')}
-        <h3>Education</h3>
-        ${d.education.map(edu => `
-          <div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start} - ${edu.end})</div>
-        `).join('')}
-      </div>
-    </div>
-  `;
-}
+console.log('9to5 University – fully loaded!');

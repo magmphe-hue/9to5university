@@ -815,3 +815,116 @@ h4 {
   color: transparent;
   text-shadow: none;
 }
+
+/* =========================
+   RESUME PREVIEW – A4 PROFESSIONAL STYLES
+========================= */
+.cv-preview {
+  background: white;
+  padding: 0;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px #e5e7eb, 0 10px 15px -3px rgba(0,0,0,0.1);
+  overflow: auto;
+}
+
+/* Force A4 width for accurate preview */
+.resume-a4 {
+  width: 210mm;
+  max-width: 100%;
+  margin: 0 auto;
+  background: white;
+  box-sizing: border-box;
+}
+
+/* Print styles for PDF */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #cvPreview, #cvPreview * {
+    visibility: visible;
+  }
+  #cvPreview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 210mm;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+  .resume-a4 {
+    margin: 0;
+    padding: 0;
+  }
+  .download-btn, .save-btn, .form-panel, .nav-bar, .top-bar, .main-header, .footer {
+    display: none;
+  }
+}
+
+/* Ensure content doesn't overflow */
+.resume-a4 * {
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.resume-a4 h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.resume-a4 h2 {
+  font-size: 1.2rem;
+  margin: 0.75rem 0 0.5rem;
+  border-bottom: 2px solid #00a2ad;
+  padding-bottom: 0.25rem;
+}
+
+.resume-a4 h3 {
+  font-size: 1rem;
+  margin: 0.5rem 0 0.25rem;
+  color: #014656;
+}
+
+.resume-a4 p, .resume-a4 li {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin-bottom: 0.25rem;
+}
+
+.resume-a4 ul {
+  padding-left: 1.25rem;
+  margin: 0.25rem 0;
+}
+
+.resume-a4 .contact-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  background: #f8fafc;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  font-size: 0.8rem;
+}
+
+.resume-a4 .two-column {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.resume-a4 .left-col {
+  flex: 1.2;
+}
+
+.resume-a4 .right-col {
+  flex: 0.8;
+}
+
+@media (max-width: 600px) {
+  .resume-a4 .two-column {
+    flex-direction: column;
+  }
+}

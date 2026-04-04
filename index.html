@@ -13,10 +13,20 @@
 </head>
 <body>
 
+<!-- MOVING RIBBON -->
+<div class="ribbon">
+  <div class="ribbon-content">
+    <span>✨ Click to Advertise ✨</span>
+    <span>✨ Click to Advertise ✨</span>
+    <span>✨ Click to Advertise ✨</span>
+  </div>
+</div>
+
 <div class="top-bar">
   <a href="https://www.facebook.com/profile.php?id=61579134208115" target="_blank" class="facebook-icon"><i class="fab fa-facebook-f"></i></a>
   <a href="https://wa.me/27794874559" target="_blank" class="whatsapp-icon"><i class="fab fa-whatsapp"></i></a>
   <a href="https://twitter.com/9to5University" target="_blank" class="twitter-icon"><i class="fab fa-twitter"></i></a>
+  <button id="darkModeToggle" class="dark-mode-btn"><i class="fas fa-moon"></i></button>
   <a href="profile.html" class="signin-icon"><i class="fas fa-user"></i></a>
 </div>
 
@@ -45,9 +55,9 @@
     <h1>Workplace Empowerment<br>for Every South African</h1>
     <p>9to5 University is a first‑of‑its‑kind public resource providing free professional tools, labour law guidance, entrepreneurial recognition, and a trusted partner network.</p>
     <div class="stat-grid">
-      <div class="stat-card"><div class="stat-number">500+</div><div>Resumes Created</div></div>
-      <div class="stat-card"><div class="stat-number">24/7</div><div>Resource Access</div></div>
-      <div class="stat-card"><div class="stat-number">R500+</div><div>Commission Opportunities</div></div>
+      <div class="stat-card"><div class="stat-number" data-target="500">0</div><div>Resumes Created</div></div>
+      <div class="stat-card"><div class="stat-number" data-target="24">0</div><div>Resource Access (hrs)</div></div>
+      <div class="stat-card"><div class="stat-number" data-target="500">0</div><div>Commission Opportunities (R)</div></div>
     </div>
     <div><a href="resume.html" class="btn-primary">Create Professional CV →</a><a href="rights.html" class="btn-outline" style="margin-left:1rem;">Know Your Rights</a></div>
   </div>
@@ -146,6 +156,8 @@
   </div>
   <div class="footer-copyright">© 2025 9to5 University — South Africa's Workplace Authority. Not an educational institution.</div>
 </footer>
+
+<button id="backToTop" class="back-to-top"><i class="fas fa-arrow-up"></i></button>
 
 <script src="script.js"></script>
 </body>

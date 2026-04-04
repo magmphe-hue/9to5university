@@ -39,30 +39,87 @@
   </div>
 </div>
 
-<!-- Resume builder content (full) -->
-<div class="resume-section">
-  <div class="section-header"><i class="fas fa-file-pdf"></i><h2>Premium Resume Builder</h2></div>
-  <div class="builder-grid">
-    <div class="form-panel">
-      <div class="template-selector"><label for="templateSelect">Choose Template</label><select id="templateSelect"><option value="minimal">Minimal</option><option value="sidebar">Sidebar</option><option value="elegant">Elegant</option><option value="centered">Centered</option><option value="modern">Modern</option><option value="card">Card</option><option value="classic">Classic</option></select></div>
-      <div class="form-group"><label>First Name</label><input type="text" id="firstName" value="Lorna"></div>
-      <div class="form-group"><label>Last Name</label><input type="text" id="lastName" value="Alvarado"></div>
-      <div class="form-group"><label>Job Title</label><input type="text" id="jobTitle" value="Marketing Manager"></div>
-      <div class="form-group"><label>Phone</label><input type="text" id="phone" value="123-456-7890"></div>
-      <div class="form-group"><label>Email</label><input type="email" id="email" value="hello@email.com"></div>
-      <div class="form-group"><label>Address</label><input type="text" id="address" value="123 Street, City"></div>
-      <div class="form-group"><label>Summary</label><textarea id="summary" rows="3">Marketing manager with 8+ years of experience in digital strategy and brand development. Proven track record of increasing engagement by 40%.</textarea></div>
-      <div class="form-group"><label>Experience (Position|Company|Location|Start|End|Description)</label><textarea id="experience" rows="4">Product Design Manager|Arowwai Industries|Any City|2020|2023|Led design strategy for 10+ products, increasing user satisfaction by 35%.&#10;Marketing Coordinator|Creative Studio|City|2018|2020|Coordinated campaigns across social media, boosting followers by 200%.</textarea></div>
-      <div class="form-group"><label>Education (Institution|Degree|Start|End)</label><textarea id="education" rows="2">Borcelle University|Bachelor of Business Management|2016|2020</textarea></div>
-      <div class="form-group"><label>Skills (comma separated)</label><input type="text" id="skills" value="Organized, Creativity, Teamwork, Leadership"></div>
-      <div class="form-group"><label>Languages (comma separated)</label><input type="text" id="languages" value="English, Spanish"></div>
-      <div class="form-group"><label>Awards (Title|Description|Year)</label><textarea id="awards" rows="2">Best Designer Award|Excellence in design|2016</textarea></div>
-      <div class="form-group"><label>References (Name|Company|Phone|Email)</label><textarea id="references" rows="2">John Doe|ABC Corp|+123456|john@email.com</textarea></div>
+<!-- NEW RESUME BUILDER SECTION -->
+<div class="resume-builder-wrapper">
+  <div class="resume-builder-container">
+    <!-- Left Panel: Form -->
+    <div class="builder-form-panel">
+      <div class="form-header">
+        <h2><i class="fas fa-file-alt"></i> Build Your Resume</h2>
+        <p>Fill in your details – the preview updates live</p>
+      </div>
+
+      <form id="resumeForm">
+        <!-- Personal Details -->
+        <div class="form-section">
+          <h3><i class="fas fa-user"></i> Personal Details</h3>
+          <div class="form-row">
+            <div class="form-group"><label>First Name</label><input type="text" id="firstName" value="Lorna"></div>
+            <div class="form-group"><label>Last Name</label><input type="text" id="lastName" value="Alvarado"></div>
+          </div>
+          <div class="form-group"><label>Job Title</label><input type="text" id="jobTitle" value="Marketing Manager"></div>
+          <div class="form-row">
+            <div class="form-group"><label>Phone</label><input type="text" id="phone" value="123-456-7890"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="email" value="hello@email.com"></div>
+          </div>
+          <div class="form-group"><label>Address</label><input type="text" id="address" value="123 Street, City"></div>
+        </div>
+
+        <!-- Summary -->
+        <div class="form-section">
+          <h3><i class="fas fa-align-left"></i> Professional Summary</h3>
+          <textarea id="summary" rows="3">Marketing manager with 8+ years of experience in digital strategy and brand development. Proven track record of increasing engagement by 40%.</textarea>
+        </div>
+
+        <!-- Experience -->
+        <div class="form-section">
+          <h3><i class="fas fa-briefcase"></i> Work Experience</h3>
+          <div class="form-hint">Format: Position|Company|Location|Start|End|Description (one per line)</div>
+          <textarea id="experience" rows="4">Product Design Manager|Arowwai Industries|Any City|2020|2023|Led design strategy for 10+ products, increasing user satisfaction by 35%.&#10;Marketing Coordinator|Creative Studio|City|2018|2020|Coordinated campaigns across social media, boosting followers by 200%.</textarea>
+        </div>
+
+        <!-- Education -->
+        <div class="form-section">
+          <h3><i class="fas fa-graduation-cap"></i> Education</h3>
+          <div class="form-hint">Format: Institution|Degree|Start|End (one per line)</div>
+          <textarea id="education" rows="2">Borcelle University|Bachelor of Business Management|2016|2020</textarea>
+        </div>
+
+        <!-- Skills & Languages -->
+        <div class="form-section">
+          <h3><i class="fas fa-code"></i> Skills & Languages</h3>
+          <div class="form-row">
+            <div class="form-group"><label>Skills (comma separated)</label><input type="text" id="skills" value="Organized, Creativity, Teamwork, Leadership"></div>
+            <div class="form-group"><label>Languages (comma separated)</label><input type="text" id="languages" value="English, Spanish"></div>
+          </div>
+        </div>
+
+        <!-- Awards -->
+        <div class="form-section">
+          <h3><i class="fas fa-trophy"></i> Awards</h3>
+          <div class="form-hint">Format: Title|Description|Year (one per line)</div>
+          <textarea id="awards" rows="2">Best Designer Award|Excellence in design|2016</textarea>
+        </div>
+
+        <!-- References -->
+        <div class="form-section">
+          <h3><i class="fas fa-address-card"></i> References</h3>
+          <div class="form-hint">Format: Name|Company|Phone|Email (one per line)</div>
+          <textarea id="references" rows="2">John Doe|ABC Corp|+123456|john@email.com</textarea>
+        </div>
+      </form>
     </div>
-    <div class="preview-panel">
+
+    <!-- Right Panel: Live Preview + Actions -->
+    <div class="builder-preview-panel">
+      <div class="preview-header">
+        <h3><i class="fas fa-eye"></i> Live Resume Preview</h3>
+        <div class="preview-actions">
+          <button id="downloadPdfBtn" class="btn-primary"><i class="fas fa-download"></i> Download PDF</button>
+          <button id="saveResumeBtn" class="btn-secondary"><i class="fas fa-save"></i> Save to Profile</button>
+        </div>
+      </div>
       <div id="cvPreview" class="cv-preview"></div>
-      <div class="download-btn"><button class="btn-primary" id="downloadPdfBtn"><i class="fas fa-download"></i> Download PDF (A4)</button></div>
-      <div class="download-btn"><button class="btn-primary" id="saveResumeBtn" style="background:var(--gold);"><i class="fas fa-save"></i> Save Resume to Profile</button></div>
     </div>
   </div>
 </div>

@@ -9,7 +9,6 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ==========================================
 // PAGE NAVIGATION (for multi-page site)
 // ==========================================
-// Not needed because we use separate HTML files; but we keep for any in-page links
 document.querySelectorAll('[data-page]').forEach(el => {
   el.addEventListener('click', (e) => {
     e.preventDefault();
@@ -20,7 +19,7 @@ document.querySelectorAll('[data-page]').forEach(el => {
 });
 
 // ==========================================
-// RESUME BUILDER (only if on resume.html)
+// RESUME BUILDER DOM ELEMENTS
 // ==========================================
 const firstName = document.getElementById('firstName');
 const lastName = document.getElementById('lastName');
@@ -40,6 +39,7 @@ const cvPreview = document.getElementById('cvPreview');
 const downloadPdfBtn = document.getElementById('downloadPdfBtn');
 const saveResumeBtn = document.getElementById('saveResumeBtn');
 
+// Helper functions
 function parseExperience(text) {
   return text.split('\n').filter(line => line.trim()).map(line => {
     const parts = line.split('|').map(p => p.trim());
@@ -97,231 +97,91 @@ function getLanguagesArray() {
   return languages.value.split(',').map(l => l.trim()).filter(l => l);
 }
 
-// ==================== PROFESSIONAL RESUME TEMPLATES ====================
-function minimalTemplate(d) {
+// ==================== PROFESSIONAL RESUME TEMPLATE (A4 OPTIMIZED) ====================
+function professionalTemplate(d) {
   return `
-    <div style="font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.05);">
-      <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border-bottom: 2px solid #00a2ad; padding-bottom: 1rem; margin-bottom: 1.5rem;">
-        <div>
-          <h1 style="font-size: 2rem; margin: 0; color: #014656;">${d.firstName} ${d.lastName}</h1>
-          <p style="font-size: 1.2rem; color: #00a2ad; margin: 0.25rem 0 0;">${d.jobTitle}</p>
-        </div>
-        <div style="text-align: right;">
-          <p style="margin: 0;">${d.phone}</p>
-          <p style="margin: 0;">${d.email}</p>
-          <p style="margin: 0;">${d.address}</p>
-        </div>
+    <div class="resume-a4" style="font-family: 'Montserrat', sans-serif; padding: 0.5rem 1rem;">
+      <!-- Header with name and title -->
+      <div style="text-align: center; margin-bottom: 1rem;">
+        <h1 style="font-size: 2rem; margin: 0; color: #014656;">${d.firstName} ${d.lastName}</h1>
+        <p style="font-size: 1.2rem; color: #00a2ad; font-weight: 500; margin: 0.25rem 0;">${d.jobTitle}</p>
       </div>
-      <div style="display: flex; flex-wrap: wrap; gap: 2rem;">
-        <div style="flex: 1.5;">
-          <h3 style="color: #014656; border-left: 4px solid #00a2ad; padding-left: 0.75rem; margin: 1rem 0 0.5rem;">Summary</h3>
-          <p>${d.summary}</p>
-          <h3 style="color: #014656; border-left: 4px solid #00a2ad; padding-left: 0.75rem; margin: 1rem 0 0.5rem;">Experience</h3>
+
+      <!-- Contact Bar -->
+      <div class="contact-info" style="display: flex; flex-wrap: wrap; justify-content: space-between; background: #f0f9fa; padding: 0.6rem; border-radius: 8px; margin-bottom: 1rem;">
+        <span><i class="fas fa-phone-alt"></i> ${d.phone}</span>
+        <span><i class="fas fa-envelope"></i> ${d.email}</span>
+        <span><i class="fas fa-map-marker-alt"></i> ${d.address}</span>
+      </div>
+
+      <!-- Two column layout -->
+      <div class="two-column" style="display: flex; gap: 1.5rem;">
+        <!-- Left column: Summary, Experience, Education -->
+        <div class="left-col" style="flex: 1.5;">
+          <!-- Summary -->
+          <h2 style="font-size: 1.2rem; border-bottom: 2px solid #00a2ad; padding-bottom: 0.25rem; margin: 0.5rem 0 0.5rem;">Professional Summary</h2>
+          <p style="margin-bottom: 1rem;">${d.summary}</p>
+
+          <!-- Experience -->
+          <h2 style="font-size: 1.2rem; border-bottom: 2px solid #00a2ad; padding-bottom: 0.25rem; margin: 0.5rem 0 0.5rem;">Work Experience</h2>
           ${d.experience.map(exp => `
-            <div style="margin-bottom: 1rem;">
-              <strong>${exp.position}</strong> at ${exp.company} (${exp.start} – ${exp.end})<br>
-              <span style="color: #666;">${exp.description}</span>
+            <div style="margin-bottom: 0.75rem;">
+              <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+                <strong>${exp.position}</strong>
+                <span style="color: #666;">${exp.start} – ${exp.end}</span>
+              </div>
+              <div><em>${exp.company}, ${exp.location}</em></div>
+              <p style="margin-top: 0.25rem;">${exp.description}</p>
             </div>
           `).join('')}
-          <h3 style="color: #014656; border-left: 4px solid #00a2ad; padding-left: 0.75rem; margin: 1rem 0 0.5rem;">Education</h3>
+
+          <!-- Education -->
+          <h2 style="font-size: 1.2rem; border-bottom: 2px solid #00a2ad; padding-bottom: 0.25rem; margin: 0.5rem 0 0.5rem;">Education</h2>
           ${d.education.map(edu => `
-            <div><strong>${edu.degree}</strong>, ${edu.institution} (${edu.start} – ${edu.end})</div>
-          `).join('')}
-        </div>
-        <div style="flex: 1;">
-          <h3 style="color: #014656; border-left: 4px solid #00a2ad; padding-left: 0.75rem; margin: 1rem 0 0.5rem;">Skills</h3>
-          <ul style="list-style: none; padding-left: 0;">${d.skills.map(s => `<li style="margin-bottom: 0.5rem;">✓ ${s}</li>`).join('')}</ul>
-          <h3 style="color: #014656; border-left: 4px solid #00a2ad; padding-left: 0.75rem; margin: 1rem 0 0.5rem;">Languages</h3>
-          <ul style="list-style: none; padding-left: 0;">${d.languages.map(l => `<li>• ${l}</li>`).join('')}</ul>
-          <h3 style="color: #014656; border-left: 4px solid #00a2ad; padding-left: 0.75rem; margin: 1rem 0 0.5rem;">Awards</h3>
-          ${d.awards.map(aw => `<div><strong>${aw.title}</strong> (${aw.year}) – ${aw.description}</div>`).join('')}
-        </div>
-      </div>
-      <hr style="margin: 1.5rem 0 1rem;">
-      <h3 style="color: #014656;">References</h3>
-      ${d.references.map(ref => `<div>${ref.name}, ${ref.company} – ${ref.phone} / ${ref.email}</div>`).join('')}
-    </div>
-  `;
-}
-
-function sidebarTemplate(d) {
-  return `
-    <div style="display: flex; flex-wrap: wrap; max-width: 800px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.05);">
-      <div style="background: #014656; color: white; width: 33%; padding: 2rem 1.5rem;">
-        <h3 style="color: #f6a801; margin-bottom: 1rem;">Contact</h3>
-        <p>${d.phone}<br>${d.email}<br>${d.address}</p>
-        <h3 style="color: #f6a801; margin-top: 2rem; margin-bottom: 1rem;">Skills</h3>
-        <ul style="list-style: none; padding-left: 0;">${d.skills.map(s => `<li>• ${s}</li>`).join('')}</ul>
-        <h3 style="color: #f6a801; margin-top: 2rem; margin-bottom: 1rem;">Languages</h3>
-        <ul style="list-style: none; padding-left: 0;">${d.languages.map(l => `<li>• ${l}</li>`).join('')}</ul>
-      </div>
-      <div style="width: 67%; padding: 2rem;">
-        <h1 style="font-size: 2rem; margin: 0 0 0.25rem; color: #014656;">${d.firstName} ${d.lastName}</h1>
-        <p style="color: #00a2ad; font-weight: 600; margin-bottom: 1.5rem;">${d.jobTitle}</p>
-        <h3 style="color: #014656;">Profile</h3>
-        <p>${d.summary}</p>
-        <h3 style="color: #014656; margin-top: 1.5rem;">Experience</h3>
-        ${d.experience.map(exp => `
-          <div style="margin-bottom: 1rem;">
-            <strong>${exp.position}</strong> at ${exp.company} (${exp.start} – ${exp.end})<br>
-            <span>${exp.description}</span>
-          </div>
-        `).join('')}
-        <h3 style="color: #014656; margin-top: 1.5rem;">Education</h3>
-        ${d.education.map(edu => `<div><strong>${edu.degree}</strong>, ${edu.institution} (${edu.start} – ${edu.end})</div>`).join('')}
-      </div>
-    </div>
-  `;
-}
-
-function elegantTemplate(d) {
-  return `
-    <div style="max-width: 800px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.05);">
-      <div style="background: #fef5e8; padding: 2rem; text-align: center;">
-        <h1 style="margin: 0; color: #014656;">${d.firstName} ${d.lastName}</h1>
-        <p style="color: #00a2ad; font-size: 1.2rem; margin: 0.5rem 0 0;">${d.jobTitle}</p>
-      </div>
-      <div style="display: flex; flex-wrap: wrap; gap: 2rem; padding: 2rem;">
-        <div style="flex: 1;">
-          <h3 style="color: #014656;">Contact</h3>
-          <p>${d.phone}<br>${d.email}<br>${d.address}</p>
-          <h3 style="color: #014656; margin-top: 1.5rem;">Skills</h3>
-          <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
-        </div>
-        <div style="flex: 2;">
-          <h3 style="color: #014656;">Profile</h3>
-          <p>${d.summary}</p>
-          <h3 style="color: #014656; margin-top: 1.5rem;">Experience</h3>
-          ${d.experience.map(exp => `
-            <div style="margin-bottom: 1rem;">
-              <strong>${exp.position}</strong> at ${exp.company} (${exp.start} – ${exp.end})<br>
-              ${exp.description}
+            <div style="margin-bottom: 0.5rem;">
+              <div><strong>${edu.degree}</strong> – ${edu.institution}</div>
+              <div style="color: #666;">${edu.start} – ${edu.end}</div>
             </div>
           `).join('')}
-          <h3 style="color: #014656; margin-top: 1.5rem;">Education</h3>
-          ${d.education.map(edu => `<div><strong>${edu.degree}</strong>, ${edu.institution} (${edu.start} – ${edu.end})</div>`).join('')}
+        </div>
+
+        <!-- Right column: Skills, Languages, Awards, References -->
+        <div class="right-col" style="flex: 1;">
+          <!-- Skills -->
+          <h2 style="font-size: 1.2rem; border-bottom: 2px solid #00a2ad; padding-bottom: 0.25rem; margin: 0.5rem 0 0.5rem;">Skills</h2>
+          <ul style="margin-bottom: 1rem;">
+            ${d.skills.map(s => `<li>${s}</li>`).join('')}
+          </ul>
+
+          <!-- Languages -->
+          <h2 style="font-size: 1.2rem; border-bottom: 2px solid #00a2ad; padding-bottom: 0.25rem; margin: 0.5rem 0 0.5rem;">Languages</h2>
+          <ul style="margin-bottom: 1rem;">
+            ${d.languages.map(l => `<li>${l}</li>`).join('')}
+          </ul>
+
+          <!-- Awards -->
+          ${d.awards.length ? `
+            <h2 style="font-size: 1.2rem; border-bottom: 2px solid #00a2ad; padding-bottom: 0.25rem; margin: 0.5rem 0 0.5rem;">Awards</h2>
+            <ul style="margin-bottom: 1rem;">
+              ${d.awards.map(aw => `<li><strong>${aw.title}</strong> (${aw.year}) – ${aw.description}</li>`).join('')}
+            </ul>
+          ` : ''}
+
+          <!-- References -->
+          ${d.references.length ? `
+            <h2 style="font-size: 1.2rem; border-bottom: 2px solid #00a2ad; padding-bottom: 0.25rem; margin: 0.5rem 0 0.5rem;">References</h2>
+            <ul style="margin-bottom: 1rem;">
+              ${d.references.map(ref => `<li>${ref.name}, ${ref.company}<br>${ref.phone} | ${ref.email}</li>`).join('')}
+            </ul>
+          ` : ''}
         </div>
       </div>
     </div>
   `;
 }
 
-function centeredTemplate(d) {
-  return `
-    <div style="max-width: 800px; margin: 0 auto; background: white; padding: 2rem; text-align: center; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.05);">
-      <h1 style="color: #014656; margin-bottom: 0.25rem;">${d.firstName} ${d.lastName}</h1>
-      <p style="color: #00a2ad; font-size: 1.2rem;">${d.jobTitle}</p>
-      <p style="margin: 1rem 0;">${d.phone} | ${d.email} | ${d.address}</p>
-      <hr style="margin: 1rem 0;">
-      <h3 style="color: #014656;">Summary</h3>
-      <p>${d.summary}</p>
-      <h3 style="color: #014656;">Experience</h3>
-      ${d.experience.map(exp => `
-        <div><strong>${exp.position}</strong> at ${exp.company} (${exp.start} – ${exp.end})<br>${exp.description}</div>
-      `).join('')}
-      <h3 style="color: #014656;">Education</h3>
-      ${d.education.map(edu => `<div><strong>${edu.degree}</strong>, ${edu.institution} (${edu.start} – ${edu.end})</div>`).join('')}
-    </div>
-  `;
-}
-
-function modernTemplate(d) {
-  return `
-    <div style="max-width: 800px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.05);">
-      <div style="background: #014656; color: white; padding: 2rem; border-radius: 8px 8px 0 0;">
-        <h1 style="margin: 0;">${d.firstName} ${d.lastName}</h1>
-        <p style="margin: 0.5rem 0 0; opacity: 0.9;">${d.jobTitle}</p>
-      </div>
-      <div style="display: flex; flex-wrap: wrap; gap: 2rem; padding: 2rem;">
-        <div style="flex: 1;">
-          <h3 style="color: #014656;">Contact</h3>
-          <p>${d.phone}<br>${d.email}<br>${d.address}</p>
-          <h3 style="color: #014656; margin-top: 1.5rem;">Skills</h3>
-          <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
-          <h3 style="color: #014656; margin-top: 1.5rem;">Languages</h3>
-          <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
-        </div>
-        <div style="flex: 2;">
-          <h3 style="color: #014656;">Summary</h3>
-          <p>${d.summary}</p>
-          <h3 style="color: #014656; margin-top: 1.5rem;">Experience</h3>
-          ${d.experience.map(exp => `
-            <div style="margin-bottom: 1rem;">
-              <strong>${exp.position}</strong> at ${exp.company} (${exp.start} – ${exp.end})<br>
-              ${exp.description}
-            </div>
-          `).join('')}
-          <h3 style="color: #014656; margin-top: 1.5rem;">Education</h3>
-          ${d.education.map(edu => `<div><strong>${edu.degree}</strong>, ${edu.institution} (${edu.start} – ${edu.end})</div>`).join('')}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function cardTemplate(d) {
-  return `
-    <div style="max-width: 800px; margin: 0 auto; background: white; border-radius: 16px; padding: 2rem; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-      <div style="text-align: center;">
-        <h1 style="color: #014656;">${d.firstName} ${d.lastName}</h1>
-        <p style="color: #00a2ad; font-size: 1.1rem;">${d.jobTitle}</p>
-        <p style="margin: 1rem 0;">${d.phone} | ${d.email} | ${d.address}</p>
-      </div>
-      <div style="display: flex; flex-wrap: wrap; gap: 2rem; margin-top: 1.5rem;">
-        <div style="flex: 1;">
-          <h3 style="color: #014656;">Summary</h3>
-          <p>${d.summary}</p>
-          <h3 style="color: #014656; margin-top: 1rem;">Skills</h3>
-          <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
-        </div>
-        <div style="flex: 2;">
-          <h3 style="color: #014656;">Experience</h3>
-          ${d.experience.map(exp => `
-            <div style="margin-bottom: 1rem;">
-              <strong>${exp.position}</strong> at ${exp.company} (${exp.start} – ${exp.end})<br>
-              ${exp.description}
-            </div>
-          `).join('')}
-          <h3 style="color: #014656; margin-top: 1rem;">Education</h3>
-          ${d.education.map(edu => `<div><strong>${edu.degree}</strong>, ${edu.institution} (${edu.start} – ${edu.end})</div>`).join('')}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function classicTemplate(d) {
-  return `
-    <div style="max-width: 800px; margin: 0 auto; background: white; display: flex; flex-wrap: wrap; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.05);">
-      <div style="width: 35%; background: #f4f4f4; padding: 2rem; border-radius: 8px 0 0 8px;">
-        <h3 style="color: #014656;">Contact</h3>
-        <p>${d.phone}<br>${d.email}<br>${d.address}</p>
-        <h3 style="color: #014656; margin-top: 1.5rem;">Skills</h3>
-        <ul style="list-style: none; padding-left: 0;">${d.skills.map(s => `<li>• ${s}</li>`).join('')}</ul>
-        <h3 style="color: #014656; margin-top: 1.5rem;">Languages</h3>
-        <ul style="list-style: none; padding-left: 0;">${d.languages.map(l => `<li>• ${l}</li>`).join('')}</ul>
-      </div>
-      <div style="width: 65%; padding: 2rem;">
-        <h1 style="font-size: 2rem; margin: 0 0 0.25rem; color: #014656;">${d.firstName} ${d.lastName}</h1>
-        <p style="color: #00a2ad; font-weight: 600; margin-bottom: 1.5rem;">${d.jobTitle}</p>
-        <h3 style="color: #014656;">Summary</h3>
-        <p>${d.summary}</p>
-        <h3 style="color: #014656; margin-top: 1.5rem;">Experience</h3>
-        ${d.experience.map(exp => `
-          <div style="margin-bottom: 1rem;">
-            <strong>${exp.position}</strong> at ${exp.company} (${exp.start} – ${exp.end})<br>
-            ${exp.description}
-          </div>
-        `).join('')}
-        <h3 style="color: #014656; margin-top: 1.5rem;">Education</h3>
-        ${d.education.map(edu => `<div><strong>${edu.degree}</strong>, ${edu.institution} (${edu.start} – ${edu.end})</div>`).join('')}
-      </div>
-    </div>
-  `;
-}
-
+// Update CV preview
 function updateCVPreview() {
-  const template = templateSelect.value;
   const data = {
     firstName: firstName.value,
     lastName: lastName.value,
@@ -337,21 +197,10 @@ function updateCVPreview() {
     awards: parseAwards(awards.value),
     references: parseReferences(references.value)
   };
-
-  let html = '';
-  switch (template) {
-    case 'minimal': html = minimalTemplate(data); break;
-    case 'sidebar': html = sidebarTemplate(data); break;
-    case 'elegant': html = elegantTemplate(data); break;
-    case 'centered': html = centeredTemplate(data); break;
-    case 'modern': html = modernTemplate(data); break;
-    case 'card': html = cardTemplate(data); break;
-    case 'classic': html = classicTemplate(data); break;
-    default: html = minimalTemplate(data);
-  }
-  cvPreview.innerHTML = html;
+  cvPreview.innerHTML = professionalTemplate(data);
 }
 
+// PDF download
 async function downloadPDF() {
   const element = cvPreview;
   if (!element) return;
@@ -380,6 +229,7 @@ async function downloadPDF() {
   }
 }
 
+// Save resume to Supabase
 async function saveResumeToSupabase() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
@@ -422,14 +272,14 @@ async function saveResumeToSupabase() {
 if (firstName) {
   const inputs = [firstName, lastName, jobTitle, phone, emailField, address, summary, experience, education, skills, languages, awards, references];
   inputs.forEach(input => input.addEventListener('input', updateCVPreview));
-  templateSelect.addEventListener('change', updateCVPreview);
-  downloadPdfBtn.addEventListener('click', downloadPDF);
-  saveResumeBtn.addEventListener('click', saveResumeToSupabase);
+  if (templateSelect) templateSelect.addEventListener('change', updateCVPreview);
+  if (downloadPdfBtn) downloadPdfBtn.addEventListener('click', downloadPDF);
+  if (saveResumeBtn) saveResumeBtn.addEventListener('click', saveResumeToSupabase);
   updateCVPreview();
 }
 
 // ==========================================
-// PROFILE PAGE
+// PROFILE PAGE FUNCTIONS (unchanged)
 // ==========================================
 async function renderAuthForm() {
   const profileContainer = document.getElementById('profileContainer');
@@ -444,14 +294,15 @@ async function renderAuthForm() {
       <button id="logoutBtn" class="btn-outline" style="margin-top:1rem; background:#dc3545; color:white;">Sign Out</button>
     </div>
   `;
-  document.getElementById('loginBtn').addEventListener('click', () => handleLogin());
-  document.getElementById('signupBtn').addEventListener('click', () => handleSignup());
-  document.getElementById('logoutBtn').addEventListener('click', () => handleLogout());
+  document.getElementById('loginBtn')?.addEventListener('click', () => handleLogin());
+  document.getElementById('signupBtn')?.addEventListener('click', () => handleSignup());
+  document.getElementById('logoutBtn')?.addEventListener('click', () => handleLogout());
 }
 
 async function handleLogin() {
-  const email = document.getElementById('authEmail').value;
-  const password = document.getElementById('authPassword').value;
+  const email = document.getElementById('authEmail')?.value;
+  const password = document.getElementById('authPassword')?.value;
+  if (!email || !password) return;
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) alert('Login failed: ' + error.message);
   else {
@@ -461,8 +312,9 @@ async function handleLogin() {
 }
 
 async function handleSignup() {
-  const email = document.getElementById('authEmail').value;
-  const password = document.getElementById('authPassword').value;
+  const email = document.getElementById('authEmail')?.value;
+  const password = document.getElementById('authPassword')?.value;
+  if (!email || !password) return;
   const { error } = await supabase.auth.signUp({ email, password });
   if (error) alert('Signup failed: ' + error.message);
   else alert('Account created! You can now sign in.');
@@ -562,6 +414,7 @@ async function loadProfilePage() {
   document.getElementById('logoutBtnProfile')?.addEventListener('click', () => handleLogout());
 }
 
+// Initialize profile page if on profile.html
 if (document.getElementById('profileContainer')) {
   loadProfilePage();
 }
@@ -578,4 +431,4 @@ if (nominateBtn) {
   });
 }
 
-console.log('9to5 University – fully loaded!');
+console.log('9to5 University – fully loaded with professional resume builder!');

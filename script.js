@@ -30,12 +30,12 @@ if (backBtn) {
 }
 
 // ==========================================
-// RIBBON CLICK (ADVERTISING)
+// RIBBON CLICK – WhatsApp Chat with Admin
 // ==========================================
 const ribbon = document.querySelector('.ribbon');
 if (ribbon) {
   ribbon.addEventListener('click', () => {
-    window.open('https://wa.me/27794874559?text=I%20want%20to%20advertise%20on%209to5%20University', '_blank');
+    window.open('https://wa.me/27794874559?text=Hello%2C%20I%20want%20to%20advertise%20on%209to5%20University', '_blank');
   });
 }
 
@@ -61,7 +61,7 @@ function animateStats() {
 if (document.querySelector('.stat-number')) animateStats();
 
 // ==========================================
-// RESUME BUILDER (only if elements exist)
+// RESUME BUILDER – FIXED PREVIEW & DOWNLOAD
 // ==========================================
 const firstName = document.getElementById('firstName');
 const lastName = document.getElementById('lastName');
@@ -80,25 +80,90 @@ const cvPreview = document.getElementById('cvPreview');
 const downloadBtn = document.getElementById('downloadPdfBtn');
 const saveBtn = document.getElementById('saveResumeBtn');
 
-function parseExperience(t) { return t.split('\n').filter(l=>l.trim()).map(l=>{const p=l.split('|').map(v=>v.trim()); return {position:p[0]||'',company:p[1]||'',location:p[2]||'',start:p[3]||'',end:p[4]||'',description:p[5]||''};}); }
-function parseEducation(t) { return t.split('\n').filter(l=>l.trim()).map(l=>{const p=l.split('|').map(v=>v.trim()); return {institution:p[0]||'',degree:p[1]||'',start:p[2]||'',end:p[3]||''};}); }
-function parseAwards(t) { return t.split('\n').filter(l=>l.trim()).map(l=>{const p=l.split('|').map(v=>v.trim()); return {title:p[0]||'',description:p[1]||'',year:p[2]||''};}); }
-function parseReferences(t) { return t.split('\n').filter(l=>l.trim()).map(l=>{const p=l.split('|').map(v=>v.trim()); return {name:p[0]||'',company:p[1]||'',phone:p[2]||'',email:p[3]||''};}); }
-function getSkillsArray() { return skills.value.split(',').map(s=>s.trim()).filter(s=>s); }
-function getLanguagesArray() { return languages.value.split(',').map(l=>l.trim()).filter(l=>l); }
+// Helper parsers
+function parseExperience(t) {
+  return t.split('\n').filter(l => l.trim()).map(l => {
+    const p = l.split('|').map(v => v.trim());
+    return { position: p[0] || '', company: p[1] || '', location: p[2] || '', start: p[3] || '', end: p[4] || '', description: p[5] || '' };
+  });
+}
+function parseEducation(t) {
+  return t.split('\n').filter(l => l.trim()).map(l => {
+    const p = l.split('|').map(v => v.trim());
+    return { institution: p[0] || '', degree: p[1] || '', start: p[2] || '', end: p[3] || '' };
+  });
+}
+function parseAwards(t) {
+  return t.split('\n').filter(l => l.trim()).map(l => {
+    const p = l.split('|').map(v => v.trim());
+    return { title: p[0] || '', description: p[1] || '', year: p[2] || '' };
+  });
+}
+function parseReferences(t) {
+  return t.split('\n').filter(l => l.trim()).map(l => {
+    const p = l.split('|').map(v => v.trim());
+    return { name: p[0] || '', company: p[1] || '', phone: p[2] || '', email: p[3] || '' };
+  });
+}
+function getSkillsArray() { return skills.value.split(',').map(s => s.trim()).filter(s => s); }
+function getLanguagesArray() { return languages.value.split(',').map(l => l.trim()).filter(l => l); }
 
+// Professional Resume Template
 function professionalTemplate(d) {
-  return `<div class="resume-a4" style="font-family:'Montserrat',sans-serif;padding:1rem;"><div style="text-align:center;"><h1 style="font-size:2rem;color:#014656;">${d.firstName} ${d.lastName}</h1><p style="font-size:1.2rem;color:#00a2ad;">${d.jobTitle}</p></div><div class="contact-info" style="display:flex;flex-wrap:wrap;justify-content:space-between;background:#f0f9fa;padding:0.6rem;border-radius:8px;"><span><i class="fas fa-phone"></i> ${d.phone}</span><span><i class="fas fa-envelope"></i> ${d.email}</span><span><i class="fas fa-map-marker-alt"></i> ${d.address}</span></div><div style="display:flex;gap:1.5rem;margin-top:1rem;"><div style="flex:1.5;"><h2 style="border-bottom:2px solid #00a2ad;">Professional Summary</h2><p>${d.summary}</p><h2>Work Experience</h2>${d.experience.map(exp=>`<div><strong>${exp.position}</strong> at ${exp.company} (${exp.start}–${exp.end})<br><em>${exp.location}</em><br>${exp.description}</div>`).join('')}<h2>Education</h2>${d.education.map(edu=>`<div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start}–${edu.end})</div>`).join('')}</div><div style="flex:1;"><h2>Skills</h2><ul>${d.skills.map(s=>`<li>${s}</li>`).join('')}</ul><h2>Languages</h2><ul>${d.languages.map(l=>`<li>${l}</li>`).join('')}</ul>${d.awards.length?`<h2>Awards</h2><ul>${d.awards.map(aw=>`<li><strong>${aw.title}</strong> (${aw.year}) – ${aw.description}</li>`).join('')}</ul>`:''}${d.references.length?`<h2>References</h2><ul>${d.references.map(ref=>`<li>${ref.name}, ${ref.company}<br>${ref.phone} | ${ref.email}</li>`).join('')}</ul>`:''}</div></div></div>`;
+  return `
+    <div class="resume-a4" style="font-family:'Chivo',sans-serif;padding:1rem;background:white;width:210mm;margin:0 auto;">
+      <div style="text-align:center;margin-bottom:1rem;">
+        <h1 style="font-family:'Rubik Mono One',monospace;font-size:1.8rem;color:#014656;">${d.firstName} ${d.lastName}</h1>
+        <p style="font-size:1rem;color:#00a2ad;">${d.jobTitle}</p>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;background:#f0f9fa;padding:0.6rem;border-radius:8px;margin-bottom:1rem;">
+        <span><i class="fas fa-phone"></i> ${d.phone}</span>
+        <span><i class="fas fa-envelope"></i> ${d.email}</span>
+        <span><i class="fas fa-map-marker-alt"></i> ${d.address}</span>
+      </div>
+      <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+        <div style="flex:1.5;">
+          <h2 style="font-family:'Rubik Mono One',monospace;font-size:1.2rem;border-bottom:2px solid #00a2ad;">Professional Summary</h2>
+          <p>${d.summary}</p>
+          <h2 style="font-family:'Rubik Mono One',monospace;font-size:1.2rem;border-bottom:2px solid #00a2ad;">Work Experience</h2>
+          ${d.experience.map(exp => `
+            <div style="margin-bottom:0.75rem;">
+              <strong>${exp.position}</strong> at ${exp.company} (${exp.start}–${exp.end})<br>
+              <em>${exp.location}</em><br>${exp.description}
+            </div>
+          `).join('')}
+          <h2 style="font-family:'Rubik Mono One',monospace;font-size:1.2rem;border-bottom:2px solid #00a2ad;">Education</h2>
+          ${d.education.map(edu => `<div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start}–${edu.end})</div>`).join('')}
+        </div>
+        <div style="flex:1;">
+          <h2 style="font-family:'Rubik Mono One',monospace;font-size:1.2rem;border-bottom:2px solid #00a2ad;">Skills</h2>
+          <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+          <h2 style="font-family:'Rubik Mono One',monospace;font-size:1.2rem;border-bottom:2px solid #00a2ad;">Languages</h2>
+          <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
+          ${d.awards.length ? `<h2 style="font-family:'Rubik Mono One',monospace;font-size:1.2rem;border-bottom:2px solid #00a2ad;">Awards</h2><ul>${d.awards.map(aw => `<li><strong>${aw.title}</strong> (${aw.year}) – ${aw.description}</li>`).join('')}</ul>` : ''}
+          ${d.references.length ? `<h2 style="font-family:'Rubik Mono One',monospace;font-size:1.2rem;border-bottom:2px solid #00a2ad;">References</h2><ul>${d.references.map(ref => `<li>${ref.name}, ${ref.company}<br>${ref.phone} | ${ref.email}</li>`).join('')}</ul>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function updatePreview() {
   if (!cvPreview) return;
   const data = {
-    firstName: firstName?.value || '', lastName: lastName?.value || '', jobTitle: jobTitle?.value || '',
-    phone: phone?.value || '', email: emailField?.value || '', address: address?.value || '',
-    summary: summary?.value || '', experience: parseExperience(experience?.value || ''),
-    education: parseEducation(education?.value || ''), skills: getSkillsArray(), languages: getLanguagesArray(),
-    awards: parseAwards(awards?.value || ''), references: parseReferences(references?.value || '')
+    firstName: firstName?.value || '',
+    lastName: lastName?.value || '',
+    jobTitle: jobTitle?.value || '',
+    phone: phone?.value || '',
+    email: emailField?.value || '',
+    address: address?.value || '',
+    summary: summary?.value || '',
+    experience: parseExperience(experience?.value || ''),
+    education: parseEducation(education?.value || ''),
+    skills: getSkillsArray(),
+    languages: getLanguagesArray(),
+    awards: parseAwards(awards?.value || ''),
+    references: parseReferences(references?.value || '')
   };
   cvPreview.innerHTML = professionalTemplate(data);
 }
@@ -107,33 +172,57 @@ async function downloadPDF() {
   if (!cvPreview) return alert('Preview not ready');
   try {
     const element = cvPreview;
-    const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#ffffff', logging: false });
+    // Force a short delay to ensure all fonts/styles are applied
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      backgroundColor: '#ffffff',
+      logging: false,
+      useCORS: true,
+      allowTaint: false
+    });
     const imgData = canvas.toDataURL('image/png');
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgWidth = 210;
+    const imgWidth = 210; // A4 width in mm
+    const pageHeight = 297;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    let heightLeft = imgHeight, position = 0;
+    let heightLeft = imgHeight;
+    let position = 0;
     pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= 297;
+    heightLeft -= pageHeight;
     while (heightLeft > 0) {
       position = heightLeft - imgHeight;
       pdf.addPage();
       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= 297;
+      heightLeft -= pageHeight;
     }
     pdf.save('resume.pdf');
-  } catch (err) { alert('PDF generation failed. Try again.'); }
+  } catch (err) {
+    console.error('PDF error:', err);
+    alert('PDF generation failed. Please try again.');
+  }
 }
 
 async function saveResume() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return alert('Please sign in on the Profile page first.');
   const resumeData = {
-    user_id: user.id, first_name: firstName.value, last_name: lastName.value, job_title: jobTitle.value,
-    phone: phone.value, email: emailField.value, address: address.value, summary: summary.value,
-    experience: experience.value, education: education.value, skills: skills.value, languages: languages.value,
-    awards: awards.value, references: references.value, created_at: new Date().toISOString()
+    user_id: user.id,
+    first_name: firstName.value,
+    last_name: lastName.value,
+    job_title: jobTitle.value,
+    phone: phone.value,
+    email: emailField.value,
+    address: address.value,
+    summary: summary.value,
+    experience: experience.value,
+    education: education.value,
+    skills: skills.value,
+    languages: languages.value,
+    awards: awards.value,
+    references: references.value,
+    created_at: new Date().toISOString()
   };
   const { error } = await supabase.from('resumes').insert([resumeData]);
   if (error) alert('Save failed: ' + error.message);
@@ -141,7 +230,8 @@ async function saveResume() {
 }
 
 if (firstName) {
-  [firstName, lastName, jobTitle, phone, emailField, address, summary, experience, education, skills, languages, awards, references].forEach(inp => inp?.addEventListener('input', updatePreview));
+  const inputs = [firstName, lastName, jobTitle, phone, emailField, address, summary, experience, education, skills, languages, awards, references];
+  inputs.forEach(inp => inp?.addEventListener('input', updatePreview));
   if (downloadBtn) downloadBtn.addEventListener('click', downloadPDF);
   if (saveBtn) saveBtn.addEventListener('click', saveResume);
   updatePreview();
@@ -204,4 +294,4 @@ document.getElementById('nominateBtn')?.addEventListener('click', (e) => {
   window.open('https://wa.me/27794874559?text=I%20want%20to%20nominate%20someone%20for%20Hustler%20of%20the%20Month', '_blank');
 });
 
-console.log('9to5 University – fully loaded!');
+console.log('9to5 University – fully loaded with fixed resume builder!');

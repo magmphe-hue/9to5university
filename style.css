@@ -1,867 +1,328 @@
-/* =========================
-   RESET & BASE
-========================= */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  max-width: 100%;
-}
-
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-  font-family: 'Chivo', sans-serif;
-  background: #f9f7f6;
-  color: #1e293b;
-  line-height: 1.6;
-  scroll-behavior: smooth;
-  font-size: 14px;
-}
-
-/* Google Fonts Imports */
-@import url('https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Chivo:wght@300;400;500;600;700&display=swap');
-
-/* =========================
-   VARIABLES
-========================= */
-:root {
-  --primary: #014656;
-  --primary-dark: #013544;
-  --accent: #00a2ad;
-  --gold: #f6a801;
-  --white: #ffffff;
-  --text-dark: #1e293b;
-  --text-light: #475569;
-  --gray-border: #e2e8f0;
-  --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
-}
-
-/* =========================
-   TYPOGRAPHY – New Fonts
-========================= */
-h1, h2, h3, h4, h5, h6,
-.section-header h2,
-.founder-name,
-.hero-card h3,
-.chores-header h3,
-.feature-header span,
-.partner-badge,
-.empty-store-content h2,
-.preview-header h3,
-.form-header h2,
-.profile-container h2,
-.content-page h2,
-.content-page h3,
-.content-page h4,
-.report-links h4,
-.footer-col h4,
-.stat-number {
-  font-family: 'Rubik Mono One', monospace;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  color: var(--primary);
-  margin-bottom: 0.75rem;
-  line-height: 1.3;
-}
-
-/* Heading sizes (slightly reduced for mono spaced font) */
-h1 { font-size: 1.7rem; }
-h2 { font-size: 1.4rem; }
-h3 { font-size: 1.2rem; }
-h4 { font-size: 1rem; }
-.section-header h2 { font-size: 1.4rem; }
-.founder-name { font-size: 1.5rem; }
-
-/* Body text – Chivo */
-body, p, li, a, button, input, textarea, select,
-.btn-primary, .btn-outline, .btn-secondary,
-.nav-menu a, .top-bar a, .footer a, .footer p,
-.contact-link, .stat-card div, .service-card p,
-.chore-item p, .brand-tag, .stats-row, .social-btn,
-.order-btn, .contact-link, .store-notice, .store-placeholder,
-.form-group label, .form-hint, .cv-preview, .saved-resume-item,
-.auth-form input, .city-list span, .report-links p {
-  font-family: 'Chivo', sans-serif;
-  font-weight: 400;
-}
-
-/* Adjust specific elements for better readability */
-.nav-menu a {
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.5px;
-}
-
-.btn-primary, .btn-outline, button {
-  font-weight: 600;
-  font-family: 'Chivo', sans-serif;
-}
-
-p, li {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: var(--text-dark);
-}
-
-/* =========================
-   LAYOUT CONTAINERS – Spacious
-========================= */
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem 2rem;
-}
-
-.section-padding {
-  padding: 3rem 5%;
-}
-
-/* =========================
-   FLEX & GRID
-========================= */
-.flex {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  align-items: center;
-}
-
-.grid {
-  display: grid;
-  gap: 2rem;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-}
-
-/* =========================
-   BUTTONS
-========================= */
-.btn-primary, .btn-outline, button {
-  display: inline-block;
-  padding: 0.7rem 1.8rem;
-  border-radius: 40px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-  font-size: 0.85rem;
-  letter-spacing: 0.3px;
-}
-
-.btn-primary, button {
-  background: var(--accent);
-  color: white;
-  box-shadow: var(--shadow-sm);
-}
-.btn-primary:hover, button:hover {
-  background: var(--gold);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.btn-outline {
-  background: transparent;
-  border: 2px solid var(--accent);
-  color: var(--accent);
-}
-.btn-outline:hover {
-  background: var(--accent);
-  color: white;
-}
-
-.btn-secondary {
-  background: #f1f5f9;
-  color: var(--primary);
-  border: 1px solid #cbd5e1;
-}
-.btn-secondary:hover {
-  background: #e2e8f0;
-}
-
-/* =========================
-   RIBBON
-========================= */
-.ribbon {
-  background: linear-gradient(90deg, #f6a801, #fdd65d);
-  color: #014656;
-  padding: 0.3rem 0;
-  overflow: hidden;
-  white-space: nowrap;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.75rem;
-  font-family: 'Chivo', sans-serif;
-}
-.ribbon-content {
-  display: inline-block;
-  animation: scrollLeft 25s linear infinite;
-}
-.ribbon-content span {
-  display: inline-block;
-  padding: 0 2rem;
-}
-@keyframes scrollLeft {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-/* =========================
-   TOP BAR & HEADER
-========================= */
-.top-bar {
-  background: var(--primary);
-  color: white;
-  padding: 0.4rem 5%;
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.top-bar a {
-  color: white;
-  font-size: 0.8rem;
-}
-
-.social-icon, .dark-mode-btn, .signin-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-
-.whatsapp-icon { background: #25D366; }
-.facebook-icon { background: #1877f2; }
-.twitter-icon { background: #1DA1F2; }
-.signin-icon { border: 1px solid white; background: transparent; }
-
-.dark-mode-btn {
-  background: transparent;
-  border: 1px solid white;
-  color: white;
-  width: auto;
-  padding: 0 0.8rem;
-  border-radius: 30px;
-  font-size: 0.7rem;
-}
-
-.main-header {
-  background: var(--white);
-  padding: 1.5rem 5%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  border-bottom: 1px solid var(--gray-border);
-}
-
-.logo-link img {
-  max-height: 260px;
-  width: auto;
-}
-
-.crest-right {
-  text-align: right;
-  font-size: 0.7rem;
-  color: #6b6a5f;
-  border-left: 2px solid var(--accent);
-  padding-left: 1rem;
-}
-.crest-right span {
-  font-weight: 700;
-  color: var(--primary);
-  font-size: 0.8rem;
-  font-family: 'Rubik Mono One', monospace;
-}
-
-/* =========================
-   NAVIGATION
-========================= */
-.nav-bar {
-  background: var(--white);
-  padding: 0.5rem 5%;
-  border-bottom: 1px solid var(--gray-border);
-}
-
-.nav-menu {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  flex-wrap: wrap;
-}
-
-.nav-menu a {
-  color: var(--text-dark);
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.5px;
-  padding-bottom: 4px;
-  border-bottom: 2px solid transparent;
-}
-.nav-menu a:hover, .nav-menu a.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-}
-
-/* =========================
-   HERO SECTION
-========================= */
-.hero {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  color: white;
-  padding: 3rem 5%;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3rem;
-  justify-content: space-between;
-}
-
-.hero-text {
-  flex: 2;
-  min-width: 280px;
-}
-
-.hero-text h1 {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
-  color: white;
-}
-
-.hero-text p {
-  font-size: 0.9rem;
-  margin-bottom: 1.5rem;
-  border-left: 3px solid var(--gold);
-  padding-left: 1rem;
-  color: rgba(255,255,255,0.9);
-}
-
-.stat-grid {
-  display: flex;
-  gap: 1.5rem;
-  margin: 1.5rem 0;
-  flex-wrap: wrap;
-}
-
-.stat-card {
-  background: rgba(255,255,255,0.1);
-  padding: 0.8rem 1.2rem;
-  border-radius: 30px;
-  text-align: center;
-  flex: 1;
-  min-width: 100px;
-}
-
-.stat-number {
-  font-size: 1.6rem;
-  font-weight: 400;
-  font-family: 'Rubik Mono One', monospace;
-  color: white;
-}
-
-.hero-card {
-  flex: 1;
-  background: rgba(255,255,255,0.08);
-  border-radius: 24px;
-  padding: 1.5rem;
-  backdrop-filter: blur(8px);
-  min-width: 260px;
-}
-.hero-card h3 {
-  color: white;
-}
-
-/* =========================
-   SECTION HEADERS
-========================= */
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 2rem 5% 1.5rem;
-}
-
-.section-header i {
-  font-size: 1.5rem;
-  color: var(--accent);
-}
-
-.section-header h2 {
-  font-size: 1.4rem;
-  margin: 0;
-}
-
-/* =========================
-   CARDS
-========================= */
-.card-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  justify-content: center;
-  padding: 0 5% 2rem;
-}
-
-.service-card {
-  background: var(--white);
-  border-radius: 20px;
-  padding: 1.8rem;
-  flex: 1 1 300px;
-  max-width: 340px;
-  border: 1px solid var(--gray-border);
-  transition: all 0.3s;
-  box-shadow: var(--shadow-sm);
-}
-
-.service-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--accent);
-  box-shadow: var(--shadow-lg);
-}
-
-.service-icon {
-  font-size: 2rem;
-  color: var(--accent);
-  margin-bottom: 1rem;
-}
-
-.chores-card, .feature-card, .partner-card {
-  background: var(--white);
-  border-radius: 24px;
-  border: 1px solid var(--gray-border);
-  margin: 2rem 5%;
-  overflow: hidden;
-}
-
-.chores-header, .feature-header {
-  background: #fef7e6;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.chores-content {
-  padding: 2rem;
-}
-
-.chores-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  justify-content: center;
-}
-
-.chore-item {
-  flex: 1;
-  min-width: 260px;
-  background: #fef7e6;
-  border-radius: 20px;
-  padding: 1.5rem;
-  text-align: center;
-}
-
-.feature-content {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  padding: 2rem;
-}
-
-.feature-image-container {
-  flex: 0 0 180px;
-}
-
-.founder-name {
-  font-size: 1.5rem;
-  margin-bottom: 0.3rem;
-}
-
-.order-container {
-  flex: 0 0 180px;
-  background: #fef7e6;
-  border-radius: 20px;
-  padding: 1rem;
-  text-align: center;
-}
-
-.partners-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  margin: 2rem 5%;
-}
-
-.partner-card {
-  flex: 1;
-  margin: 0;
-  padding: 1.8rem;
-}
-
-.partner-logo {
-  height: 60px;
-}
-
-.contact-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  margin: 1.2rem 0;
-}
-
-.contact-link {
-  background: #f8fafc;
-  padding: 0.4rem 1rem;
-  border-radius: 30px;
-  font-size: 0.7rem;
-}
-
-.empty-store-section {
-  background: #0a0f1c;
-  margin: 2rem 5%;
-  border-radius: 32px;
-  padding: 2rem;
-  text-align: center;
-}
-
-.empty-store-content i {
-  font-size: 2.5rem;
-}
-.empty-store-content h2 {
-  font-size: 1.6rem;
-  color: white;
-}
-.empty-store-content p {
-  color: #cbd5e1;
-}
-
-/* =========================
-   RESUME BUILDER
-========================= */
-.resume-builder-wrapper {
-  padding: 2rem 5%;
-  background: #f1f5f9;
-}
-
-.resume-builder-container {
-  display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.builder-form-panel, .builder-preview-panel {
-  background: white;
-  border-radius: 24px;
-  padding: 1.8rem;
-  box-shadow: var(--shadow-md);
-}
-
-.form-section {
-  margin-bottom: 1.8rem;
-  padding: 1rem;
-  background: #f8fafc;
-  border-radius: 16px;
-}
-
-.form-section h3 {
-  font-size: 1rem;
-  margin-bottom: 1rem;
-  font-family: 'Rubik Mono One', monospace;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-.form-group label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.form-group input, .form-section textarea {
-  padding: 0.6rem 0.8rem;
-  font-size: 0.85rem;
-}
-
-.cv-preview {
-  max-height: 70vh;
-  overflow: auto;
-  padding: 1rem;
-}
-
-.preview-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-/* =========================
-   PROFILE PAGE
-========================= */
-.profile-container {
-  max-width: 800px;
-  margin: 2rem auto;
-  background: white;
-  border-radius: 28px;
-  padding: 2rem;
-  border: 1px solid var(--gray-border);
-}
-
-.auth-form {
-  max-width: 360px;
-  margin: 0 auto;
-}
-
-.saved-resume-item {
-  background: #f8fafc;
-  padding: 1rem;
-  margin-bottom: 0.8rem;
-  border-radius: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-/* =========================
-   CONTENT PAGES
-========================= */
-.content-page {
-  background: var(--white);
-  border-radius: 28px;
-  margin: 2rem 5%;
-  padding: 2rem;
-  border: 1px solid var(--gray-border);
-}
-
-.report-links {
-  background: #fef7e6;
-  border-radius: 20px;
-  padding: 1.5rem;
-  margin-top: 1.5rem;
-  border-left: 4px solid var(--gold);
-}
-
-.city-list {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.8rem;
-  margin-top: 1rem;
-}
-
-/* =========================
-   FOOTER & BACK TO TOP
-========================= */
-.footer {
-  background: var(--primary);
-  color: white;
-  padding: 2.5rem 5% 1.5rem;
-  margin-top: 3rem;
-}
-
-.footer-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 2rem;
-}
-
-.footer-col h4 {
-  font-size: 1rem;
-  margin-bottom: 1rem;
-  color: #f1f5f9;
-  font-family: 'Rubik Mono One', monospace;
-}
-
-.footer-col a, .footer-col p {
-  color: #cbd5e1;
-  font-size: 0.75rem;
-  line-height: 1.8;
-}
-
-.footer-copyright {
-  text-align: center;
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid #2f6e6e;
-  font-size: 0.65rem;
-}
-
-.back-to-top {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  background: var(--accent);
-  color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s;
-  z-index: 1000;
-  box-shadow: var(--shadow-md);
-}
-
-.back-to-top.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-.back-to-top:hover {
-  background: var(--gold);
-  transform: translateY(-3px);
-}
-
-/* =========================
-   DARK MODE
-========================= */
-body.dark-mode {
-  background: #0f172a;
-  color: #e2e8f0;
-}
-
-body.dark-mode .main-header, body.dark-mode .nav-bar,
-body.dark-mode .service-card, body.dark-mode .chores-card,
-body.dark-mode .feature-card, body.dark-mode .partner-card,
-body.dark-mode .content-page, body.dark-mode .profile-container,
-body.dark-mode .builder-form-panel, body.dark-mode .builder-preview-panel,
-body.dark-mode .form-section {
-  background: #1e293b;
-  border-color: #334155;
-}
-
-body.dark-mode h1, body.dark-mode h2, body.dark-mode h3,
-body.dark-mode .section-header h2, body.dark-mode .founder-name {
-  color: #f1f5f9;
-}
-
-body.dark-mode p, body.dark-mode li {
-  color: #cbd5e1;
-}
-
-body.dark-mode .top-bar {
-  background: #0f172a;
-}
-
-body.dark-mode .hero-card {
-  background: rgba(30,41,59,0.9);
-}
-
-body.dark-mode .btn-secondary {
-  background: #334155;
-  color: white;
-  border-color: #475569;
-}
-
-/* =========================
-   RESPONSIVE
-========================= */
-@media (max-width: 1024px) {
-  .resume-builder-container {
-    grid-template-columns: 1fr;
-  }
-  .hero {
-    flex-direction: column;
-    text-align: center;
-  }
-  .stat-grid {
-    justify-content: center;
-  }
-  .container {
-    padding: 1.5rem;
+// ==========================================
+// SUPABASE INITIALIZATION
+// ==========================================
+const SUPABASE_URL = 'https://pfqpyzfqwsksepoohive.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXB5emZxd3Nrc2Vwb29oaXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM1MTMsImV4cCI6MjA4OTk0OTUxM30.NPbcOFUPS_2zYg-2MjH1ukHrHqN8AjXRDrP1OpU4nNs';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ==========================================
+// DARK MODE TOGGLE
+// ==========================================
+const darkToggle = document.getElementById('darkModeToggle');
+if (darkToggle) {
+  darkToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+  });
+  if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+}
+
+// ==========================================
+// BACK TO TOP BUTTON
+// ==========================================
+const backBtn = document.getElementById('backToTop');
+if (backBtn) {
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) backBtn.classList.add('show');
+    else backBtn.classList.remove('show');
+  });
+  backBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+}
+
+// ==========================================
+// RIBBON CLICK – ADVERTISE (WhatsApp Chat)
+// ==========================================
+const ribbon = document.querySelector('.ribbon');
+if (ribbon) {
+  ribbon.addEventListener('click', () => {
+    const message = encodeURIComponent("I want to advertise on 9to5 University");
+    window.open(`https://wa.me/27794874559?text=${message}`, '_blank');
+  });
+}
+
+// ==========================================
+// ANIMATED STATS (HOME PAGE)
+// ==========================================
+function animateStats() {
+  document.querySelectorAll('.stat-number[data-target]').forEach(el => {
+    const target = parseInt(el.getAttribute('data-target'));
+    let current = 0;
+    const increment = target / 30;
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        el.innerText = target;
+        clearInterval(timer);
+      } else {
+        el.innerText = Math.floor(current);
+      }
+    }, 30);
+  });
+}
+if (document.querySelector('.stat-number')) animateStats();
+
+// ==========================================
+// RESUME BUILDER – FIXED PREVIEW & DOWNLOAD
+// ==========================================
+const firstName = document.getElementById('firstName');
+const lastName = document.getElementById('lastName');
+const jobTitle = document.getElementById('jobTitle');
+const phone = document.getElementById('phone');
+const emailField = document.getElementById('email');
+const address = document.getElementById('address');
+const summary = document.getElementById('summary');
+const experience = document.getElementById('experience');
+const education = document.getElementById('education');
+const skills = document.getElementById('skills');
+const languages = document.getElementById('languages');
+const awards = document.getElementById('awards');
+const references = document.getElementById('references');
+const cvPreview = document.getElementById('cvPreview');
+const downloadBtn = document.getElementById('downloadPdfBtn');
+const saveBtn = document.getElementById('saveResumeBtn');
+
+function parseExperience(t) {
+  return t.split('\n').filter(l => l.trim()).map(l => {
+    const p = l.split('|').map(v => v.trim());
+    return {
+      position: p[0] || '',
+      company: p[1] || '',
+      location: p[2] || '',
+      start: p[3] || '',
+      end: p[4] || '',
+      description: p[5] || ''
+    };
+  });
+}
+function parseEducation(t) {
+  return t.split('\n').filter(l => l.trim()).map(l => {
+    const p = l.split('|').map(v => v.trim());
+    return { institution: p[0] || '', degree: p[1] || '', start: p[2] || '', end: p[3] || '' };
+  });
+}
+function parseAwards(t) {
+  return t.split('\n').filter(l => l.trim()).map(l => {
+    const p = l.split('|').map(v => v.trim());
+    return { title: p[0] || '', description: p[1] || '', year: p[2] || '' };
+  });
+}
+function parseReferences(t) {
+  return t.split('\n').filter(l => l.trim()).map(l => {
+    const p = l.split('|').map(v => v.trim());
+    return { name: p[0] || '', company: p[1] || '', phone: p[2] || '', email: p[3] || '' };
+  });
+}
+function getSkillsArray() { return skills.value.split(',').map(s => s.trim()).filter(s => s); }
+function getLanguagesArray() { return languages.value.split(',').map(l => l.trim()).filter(l => l); }
+
+function professionalTemplate(d) {
+  return `
+    <div class="resume-a4" style="font-family:'Chivo',sans-serif; padding:1rem; background:white;">
+      <div style="text-align:center; margin-bottom:1rem;">
+        <h1 style="font-family:'Rubik Mono One',monospace; font-size:1.8rem; color:#014656; margin:0;">${d.firstName} ${d.lastName}</h1>
+        <p style="font-size:1.1rem; color:#00a2ad; margin:0.25rem 0 0;">${d.jobTitle}</p>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; justify-content:space-between; background:#f0f9fa; padding:0.6rem; border-radius:8px; margin-bottom:1rem;">
+        <span><i class="fas fa-phone"></i> ${d.phone}</span>
+        <span><i class="fas fa-envelope"></i> ${d.email}</span>
+        <span><i class="fas fa-map-marker-alt"></i> ${d.address}</span>
+      </div>
+      <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
+        <div style="flex:1.5;">
+          <h2 style="font-family:'Rubik Mono One',monospace; font-size:1rem; border-bottom:2px solid #00a2ad; padding-bottom:0.25rem;">Professional Summary</h2>
+          <p>${d.summary}</p>
+          <h2 style="font-family:'Rubik Mono One',monospace; font-size:1rem; border-bottom:2px solid #00a2ad; margin-top:1rem;">Work Experience</h2>
+          ${d.experience.map(exp => `
+            <div style="margin-bottom:0.75rem;">
+              <strong>${exp.position}</strong> at ${exp.company} (${exp.start}–${exp.end})<br>
+              <em>${exp.location}</em><br>${exp.description}
+            </div>
+          `).join('')}
+          <h2 style="font-family:'Rubik Mono One',monospace; font-size:1rem; border-bottom:2px solid #00a2ad; margin-top:1rem;">Education</h2>
+          ${d.education.map(edu => `<div><strong>${edu.degree}</strong> – ${edu.institution} (${edu.start}–${edu.end})</div>`).join('')}
+        </div>
+        <div style="flex:1;">
+          <h2 style="font-family:'Rubik Mono One',monospace; font-size:1rem; border-bottom:2px solid #00a2ad;">Skills</h2>
+          <ul>${d.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+          <h2 style="font-family:'Rubik Mono One',monospace; font-size:1rem; border-bottom:2px solid #00a2ad;">Languages</h2>
+          <ul>${d.languages.map(l => `<li>${l}</li>`).join('')}</ul>
+          ${d.awards.length ? `<h2 style="font-family:'Rubik Mono One',monospace; font-size:1rem; border-bottom:2px solid #00a2ad;">Awards</h2><ul>${d.awards.map(aw => `<li><strong>${aw.title}</strong> (${aw.year}) – ${aw.description}</li>`).join('')}</ul>` : ''}
+          ${d.references.length ? `<h2 style="font-family:'Rubik Mono One',monospace; font-size:1rem; border-bottom:2px solid #00a2ad;">References</h2><ul>${d.references.map(ref => `<li>${ref.name}, ${ref.company}<br>${ref.phone} | ${ref.email}</li>`).join('')}</ul>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function updatePreview() {
+  if (!cvPreview) return;
+  const data = {
+    firstName: firstName?.value || '',
+    lastName: lastName?.value || '',
+    jobTitle: jobTitle?.value || '',
+    phone: phone?.value || '',
+    email: emailField?.value || '',
+    address: address?.value || '',
+    summary: summary?.value || '',
+    experience: parseExperience(experience?.value || ''),
+    education: parseEducation(education?.value || ''),
+    skills: getSkillsArray(),
+    languages: getLanguagesArray(),
+    awards: parseAwards(awards?.value || ''),
+    references: parseReferences(references?.value || '')
+  };
+  cvPreview.innerHTML = professionalTemplate(data);
+}
+
+async function downloadPDF() {
+  if (!cvPreview) return alert('Preview not ready');
+  try {
+    // Get the element to capture
+    const element = cvPreview;
+    // Use html2canvas with high scale and white background
+    const canvas = await html2canvas(element, {
+      scale: 3,
+      backgroundColor: '#ffffff',
+      logging: false,
+      useCORS: true
+    });
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    // A4 dimensions in mm (portrait)
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const imgWidth = 210; // A4 width in mm
+    const pageHeight = 297;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+    pdf.save('resume.pdf');
+  } catch (err) {
+    console.error('PDF error:', err);
+    alert('Failed to generate PDF. Please try again.');
   }
 }
 
-@media (max-width: 768px) {
-  body {
-    font-size: 13px;
-  }
-  h1 { font-size: 1.5rem; }
-  h2 { font-size: 1.2rem; }
-  .main-header {
-    flex-direction: column;
-    text-align: center;
-  }
-  .crest-right {
-    border-left: none;
-    padding-left: 0;
-  }
-  .logo-link img {
-    max-height: 150px;
-  }
-  .nav-menu {
-    gap: 1rem;
-  }
-  .nav-menu a {
-    font-size: 0.7rem;
-  }
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-  .preview-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .resume-builder-wrapper {
-    padding: 1rem;
-  }
-  .card-grid {
-    padding: 0 1rem 1rem;
-  }
-  .partners-grid, .chores-grid {
-    flex-direction: column;
-  }
-  .footer-grid {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
+async function saveResume() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return alert('Please sign in on the Profile page first.');
+  const resumeData = {
+    user_id: user.id,
+    first_name: firstName.value,
+    last_name: lastName.value,
+    job_title: jobTitle.value,
+    phone: phone.value,
+    email: emailField.value,
+    address: address.value,
+    summary: summary.value,
+    experience: experience.value,
+    education: education.value,
+    skills: skills.value,
+    languages: languages.value,
+    awards: awards.value,
+    references: references.value,
+    created_at: new Date().toISOString()
+  };
+  const { error } = await supabase.from('resumes').insert([resumeData]);
+  if (error) alert('Save failed: ' + error.message);
+  else alert('Resume saved to your profile!');
 }
 
-@media (max-width: 480px) {
-  .hero-text h1 {
-    font-size: 1.4rem;
-  }
-  .stat-number {
-    font-size: 1.2rem;
-  }
-  .section-header h2 {
-    font-size: 1.2rem;
-  }
-  .service-card {
-    max-width: 100%;
-  }
-  .profile-container {
-    padding: 1rem;
-  }
-  .container {
-    padding: 1rem;
-  }
+if (firstName) {
+  const inputs = [firstName, lastName, jobTitle, phone, emailField, address, summary, experience, education, skills, languages, awards, references];
+  inputs.forEach(inp => inp?.addEventListener('input', updatePreview));
+  if (downloadBtn) downloadBtn.addEventListener('click', downloadPDF);
+  if (saveBtn) saveBtn.addEventListener('click', saveResume);
+  updatePreview();
 }
+
+// ==========================================
+// PROFILE PAGE (AUTH & SAVED RESUMES)
+// ==========================================
+async function loadProfilePage() {
+  const container = document.getElementById('profileContainer');
+  if (!container) return;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    container.innerHTML = `
+      <div class="auth-form">
+        <h2>Sign In / Sign Up</h2>
+        <input type="email" id="authEmail" placeholder="Email" required>
+        <input type="password" id="authPassword" placeholder="Password" required>
+        <button id="loginBtn" class="btn-primary">Sign In</button>
+        <button id="signupBtn" class="btn-outline">Sign Up</button>
+      </div>
+    `;
+    document.getElementById('loginBtn')?.addEventListener('click', async () => {
+      const email = document.getElementById('authEmail').value, pwd = document.getElementById('authPassword').value;
+      const { error } = await supabase.auth.signInWithPassword({ email, password: pwd });
+      alert(error ? error.message : 'Logged in!');
+      if (!error) loadProfilePage();
+    });
+    document.getElementById('signupBtn')?.addEventListener('click', async () => {
+      const email = document.getElementById('authEmail').value, pwd = document.getElementById('authPassword').value;
+      const { error } = await supabase.auth.signUp({ email, password: pwd });
+      alert(error ? error.message : 'Account created! You can now sign in.');
+    });
+    return;
+  }
+  const { data: resumes, error } = await supabase.from('resumes').select('*').eq('user_id', user.id);
+  if (error) console.error(error);
+  container.innerHTML = `
+    <h2>Your Profile</h2>
+    <p><strong>Email:</strong> ${user.email}</p>
+    <p><strong>Account created:</strong> ${new Date(user.created_at).toLocaleDateString()}</p>
+    <p><strong>Saved resumes:</strong> ${resumes?.length || 0}</p>
+    <button id="logoutBtn" class="btn-outline" style="background:#dc3545;color:white;">Sign Out</button>
+    <hr>
+    <h3>Your Resumes</h3>
+    <div id="savedResumesList">${(resumes || []).map(r => `
+      <div class="saved-resume-item">
+        <span><strong>${r.first_name} ${r.last_name}</strong> – ${r.job_title}</span>
+        <button class="btn-sm load-resume" data-id="${r.id}">Load</button>
+        <button class="btn-sm delete-resume" data-id="${r.id}" style="background:#dc3545;">Delete</button>
+      </div>
+    `).join('') || '<p>No saved resumes.</p>'}</div>
+  `;
+  document.getElementById('logoutBtn')?.addEventListener('click', async () => { await supabase.auth.signOut(); loadProfilePage(); });
+  document.querySelectorAll('.load-resume').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-id');
+      const resume = resumes.find(r => r.id === id);
+      if (resume && firstName) {
+        firstName.value = resume.first_name; lastName.value = resume.last_name; jobTitle.value = resume.job_title;
+        phone.value = resume.phone; emailField.value = resume.email; address.value = resume.address;
+        summary.value = resume.summary; experience.value = resume.experience; education.value = resume.education;
+        skills.value = resume.skills; languages.value = resume.languages; awards.value = resume.awards; references.value = resume.references;
+        updatePreview();
+        window.location.href = 'resume.html';
+      }
+    });
+  });
+  document.querySelectorAll('.delete-resume').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-id');
+      if (confirm('Delete this resume?')) { await supabase.from('resumes').delete().eq('id', id); loadProfilePage(); }
+    });
+  });
+}
+if (document.getElementById('profileContainer')) loadProfilePage();
+
+// ==========================================
+// HUSTLER NOMINATION
+// ==========================================
+document.getElementById('nominateBtn')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  window.open('https://wa.me/27794874559?text=I%20want%20to%20nominate%20someone%20for%20Hustler%20of%20the%20Month', '_blank');
+});
+
+console.log('9to5 University – fully loaded!');

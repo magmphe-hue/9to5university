@@ -2,155 +2,80 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>9to5 University · Resume Builder</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    /* Copy all styles from index.html plus resume-specific */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Montserrat', sans-serif; background: #f1f5f9; }
-    .top-bar, .main-header, .nav-bar, .footer { /* same as index */ }
-    .resume-builder-wrapper { padding: 2rem 5%; }
-    .resume-builder-container { display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem; }
-    .builder-form-panel, .builder-preview-panel { background: white; border-radius: 24px; padding: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
-    .form-section { margin-bottom: 2rem; background: #f8fafc; padding: 1rem; border-radius: 16px; }
-    .form-group { margin-bottom: 1rem; }
-    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.6rem; border-radius: 12px; border: 1px solid #cbd5e1; }
-    .cv-preview { background: white; border-radius: 12px; overflow: auto; max-height: 70vh; padding: 1rem; }
-    .preview-actions { display: flex; gap: 1rem; margin-top: 1rem; }
-    .btn-primary, .btn-secondary { padding: 10px 20px; border-radius: 40px; border: none; cursor: pointer; }
-    .btn-primary { background: #00a2ad; color: white; }
-    .btn-secondary { background: #e2e8f0; }
-    @media (max-width: 1024px) { .resume-builder-container { grid-template-columns: 1fr; } }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="top-bar"><a href="index.html" class="signin-icon"><i class="fas fa-user"></i></a></div>
-<div class="main-header"><a href="index.html"><img src="https://i.postimg.cc/8Chj1H8D/file-00000000d4b4722f8dcbec10fa906d0a.png" alt="Logo" style="max-height:80px"></a></div>
-<div class="nav-bar"><div class="nav-menu"><a href="resume.html">RESUME BUILDER</a><a href="rights.html">WORKERS' RIGHTS</a><a href="issues.html">REPORT MISCONDUCT</a><a href="contact.html">CONTACT</a></div></div>
+
+<div class="ribbon">
+  <div class="ribbon-content"><span>✨ Click to Advertise ✨</span><span>✨ Click to Advertise ✨</span><span>✨ Click to Advertise ✨</span></div>
+</div>
+
+<div class="top-bar">
+  <a href="https://www.facebook.com/profile.php?id=61579134208115" target="_blank" class="facebook-icon"><i class="fab fa-facebook-f"></i></a>
+  <a href="https://wa.me/27794874559" target="_blank" class="whatsapp-icon"><i class="fab fa-whatsapp"></i></a>
+  <a href="https://twitter.com/9to5University" target="_blank" class="twitter-icon"><i class="fab fa-twitter"></i></a>
+  <button id="darkModeToggle" class="dark-mode-btn"><i class="fas fa-moon"></i></button>
+  <a href="profile.html" class="signin-icon"><i class="fas fa-user"></i></a>
+</div>
+
+<div class="main-header">
+  <a href="index.html" class="logo-link"><img src="https://i.postimg.cc/8Chj1H8D/file-00000000d4b4722f8dcbec10fa906d0a.png" alt="9to5 University Logo"></a>
+  <div class="crest-right"><span>OFFICIAL RESOURCE</span><br>REPUBLIC OF SOUTH AFRICA</div>
+</div>
+
+<div class="nav-bar">
+  <div class="nav-menu">
+    <a href="resume.html" class="nav-link active">RESUME BUILDER</a>
+    <a href="rights.html" class="nav-link">WORKERS' RIGHTS</a>
+    <a href="issues.html" class="nav-link">REPORT MISCONDUCT</a>
+    <a href="contact.html" class="nav-link">CONTACT</a>
+  </div>
+</div>
 
 <div class="resume-builder-wrapper">
   <div class="resume-builder-container">
     <div class="builder-form-panel">
-      <h2>Build Your Resume</h2>
-      <div class="form-section"><h3>Personal Details</h3>
-        <div class="form-group"><label>First Name</label><input id="firstName" value="Lorna"></div>
-        <div class="form-group"><label>Last Name</label><input id="lastName" value="Alvarado"></div>
-        <div class="form-group"><label>Job Title</label><input id="jobTitle" value="Marketing Manager"></div>
-        <div class="form-group"><label>Phone</label><input id="phone" value="123-456-7890"></div>
-        <div class="form-group"><label>Email</label><input id="email" value="hello@email.com"></div>
-        <div class="form-group"><label>Address</label><input id="address" value="123 Street, City"></div>
-      </div>
-      <div class="form-section"><h3>Summary</h3><textarea id="summary" rows="3">Marketing manager with 8+ years of experience in digital strategy...</textarea></div>
-      <div class="form-section"><h3>Experience</h3><textarea id="experience" rows="4">Product Design Manager|Arowwai Industries|Any City|2020|2023|Led design strategy for 10+ products...</textarea></div>
-      <div class="form-section"><h3>Education</h3><textarea id="education" rows="2">Borcelle University|Bachelor of Business Management|2016|2020</textarea></div>
-      <div class="form-section"><h3>Skills</h3><input id="skills" value="Organized, Creativity, Teamwork"></div>
-      <div class="form-section"><h3>Languages</h3><input id="languages" value="English, Spanish"></div>
-      <div class="form-section"><h3>Awards</h3><textarea id="awards" rows="2">Best Designer Award|Excellence in design|2016</textarea></div>
-      <div class="form-section"><h3>References</h3><textarea id="references" rows="2">John Doe|ABC Corp|+123456|john@email.com</textarea></div>
+      <div class="form-header"><h2><i class="fas fa-file-alt"></i> Build Your Resume</h2><p>Fill in your details – the preview updates live</p></div>
+      <form id="resumeForm">
+        <div class="form-section"><h3><i class="fas fa-user"></i> Personal Details</h3>
+          <div class="form-row"><div class="form-group"><label>First Name</label><input type="text" id="firstName" value="Lorna"></div><div class="form-group"><label>Last Name</label><input type="text" id="lastName" value="Alvarado"></div></div>
+          <div class="form-group"><label>Job Title</label><input type="text" id="jobTitle" value="Marketing Manager"></div>
+          <div class="form-row"><div class="form-group"><label>Phone</label><input type="text" id="phone" value="123-456-7890"></div><div class="form-group"><label>Email</label><input type="email" id="email" value="hello@email.com"></div></div>
+          <div class="form-group"><label>Address</label><input type="text" id="address" value="123 Street, City"></div>
+        </div>
+        <div class="form-section"><h3><i class="fas fa-align-left"></i> Professional Summary</h3><textarea id="summary" rows="3">Marketing manager with 8+ years of experience in digital strategy and brand development. Proven track record of increasing engagement by 40%.</textarea></div>
+        <div class="form-section"><h3><i class="fas fa-briefcase"></i> Work Experience</h3><div class="form-hint">Format: Position|Company|Location|Start|End|Description (one per line)</div><textarea id="experience" rows="4">Product Design Manager|Arowwai Industries|Any City|2020|2023|Led design strategy for 10+ products, increasing user satisfaction by 35%.&#10;Marketing Coordinator|Creative Studio|City|2018|2020|Coordinated campaigns across social media, boosting followers by 200%.</textarea></div>
+        <div class="form-section"><h3><i class="fas fa-graduation-cap"></i> Education</h3><div class="form-hint">Format: Institution|Degree|Start|End (one per line)</div><textarea id="education" rows="2">Borcelle University|Bachelor of Business Management|2016|2020</textarea></div>
+        <div class="form-section"><h3><i class="fas fa-code"></i> Skills & Languages</h3><div class="form-row"><div class="form-group"><label>Skills (comma separated)</label><input type="text" id="skills" value="Organized, Creativity, Teamwork, Leadership"></div><div class="form-group"><label>Languages (comma separated)</label><input type="text" id="languages" value="English, Spanish"></div></div></div>
+        <div class="form-section"><h3><i class="fas fa-trophy"></i> Awards</h3><div class="form-hint">Format: Title|Description|Year (one per line)</div><textarea id="awards" rows="2">Best Designer Award|Excellence in design|2016</textarea></div>
+        <div class="form-section"><h3><i class="fas fa-address-card"></i> References</h3><div class="form-hint">Format: Name|Company|Phone|Email (one per line)</div><textarea id="references" rows="2">John Doe|ABC Corp|+123456|john@email.com</textarea></div>
+      </form>
     </div>
     <div class="builder-preview-panel">
+      <div class="preview-header"><h3><i class="fas fa-eye"></i> Live Resume Preview</h3><div class="preview-actions"><button id="downloadPdfBtn" class="btn-primary"><i class="fas fa-download"></i> Download PDF</button><button id="saveResumeBtn" class="btn-secondary"><i class="fas fa-save"></i> Save to Profile</button></div></div>
       <div id="cvPreview" class="cv-preview"></div>
-      <div class="preview-actions">
-        <button id="downloadPdfBtn" class="btn-primary"><i class="fas fa-download"></i> Download PDF</button>
-        <button id="saveResumeBtn" class="btn-secondary"><i class="fas fa-save"></i> Save to Profile</button>
-      </div>
     </div>
   </div>
 </div>
-<footer class="footer"><p>© 2025 9to5 University</p></footer>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-col"><h4>9to5 UNIVERSITY</h4><p>South Africa's first integrated workplace resource. Free tools, legal guidance, and entrepreneurial recognition.</p></div>
+    <div class="footer-col"><h4>RESOURCES</h4><a href="resume.html" class="footer-link">Resume Builder</a><br><a href="rights.html" class="footer-link">Workers' Rights</a><br><a href="issues.html" class="footer-link">Report Misconduct</a></div>
+    <div class="footer-col"><h4>PARTNERS</h4><a href="https://www.facebook.com/ondablock1" target="_blank">ON-DA BLOCK</a><br><a href="https://www.facebook.com/profile.php?id=100085596154873" target="_blank">Judacelia</a></div>
+    <div class="footer-col"><h4>CONTACT</h4><p>079 487 4559</p><p>mphelamlangeni@gmail.com</p></div>
+  </div>
+  <div class="footer-copyright">© 2025 9to5 University — South Africa's Workplace Authority. Not an educational institution.</div>
+</footer>
+
 <button id="backToTop" class="back-to-top"><i class="fas fa-arrow-up"></i></button>
-
-<script>
-  const SUPABASE_URL = 'https://pfqpyzfqwsksepoohive.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXB5emZxd3Nrc2Vwb29oaXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM1MTMsImV4cCI6MjA4OTk0OTUxM30.NPbcOFUPS_2zYg-2MjH1ukHrHqN8AjXRDrP1OpU4nNs';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  // DOM elements
-  const firstName = document.getElementById('firstName');
-  const lastName = document.getElementById('lastName');
-  const jobTitle = document.getElementById('jobTitle');
-  const phone = document.getElementById('phone');
-  const email = document.getElementById('email');
-  const address = document.getElementById('address');
-  const summary = document.getElementById('summary');
-  const experience = document.getElementById('experience');
-  const education = document.getElementById('education');
-  const skills = document.getElementById('skills');
-  const languages = document.getElementById('languages');
-  const awards = document.getElementById('awards');
-  const references = document.getElementById('references');
-  const cvPreview = document.getElementById('cvPreview');
-  const downloadBtn = document.getElementById('downloadPdfBtn');
-  const saveBtn = document.getElementById('saveResumeBtn');
-
-  function parsePipe(text) { return text.split('\n').filter(l=>l.trim()).map(l=>l.split('|').map(p=>p.trim())); }
-  function getArray(field) { return field.value.split(',').map(s=>s.trim()).filter(s=>s); }
-
-  function updatePreview() {
-    const data = {
-      firstName: firstName.value, lastName: lastName.value, jobTitle: jobTitle.value,
-      phone: phone.value, email: email.value, address: address.value, summary: summary.value,
-      experience: parsePipe(experience.value).map(p=>({position:p[0]||'',company:p[1]||'',location:p[2]||'',start:p[3]||'',end:p[4]||'',description:p[5]||''})),
-      education: parsePipe(education.value).map(p=>({institution:p[0]||'',degree:p[1]||'',start:p[2]||'',end:p[3]||''})),
-      skills: getArray(skills), languages: getArray(languages),
-      awards: parsePipe(awards.value).map(p=>({title:p[0]||'',description:p[1]||'',year:p[2]||''})),
-      references: parsePipe(references.value).map(p=>({name:p[0]||'',company:p[1]||'',phone:p[2]||'',email:p[3]||''}))
-    };
-    cvPreview.innerHTML = `
-      <div style="font-family:Montserrat; max-width:210mm; margin:0 auto; padding:1rem;">
-        <h1 style="color:#014656;">${data.firstName} ${data.lastName}</h1>
-        <p style="color:#00a2ad;">${data.jobTitle}</p>
-        <div style="background:#f0f9fa; padding:0.5rem; border-radius:8px;">${data.phone} | ${data.email} | ${data.address}</div>
-        <h2>Summary</h2><p>${data.summary}</p>
-        <h2>Experience</h2>${data.experience.map(e=>`<div><strong>${e.position}</strong> at ${e.company} (${e.start}-${e.end})<br>${e.description}</div>`).join('')}
-        <h2>Education</h2>${data.education.map(e=>`<div>${e.degree} - ${e.institution} (${e.start}-${e.end})</div>`).join('')}
-        <h2>Skills</h2><ul>${data.skills.map(s=>`<li>${s}</li>`).join('')}</ul>
-        <h2>Languages</h2><ul>${data.languages.map(l=>`<li>${l}</li>`).join('')}</ul>
-        ${data.awards.length?`<h2>Awards</h2><ul>${data.awards.map(a=>`<li>${a.title} (${a.year}) - ${a.description}</li>`).join('')}</ul>`:''}
-        ${data.references.length?`<h2>References</h2><ul>${data.references.map(r=>`<li>${r.name}, ${r.company}<br>${r.phone} | ${r.email}</li>`).join('')}</ul>`:''}
-      </div>`;
-  }
-
-  async function downloadPDF() {
-    const element = cvPreview;
-    const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#fff' });
-    const imgData = canvas.toDataURL('image/png');
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgWidth = 210;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-    pdf.save('resume.pdf');
-  }
-
-  async function saveResume() {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return alert('Please sign in on Profile page.');
-    const resumeData = {
-      user_id: user.id, first_name: firstName.value, last_name: lastName.value, job_title: jobTitle.value,
-      phone: phone.value, email: email.value, address: address.value, summary: summary.value,
-      experience: experience.value, education: education.value, skills: skills.value,
-      languages: languages.value, awards: awards.value, references: references.value
-    };
-    const { error } = await supabase.from('resumes').insert([resumeData]);
-    alert(error ? error.message : 'Saved!');
-  }
-
-  [firstName, lastName, jobTitle, phone, email, address, summary, experience, education, skills, languages, awards, references].forEach(field => field?.addEventListener('input', updatePreview));
-  downloadBtn?.addEventListener('click', downloadPDF);
-  saveBtn?.addEventListener('click', saveResume);
-  updatePreview();
-
-  // Back to top
-  const backBtn = document.createElement('button'); backBtn.innerHTML = '↑'; backBtn.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#00a2ad;color:white;border:none;border-radius:50%;width:45px;height:45px;cursor:pointer;display:none;z-index:1000;';
-  document.body.appendChild(backBtn);
-  window.addEventListener('scroll', () => backBtn.style.display = window.scrollY > 300 ? 'flex' : 'none');
-  backBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-</script>
+<script src="script.js"></script>
 </body>
 </html>

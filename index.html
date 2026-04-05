@@ -9,9 +9,19 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="ribbon" id="adRibbon"><div class="ribbon-content"><span>✨ Click to Advertise ✨</span><span>✨ Click to Advertise ✨</span><span>✨ Click to Advertise ✨</span></div></div>
+
+<!-- MOVING RIBBON -->
+<div class="ribbon">
+  <div class="ribbon-content">
+    <span>✨ Click to Advertise ✨</span>
+    <span>✨ Click to Advertise ✨</span>
+    <span>✨ Click to Advertise ✨</span>
+  </div>
+</div>
+
 <div class="top-bar">
   <a href="https://www.facebook.com/profile.php?id=61579134208115" target="_blank" class="facebook-icon"><i class="fab fa-facebook-f"></i></a>
   <a href="https://wa.me/27794874559" target="_blank" class="whatsapp-icon"><i class="fab fa-whatsapp"></i></a>
@@ -19,66 +29,125 @@
   <button id="darkModeToggle" class="dark-mode-btn"><i class="fas fa-moon"></i></button>
   <a href="profile.html" class="signin-icon"><i class="fas fa-user"></i></a>
 </div>
-<div class="main-header"><a href="index.html" class="logo-link"><img src="https://i.postimg.cc/8Chj1H8D/file-00000000d4b4722f8dcbec10fa906d0a.png" alt="Logo"></a><div class="crest-right"><span>OFFICIAL RESOURCE</span><br>REPUBLIC OF SOUTH AFRICA</div></div>
-<div class="nav-bar"><div class="nav-menu"><a href="resume.html">RESUME BUILDER</a><a href="rights.html">WORKERS' RIGHTS</a><a href="issues.html">REPORT MISCONDUCT</a><a href="contact.html">CONTACT</a></div></div>
-<div class="hero"><div class="hero-text"><h1>Workplace Empowerment<br>for Every South African</h1><p>9to5 University is a first‑of‑its‑kind public resource providing free professional tools, labour law guidance, entrepreneurial recognition, and a trusted partner network.</p><div class="stat-grid"><div class="stat-card"><div class="stat-number" data-target="500">0</div><div>Resumes Created</div></div><div class="stat-card"><div class="stat-number" data-target="24">0</div><div>24/7 Access</div></div><div class="stat-card"><div class="stat-number" data-target="500">0</div><div>R500+ Commissions</div></div></div><div><a href="resume.html" class="btn-primary">Create CV →</a><a href="rights.html" class="btn-outline" style="margin-left:1rem;">Know Your Rights</a></div></div><div class="hero-card"><i class="fas fa-info-circle" style="font-size:2rem;"></i><h3>Official Notice</h3><p>9to5 University is not an educational institution. All tools free. Aligned with BCEA & LRA.</p></div></div>
+
+<div class="main-header">
+  <a href="index.html" class="logo-link">
+    <img src="https://i.postimg.cc/8Chj1H8D/file-00000000d4b4722f8dcbec10fa906d0a.png" alt="9to5 University Logo">
+  </a>
+  <div class="crest-right">
+    <span>OFFICIAL RESOURCE</span><br>
+    REPUBLIC OF SOUTH AFRICA
+  </div>
+</div>
+
+<div class="nav-bar">
+  <div class="nav-menu">
+    <a href="resume.html" class="nav-link">RESUME BUILDER</a>
+    <a href="rights.html" class="nav-link">WORKERS' RIGHTS</a>
+    <a href="issues.html" class="nav-link">REPORT MISCONDUCT</a>
+    <a href="contact.html" class="nav-link">CONTACT</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-text">
+    <h1>Workplace Empowerment<br>for Every South African</h1>
+    <p>9to5 University is a first‑of‑its‑kind public resource providing free professional tools, labour law guidance, entrepreneurial recognition, and a trusted partner network.</p>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-number" data-target="500">0</div><div>Resumes Created</div></div>
+      <div class="stat-card"><div class="stat-number" data-target="24">0</div><div>24/7 Resource Access</div></div>
+      <div class="stat-card"><div class="stat-number" data-target="500">0</div><div>Commission (R500+)</div></div>
+    </div>
+    <div><a href="resume.html" class="btn-primary">Create Professional CV →</a><a href="rights.html" class="btn-outline" style="margin-left:1rem;">Know Your Rights</a></div>
+  </div>
+  <div class="hero-card">
+    <i class="fas fa-info-circle" style="font-size:2rem;"></i>
+    <h3 style="margin:0.5rem 0;">Official Notice</h3>
+    <p>9to5 University is not an educational institution nor an agency. All tools are provided free of charge as a public service. Information aligned with BCEA & LRA.</p>
+  </div>
+</div>
+
 <div class="section-header"><i class="fas fa-briefcase"></i><h2>Official Services</h2></div>
-<div class="card-grid"><div class="service-card"><i class="fas fa-file-alt service-icon"></i><h3>Resume Builder</h3><p>7 templates. Free PDF.</p><a href="resume.html">Access →</a></div><div class="service-card"><i class="fas fa-gavel service-icon"></i><h3>Labour Rights</h3><p>BCEA & LRA guide.</p><a href="rights.html">Read →</a></div><div class="service-card"><i class="fas fa-flag-checkered service-icon"></i><h3>Report Misconduct</h3><p>CCMA & Labour Dept.</p><a href="issues.html">Report →</a></div></div>
-<div class="chores-card"><div class="chores-header"><i class="fas fa-hand-holding-heart"></i><h3>Chores Corner</h3></div><div class="chores-grid"><div class="chore-item"><i class="fas fa-code"></i><h4>Web Design Referral</h4><div class="chore-amount">R500</div><a href="https://www.facebook.com/ondablock1" target="_blank" class="btn-primary">Refer Now</a></div><div class="chore-item"><i class="fas fa-mobile-alt"></i><h4>Tech Trade-in</h4><div class="chore-amount">R300</div><a href="https://www.facebook.com/profile.php?id=100085596154873" target="_blank" class="btn-primary">Learn More</a></div><div class="chore-item"><i class="fas fa-crown"></i><h4>Hustler Nomination</h4><div class="chore-amount">R300</div><a href="#" id="nominateBtn" class="btn-primary">Nominate</a></div></div></div>
-<div class="feature-card"><div class="feature-header"><i class="fas fa-crown"></i><span>HUSTLER OF THE MONTH</span><span>MARCH 2025</span></div><div class="feature-content"><div class="feature-image-container"><img src="https://i.ibb.co/zW8y8KKb/FB-IMG-17740408166780955.jpg" alt="Watch"></div><div><div class="founder-name">Buhle Gotsha</div><div class="brand-tag">Founder, Ericsson Dorra</div><p>Luxury watch brand shipping internationally.</p><div class="stats-row"><span class="stat-pill">50 watches (June 2024)</span><span class="stat-pill">International Sales</span><span class="stat-pill">R850</span></div><div class="social-links"><a href="#" class="social-btn">Facebook</a></div></div><div class="order-container"><img src="https://i.ibb.co/6cxQk8z3/FB-IMG-17740410967114200.jpg" alt="Watch"><div class="watch-price">R850</div><a href="tel:+27760390570" class="order-btn">ORDER: 076 039 0570</a></div></div></div>
-<div class="empty-store-section"><div class="empty-store-content"><i class="fas fa-store"></i><h2>The Empty Store</h2><p>Merchandise coming soon.</p><div class="store-placeholder"><span>Hoodies</span><span>Caps</span><span>Mugs</span></div></div></div>
-<footer class="footer"><div class="footer-grid"><div class="footer-col"><h4>9to5 UNIVERSITY</h4><p>Workplace authority.</p></div><div class="footer-col"><h4>RESOURCES</h4><a href="resume.html">Resume Builder</a><br><a href="rights.html">Workers' Rights</a><br><a href="issues.html">Report Misconduct</a></div><div class="footer-col"><h4>CONTACT</h4><p>079 487 4559</p><p>mphelamlangeni@gmail.com</p></div></div><div class="footer-copyright">© 2025 9to5 University</div></footer>
+<div class="card-grid">
+  <div class="service-card"><div class="service-icon"><i class="fas fa-file-alt"></i></div><h3>Resume Builder</h3><p>7 professional CV templates. Free PDF download.</p><a href="resume.html" class="service-link">Access Tool →</a></div>
+  <div class="service-card"><div class="service-icon"><i class="fas fa-gavel"></i></div><h3>Labour Rights Guide</h3><p>Comprehensive South African labour law resource. BCEA & LRA.</p><a href="rights.html" class="service-link">Read Guide →</a></div>
+  <div class="service-card"><div class="service-icon"><i class="fas fa-flag-checkered"></i></div><h3>Misconduct Reporting</h3><p>Official channels for CCMA, Department of Labour, and legal recourse.</p><a href="issues.html" class="service-link">Report →</a></div>
+</div>
+
+<div class="chores-card">
+  <div class="chores-header"><i class="fas fa-hand-holding-heart"></i><h3>Chores Corner</h3></div>
+  <div class="chores-content">
+    <div class="chores-grid">
+      <div class="chore-item"><i class="fas fa-code"></i><h4>Web Design Referral</h4><div class="chore-amount">R500</div><p>Refer a client who needs a website, hosting, or management.</p><a href="https://www.facebook.com/ondablock1" target="_blank" class="btn-primary">Refer Now →</a></div>
+      <div class="chore-item"><i class="fas fa-mobile-alt"></i><h4>Tech Trade-in Referral</h4><div class="chore-amount">R300</div><p>Refer someone selling or buying pre-owned electronics.</p><a href="https://www.facebook.com/profile.php?id=100085596154873" target="_blank" class="btn-primary">Learn More →</a></div>
+      <div class="chore-item"><i class="fas fa-crown"></i><h4>Hustler Nomination</h4><div class="chore-amount">R300</div><p>Nominate an entrepreneur to be featured as Hustler of the Month.</p><a href="#" class="btn-primary" id="nominateBtn">Nominate →</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="feature-card">
+  <div class="feature-header"><i class="fas fa-crown"></i><span>HUSTLER OF THE MONTH</span><span>MARCH 2025</span></div>
+  <div class="feature-content">
+    <div class="feature-image-container">
+      <img src="https://i.ibb.co/zW8y8KKb/FB-IMG-17740408166780955.jpg" alt="Ericsson Dorra Watch">
+    </div>
+    <div class="feature-story-container">
+      <div class="founder-name">Buhle Gotsha</div>
+      <div class="brand-tag">Founder, Ericsson Dorra Timepiece</div>
+      <p>At 19 years old, Buhle Gotsha from KwaZulu-Natal has built a luxury watch brand that now ships internationally. Starting in 2022, Ericsson Dorra—named for his parents Eric and Theodorra—has achieved 50+ monthly sales and recently recorded its first international order to Australia.</p>
+      <div class="stats-row">
+        <span class="stat-pill"><i class="fas fa-chart-line"></i> 50 watches (June 2024)</span>
+        <span class="stat-pill"><i class="fas fa-globe"></i> International Sales</span>
+        <span class="stat-pill"><i class="fas fa-tag"></i> R850 Premium Steel</span>
+      </div>
+      <div class="social-links">
+        <a href="https://www.facebook.com/profile.php?id=100076952310995" target="_blank" class="social-btn"><i class="fab fa-facebook-f"></i> Founder Profile</a>
+        <a href="https://www.facebook.com/profile.php?id=100084787077819" target="_blank" class="social-btn"><i class="fab fa-facebook-f"></i> Brand Page</a>
+      </div>
+    </div>
+    <div class="order-container">
+      <img src="https://i.ibb.co/6cxQk8z3/FB-IMG-17740410967114200.jpg" alt="Ericsson Dorra">
+      <div class="watch-price">R850.00</div>
+      <a href="tel:+27760390570" class="order-btn"><i class="fas fa-shopping-cart"></i> ORDER: 076 039 0570</a>
+    </div>
+  </div>
+</div>
+
+<div class="partners-grid">
+  <div class="partner-card">
+    <div class="partner-header"><img src="https://i.ibb.co/gZz5TSD7/FB-IMG-17740358367251388.jpg" alt="ON-DA BLOCK" class="partner-logo"><div><div class="partner-badge">OFFICIAL REFERRAL PARTNER</div><h3>ON-DA BLOCK</h3><p>Web Development · Hosting · SEO · Landline Solutions</p></div></div>
+    <p><strong>R500 Commission:</strong> Refer a client for website, domain, hosting, or management services.</p>
+    <div class="contact-links"><a href="mailto:Info@ondablock.co.za" class="contact-link"><i class="fas fa-envelope"></i> Info@ondablock.co.za</a><a href="tel:+27875100132" class="contact-link"><i class="fas fa-phone-alt"></i> (+27)87 5100 132</a><a href="https://www.facebook.com/ondablock1" target="_blank" class="contact-link"><i class="fab fa-facebook-f"></i> ON-DA BLOCK</a><a href="https://www.ondablock.co.za" target="_blank" class="contact-link"><i class="fas fa-external-link-alt"></i> Website</a></div>
+  </div>
+  <div class="partner-card">
+    <div class="partner-header"><img src="https://i.postimg.cc/xCLmk2Wy/img-2-1774048963827.jpg" alt="Judacelia" class="partner-logo"><div><div class="partner-badge">PROUD PARTNER</div><h3>Judacelia</h3><p>Pre-owned Electronics · Trade-ins · Nationwide Delivery</p></div></div>
+    <p>Specializing in buying and selling pre-owned laptops, smartphones, tablets, cameras, and gaming consoles. 3-month warranty, trade-ins available, and lay-by options.</p>
+    <div class="contact-links"><a href="https://www.facebook.com/profile.php?id=100085596154873" target="_blank" class="contact-link"><i class="fab fa-facebook-f"></i> Judacelia Store</a><a href="https://www.instagram.com/judacelia" target="_blank" class="contact-link"><i class="fab fa-instagram"></i> @judacelia</a><a href="https://www.tiktok.com/@judacelia_store" target="_blank" class="contact-link"><i class="fab fa-tiktok"></i> @judacelia_store</a><a href="https://judacelia.co.za" target="_blank" class="contact-link"><i class="fas fa-external-link-alt"></i> judacelia.co.za</a></div>
+    <p><i class="fas fa-map-marker-alt"></i> Germiston Goldenwalk Mall, Johannesburg | Nationwide delivery</p>
+  </div>
+</div>
+
+<div class="empty-store-section">
+  <div class="empty-store-content">
+    <i class="fas fa-store"></i>
+    <h2>The Empty Store</h2>
+    <p>Official 9to5 University merchandise is coming soon.</p>
+    <div class="store-notice"><i class="fas fa-box-open"></i> <span>Stay tuned – we're preparing something special.</span></div>
+    <div class="store-placeholder"><span>⚡ Hoodies</span> <span>• Caps •</span> <span>Notebooks •</span> <span>Mugs</span></div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-col"><h4>9to5 UNIVERSITY</h4><p>South Africa's first integrated workplace resource. Free tools, legal guidance, and entrepreneurial recognition.</p></div>
+    <div class="footer-col"><h4>RESOURCES</h4><a href="resume.html" class="footer-link">Resume Builder</a><br><a href="rights.html" class="footer-link">Workers' Rights</a><br><a href="issues.html" class="footer-link">Report Misconduct</a></div>
+    <div class="footer-col"><h4>PARTNERS</h4><a href="https://www.facebook.com/ondablock1" target="_blank">ON-DA BLOCK</a><br><a href="https://www.facebook.com/profile.php?id=100085596154873" target="_blank">Judacelia</a></div>
+    <div class="footer-col"><h4>CONTACT</h4><p>079 487 4559</p><p>mphelamlangeni@gmail.com</p></div>
+  </div>
+  <div class="footer-copyright">© 2025 9to5 University — South Africa's Workplace Authority. Not an educational institution.</div>
+</footer>
+
 <button id="backToTop" class="back-to-top"><i class="fas fa-arrow-up"></i></button>
-
-<script>
-  // Supabase (optional for this page, but keep)
-  const SUPABASE_URL = 'https://pfqpyzfqwsksepoohive.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXB5emZxd3Nrc2Vwb29oaXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM1MTMsImV4cCI6MjA4OTk0OTUxM30.NPbcOFUPS_2zYg-2MjH1ukHrHqN8AjXRDrP1OpU4nNs';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  // Dark mode
-  const toggle = document.getElementById('darkModeToggle');
-  if (toggle) {
-    toggle.addEventListener('click', () => {
-      document.body.classList.toggle('dark-mode');
-      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-    });
-    if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
-  }
-
-  // Back to top
-  const backBtn = document.getElementById('backToTop');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 300) backBtn.classList.add('show');
-    else backBtn.classList.remove('show');
-  });
-  backBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
-  // Animated stats
-  function animateStats() {
-    document.querySelectorAll('.stat-number[data-target]').forEach(el => {
-      const target = parseInt(el.dataset.target);
-      let current = 0;
-      const step = target / 30;
-      const timer = setInterval(() => {
-        current += step;
-        if (current >= target) { el.innerText = target; clearInterval(timer); }
-        else el.innerText = Math.floor(current);
-      }, 30);
-    });
-  }
-  animateStats();
-
-  // Ribbon click (advertise)
-  document.getElementById('adRibbon')?.addEventListener('click', () => {
-    window.open('https://wa.me/27794874559?text=I%20want%20to%20advertise%20on%209to5%20University', '_blank');
-  });
-
-  // Hustler nomination
-  document.getElementById('nominateBtn')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.open('https://wa.me/27794874559?text=I%20want%20to%20nominate%20someone%20for%20Hustler%20of%20the%20Month', '_blank');
-  });
-</script>
+<script src="script.js"></script>
 </body>
 </html>

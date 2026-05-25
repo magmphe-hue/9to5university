@@ -867,7 +867,7 @@ body.dark-mode .btn-secondary {
 }
 
 /* =========================
-   MULTI-STEP RESUME BUILDER STYLES
+   MULTI-STEP RESUME BUILDER
 ========================= */
 .resume-builder-wrapper {
   padding: 2rem 5%;
@@ -875,12 +875,12 @@ body.dark-mode .btn-secondary {
   min-height: calc(100vh - 200px);
 }
 .builder-container {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   background: white;
   border-radius: 28px;
   padding: 2rem;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
 }
 .steps {
   display: flex;
@@ -892,16 +892,15 @@ body.dark-mode .btn-secondary {
 .step {
   background: #e2e8f0;
   color: #475569;
-  padding: 0.6rem 1.2rem;
+  padding: 0.5rem 1rem;
   border-radius: 40px;
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: 'Chivo', sans-serif;
 }
 .step.active {
-  background: var(--accent);
+  background: #00a2ad;
   color: white;
 }
 .step-content {
@@ -924,15 +923,16 @@ body.dark-mode .btn-secondary {
   border-radius: 16px;
   margin-bottom: 1rem;
   border: 1px solid #e2e8f0;
-  position: relative;
 }
 .remove-entry {
-  margin-top: 0.5rem;
   background: #fee2e2;
   color: #dc2626;
   border: none;
   padding: 0.2rem 0.8rem;
+  border-radius: 30px;
   font-size: 0.7rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
 }
 .btn-sm {
   padding: 0.3rem 0.8rem;
@@ -970,19 +970,7 @@ body.dark-mode .btn-secondary {
 .resume-executive {
   border-top: 5px solid #014656;
 }
-/* Responsive */
 @media (max-width: 768px) {
-  .builder-container {
-    padding: 1rem;
-  }
-  .steps {
-    justify-content: center;
-  }
-  .step {
-    font-size: 0.7rem;
-    padding: 0.4rem 0.8rem;
-  }
-  .preview-actions {
-    justify-content: center;
-  }
+  .builder-container { padding: 1rem; }
+  .step { font-size: 0.7rem; padding: 0.3rem 0.6rem; }
 }

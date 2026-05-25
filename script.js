@@ -38,53 +38,66 @@ document.addEventListener('DOMContentLoaded', function() {
   const builderContainer = document.querySelector('.builder-container');
   if (!builderContainer) return;
 
-  // DOM elements
-  const fullName = document.getElementById('fullName');
-  const jobTitle = document.getElementById('jobTitle');
-  const email = document.getElementById('email');
-  const phone = document.getElementById('phone');
-  const address = document.getElementById('address');
-  const summary = document.getElementById('summary');
-  const skills = document.getElementById('skills');
-  const languages = document.getElementById('languages');
-  const templateSelect = document.getElementById('templateSelect');
-  const previewTemplateSelect = document.getElementById('previewTemplateSelect');
-  const resumePreview = document.getElementById('resumePreview');
-  const downloadBtn = document.getElementById('downloadPdfBtn');
-  const saveBtn = document.getElementById('saveResumeBtn');
-
-  // Step navigation
+  // DOM elements for step navigation
   const steps = document.querySelectorAll('.step');
   const stepContents = document.querySelectorAll('.step-content');
+  
+  // Function to show a specific step (1-indexed)
   function showStep(stepNumber) {
-    stepContents.forEach(c => c.classList.remove('active'));
-    document.querySelector(`.step-content[data-step="${stepNumber}"]`).classList.add('active');
-    steps.forEach(s => {
-      const num = parseInt(s.getAttribute('data-step'));
-      if (num === stepNumber) s.classList.add('active');
-      else s.classList.remove('active');
+    // Hide all step contents
+    stepContents.forEach(content => content.classList.remove('active'));
+    // Show the selected step content
+    const targetContent = document.querySelector(`.step-content[data-step="${stepNumber}"]`);
+    if (targetContent) targetContent.classList.add('active');
+    // Update step indicators
+    steps.forEach(step => {
+      const stepNum = parseInt(step.getAttribute('data-step'));
+      if (stepNum === stepNumber) {
+        step.classList.add('active');
+      } else {
+        step.classList.remove('active');
+      }
     });
   }
-  steps.forEach(s => {
-    s.addEventListener('click', () => {
-      const stepNum = parseInt(s.getAttribute('data-step'));
-      showStep(stepNum);
-    });
-  });
-  document.querySelectorAll('.next-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const current = document.querySelector('.step-content.active').getAttribute('data-step');
-      showStep(parseInt(current) + 1);
-    });
-  });
-  document.querySelectorAll('.prev-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const current = document.querySelector('.step-content.active').getAttribute('data-step');
-      showStep(parseInt(current) - 1);
+
+  // Add click listeners to step tabs
+  steps.forEach(step => {
+    step.addEventListener('click', () => {
+      const stepNum = parseInt(step.getAttribute('data-step'));
+      if (!isNaN(stepNum)) showStep(stepNum);
     });
   });
 
-  // Dynamic Work Entries
+  // Add listeners to all Next buttons
+  const nextButtons = document.querySelectorAll('.next-btn');
+  nextButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const activeContent = document.querySelector('.step-content.active');
+      if (activeContent) {
+        const currentStep = parseInt(activeContent.getAttribute('data-step'));
+        const nextStep = currentStep + 1;
+        if (nextStep <= stepContents.length) showStep(nextStep);
+      }
+    });
+  });
+
+  // Add listeners to all Previous buttons
+  const prevButtons = document.querySelectorAll('.prev-btn');
+  prevButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const activeContent = document.querySelector('.step-content.active');
+      if (activeContent) {
+        const currentStep = parseInt(activeContent.getAttribute('data-step'));
+        const prevStep = currentStep - 1;
+        if (prevStep >= 1) showStep(prevStep);
+      }
+    });
+  });
+
+  // Initially show step 1 (already active in HTML, but ensure)
+  showStep(1);
+
+  // ----- Dynamic Work Entries -----
   const workContainer = document.getElementById('workEntries');
   const addWorkBtn = document.getElementById('addWorkBtn');
   function addWorkEntry(data = {}) {
@@ -108,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (addWorkBtn) addWorkBtn.addEventListener('click', () => addWorkEntry());
   if (workContainer && workContainer.children.length === 0) addWorkEntry();
 
-  // Dynamic Education Entries
+  // ----- Dynamic Education Entries -----
   const eduContainer = document.getElementById('eduEntries');
   const addEduBtn = document.getElementById('addEduBtn');
   function addEduEntry(data = {}) {
@@ -131,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (addEduBtn) addEduBtn.addEventListener('click', () => addEduEntry());
   if (eduContainer && eduContainer.children.length === 0) addEduEntry();
 
-  // Collect data
+  // ----- Collect data functions -----
   function getWorkEntries() {
     const entries = [];
     document.querySelectorAll('.work-entry').forEach(entry => {
@@ -158,7 +171,21 @@ document.addEventListener('DOMContentLoaded', function() {
     return entries;
   }
 
-  // Template rendering
+  // ----- Template rendering -----
+  const fullName = document.getElementById('fullName');
+  const jobTitle = document.getElementById('jobTitle');
+  const email = document.getElementById('email');
+  const phone = document.getElementById('phone');
+  const address = document.getElementById('address');
+  const summary = document.getElementById('summary');
+  const skills = document.getElementById('skills');
+  const languages = document.getElementById('languages');
+  const templateSelect = document.getElementById('templateSelect');
+  const previewTemplateSelect = document.getElementById('previewTemplateSelect');
+  const resumePreview = document.getElementById('resumePreview');
+  const downloadBtn = document.getElementById('downloadPdfBtn');
+  const saveBtn = document.getElementById('saveResumeBtn');
+
   function renderModern(data) {
     return `
       <div class="resume-modern" style="font-family:'Chivo';max-width:800px;margin:0 auto;">

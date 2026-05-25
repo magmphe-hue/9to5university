@@ -9,8 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- html2pdf for easier PDF generation -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -39,19 +38,18 @@
   </div>
 </div>
 
-<!-- Multi-step Resume Builder Container -->
+<!-- Multi-step Resume Builder -->
 <div class="resume-builder-wrapper">
   <div class="builder-container">
-    <!-- Progress Steps -->
     <div class="steps">
-      <div class="step active" data-step="1">Personal Info</div>
-      <div class="step" data-step="2">Work Experience</div>
-      <div class="step" data-step="3">Education</div>
-      <div class="step" data-step="4">Skills</div>
-      <div class="step" data-step="5">Preview & Download</div>
+      <div class="step active" data-step="1">1. Personal</div>
+      <div class="step" data-step="2">2. Work</div>
+      <div class="step" data-step="3">3. Education</div>
+      <div class="step" data-step="4">4. Skills & Languages</div>
+      <div class="step" data-step="5">5. Preview</div>
     </div>
 
-    <!-- Step 1: Personal Info -->
+    <!-- Step 1 -->
     <div class="step-content active" data-step="1">
       <h3><i class="fas fa-user"></i> Personal Details</h3>
       <div class="form-row">
@@ -63,7 +61,7 @@
         <div class="form-group"><label>Phone</label><input type="tel" id="phone" placeholder="+1234567890"></div>
       </div>
       <div class="form-group"><label>Address</label><input type="text" id="address" placeholder="City, Country"></div>
-      <div class="form-group"><label>Professional Summary</label><textarea id="summary" rows="4" placeholder="Brief overview of your experience and goals..."></textarea></div>
+      <div class="form-group"><label>Professional Summary</label><textarea id="summary" rows="4" placeholder="Brief overview of your experience..."></textarea></div>
       <div class="form-group"><label>Template Style</label>
         <select id="templateSelect">
           <option value="modern">Modern</option>
@@ -74,40 +72,27 @@
       <div class="step-buttons"><button class="next-btn btn-primary">Next →</button></div>
     </div>
 
-    <!-- Step 2: Work Experience (dynamic entries) -->
+    <!-- Step 2: Work Experience -->
     <div class="step-content" data-step="2">
       <h3><i class="fas fa-briefcase"></i> Work Experience</h3>
-      <div id="workEntries" class="entries-container">
-        <div class="work-entry entry">
-          <div class="form-row"><div class="form-group"><label>Job Title</label><input type="text" class="job-title" placeholder="e.g., Frontend Developer"></div><div class="form-group"><label>Company</label><input type="text" class="company" placeholder="Company name"></div></div>
-          <div class="form-row"><div class="form-group"><label>Start Date</label><input type="text" class="start-date" placeholder="MM/YYYY"></div><div class="form-group"><label>End Date</label><input type="text" class="end-date" placeholder="Present or MM/YYYY"></div></div>
-          <div class="form-group"><label>Description</label><textarea class="work-desc" rows="2" placeholder="Key responsibilities and achievements..."></textarea></div>
-          <button class="remove-entry btn-outline btn-sm">Remove</button>
-        </div>
-      </div>
-      <button id="addWorkBtn" class="btn-secondary btn-sm"><i class="fas fa-plus"></i> Add Another Job</button>
+      <div id="workEntries" class="entries-container"></div>
+      <button type="button" id="addWorkBtn" class="btn-secondary btn-sm"><i class="fas fa-plus"></i> Add Work</button>
       <div class="step-buttons"><button class="prev-btn btn-outline">← Back</button><button class="next-btn btn-primary">Next →</button></div>
     </div>
 
-    <!-- Step 3: Education (dynamic entries) -->
+    <!-- Step 3: Education -->
     <div class="step-content" data-step="3">
       <h3><i class="fas fa-graduation-cap"></i> Education</h3>
-      <div id="eduEntries" class="entries-container">
-        <div class="edu-entry entry">
-          <div class="form-row"><div class="form-group"><label>Degree</label><input type="text" class="degree" placeholder="e.g., BSc Computer Science"></div><div class="form-group"><label>Institution</label><input type="text" class="institution" placeholder="University name"></div></div>
-          <div class="form-row"><div class="form-group"><label>Start Year</label><input type="text" class="edu-start" placeholder="YYYY"></div><div class="form-group"><label>End Year</label><input type="text" class="edu-end" placeholder="YYYY"></div></div>
-          <button class="remove-entry btn-outline btn-sm">Remove</button>
-        </div>
-      </div>
-      <button id="addEduBtn" class="btn-secondary btn-sm"><i class="fas fa-plus"></i> Add Another Education</button>
+      <div id="eduEntries" class="entries-container"></div>
+      <button type="button" id="addEduBtn" class="btn-secondary btn-sm"><i class="fas fa-plus"></i> Add Education</button>
       <div class="step-buttons"><button class="prev-btn btn-outline">← Back</button><button class="next-btn btn-primary">Next →</button></div>
     </div>
 
     <!-- Step 4: Skills & Languages -->
     <div class="step-content" data-step="4">
       <h3><i class="fas fa-code"></i> Skills & Languages</h3>
-      <div class="form-group"><label>Skills (comma separated)</label><input type="text" id="skills" placeholder="JavaScript, React, Python, ..."></div>
-      <div class="form-group"><label>Languages (comma separated)</label><input type="text" id="languages" placeholder="English, Spanish, ..."></div>
+      <div class="form-group"><label>Skills (comma separated)</label><input type="text" id="skills" placeholder="JavaScript, React, Python"></div>
+      <div class="form-group"><label>Languages (comma separated)</label><input type="text" id="languages" placeholder="English, Spanish"></div>
       <div class="step-buttons"><button class="prev-btn btn-outline">← Back</button><button class="next-btn btn-primary">Next →</button></div>
     </div>
 
@@ -131,12 +116,12 @@
 
 <footer class="footer">
   <div class="footer-grid">
-    <div class="footer-col"><h4>9to5 UNIVERSITY</h4><p>South Africa's first integrated workplace resource. Free tools, legal guidance, and entrepreneurial recognition.</p></div>
-    <div class="footer-col"><h4>RESOURCES</h4><a href="resume.html" class="footer-link">Resume Builder</a><br><a href="rights.html" class="footer-link">Workers' Rights</a><br><a href="issues.html" class="footer-link">Report Misconduct</a></div>
-    <div class="footer-col"><h4>PARTNERS</h4><a href="https://www.facebook.com/ondablock1" target="_blank">ON-DA BLOCK</a><br><a href="https://www.facebook.com/profile.php?id=100085596154873" target="_blank">Judacelia</a></div>
+    <div class="footer-col"><h4>9to5 UNIVERSITY</h4><p>South Africa's first integrated workplace resource.</p></div>
+    <div class="footer-col"><h4>RESOURCES</h4><a href="resume.html">Resume Builder</a><br><a href="rights.html">Workers' Rights</a><br><a href="issues.html">Report Misconduct</a></div>
+    <div class="footer-col"><h4>PARTNERS</h4><a href="https://www.facebook.com/ondablock1">ON-DA BLOCK</a><br><a href="https://www.facebook.com/profile.php?id=100085596154873">Judacelia</a></div>
     <div class="footer-col"><h4>CONTACT</h4><p>079 487 4559</p><p>mphelamlangeni@gmail.com</p></div>
   </div>
-  <div class="footer-copyright">© 2025 9to5 University — South Africa's Workplace Authority. Not an educational institution.</div>
+  <div class="footer-copyright">© 2025 9to5 University — South Africa's Workplace Authority.</div>
 </footer>
 
 <button id="backToTop" class="back-to-top"><i class="fas fa-arrow-up"></i></button>

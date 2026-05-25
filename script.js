@@ -1,94 +1,44 @@
 // ==========================================
-// SUPABASE INITIALIZATION (unchanged)
+// SUPABASE INITIALIZATION
 // ==========================================
 const SUPABASE_URL = 'https://pfqpyzfqwsksepoohive.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXB5emZxd3Nrc2Vwb29oaXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM1MTMsImV4cCI6MjA4OTk0OTUxM30.NPbcOFUPS_2zYg-2MjH1ukHrHqN8AjXRDrP1OpU4nNs';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Dark mode, back to top, ribbon, stats, profile functions – keep from previous version
-// (In your actual file, keep all the existing code for these features)
+// ==========================================
+// DARK MODE, BACK TO TOP, RIBBON (existing)
+// ==========================================
+const darkToggle = document.getElementById('darkModeToggle');
+if (darkToggle) {
+  darkToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+  });
+  if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+}
+const backBtn = document.getElementById('backToTop');
+if (backBtn) {
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) backBtn.classList.add('show');
+    else backBtn.classList.remove('show');
+  });
+  backBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+}
+const ribbon = document.querySelector('.ribbon');
+if (ribbon) {
+  ribbon.addEventListener('click', () => {
+    window.open('https://wa.me/27794874559?text=Hello%2C%20I%20want%20to%20advertise%20on%209to5%20University', '_blank');
+  });
+}
 
 // ==========================================
-// MULTI-STEP RESUME BUILDER (NEW)
+// RESUME BUILDER (FULLY FUNCTIONAL)
 // ==========================================
 document.addEventListener('DOMContentLoaded', function() {
-  // Only initialize if we are on the resume page (presence of .builder-container)
   const builderContainer = document.querySelector('.builder-container');
   if (!builderContainer) return;
 
-  // ---------- DOM elements ----------
-  const steps = document.querySelectorAll('.step');
-  const stepContents = document.querySelectorAll('.step-content');
-  const nextBtns = document.querySelectorAll('.next-btn');
-  const prevBtns = document.querySelectorAll('.prev-btn');
-
-  // Step navigation
-  function showStep(stepNumber) {
-    stepContents.forEach(content => content.classList.remove('active'));
-    document.querySelector(`.step-content[data-step="${stepNumber}"]`).classList.add('active');
-    steps.forEach(step => {
-      const stepNum = parseInt(step.getAttribute('data-step'));
-      if (stepNum === stepNumber) step.classList.add('active');
-      else step.classList.remove('active');
-    });
-  }
-
-  steps.forEach(step => {
-    step.addEventListener('click', () => {
-      const stepNum = parseInt(step.getAttribute('data-step'));
-      showStep(stepNum);
-    });
-  });
-  nextBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const currentStep = document.querySelector('.step-content.active').getAttribute('data-step');
-      showStep(parseInt(currentStep) + 1);
-    });
-  });
-  prevBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const currentStep = document.querySelector('.step-content.active').getAttribute('data-step');
-      showStep(parseInt(currentStep) - 1);
-    });
-  });
-
-  // Dynamic Work Experience
-  const workContainer = document.getElementById('workEntries');
-  const addWorkBtn = document.getElementById('addWorkBtn');
-  function addWorkEntry(data = {}) {
-    const div = document.createElement('div');
-    div.className = 'work-entry entry';
-    div.innerHTML = `
-      <div class="form-row"><div class="form-group"><label>Job Title</label><input type="text" class="job-title" value="${escapeHtml(data.title || '')}" placeholder="e.g., Frontend Developer"></div><div class="form-group"><label>Company</label><input type="text" class="company" value="${escapeHtml(data.company || '')}" placeholder="Company name"></div></div>
-      <div class="form-row"><div class="form-group"><label>Start Date</label><input type="text" class="start-date" value="${escapeHtml(data.start || '')}" placeholder="MM/YYYY"></div><div class="form-group"><label>End Date</label><input type="text" class="end-date" value="${escapeHtml(data.end || '')}" placeholder="Present or MM/YYYY"></div></div>
-      <div class="form-group"><label>Description</label><textarea class="work-desc" rows="2" placeholder="Key responsibilities and achievements...">${escapeHtml(data.desc || '')}</textarea></div>
-      <button class="remove-entry btn-outline btn-sm">Remove</button>
-    `;
-    div.querySelector('.remove-entry').addEventListener('click', () => div.remove());
-    workContainer.appendChild(div);
-  }
-  if (addWorkBtn) addWorkBtn.addEventListener('click', () => addWorkEntry());
-  // Initialize with one empty entry if none exist
-  if (workContainer && workContainer.children.length === 0) addWorkEntry();
-
-  // Dynamic Education
-  const eduContainer = document.getElementById('eduEntries');
-  const addEduBtn = document.getElementById('addEduBtn');
-  function addEduEntry(data = {}) {
-    const div = document.createElement('div');
-    div.className = 'edu-entry entry';
-    div.innerHTML = `
-      <div class="form-row"><div class="form-group"><label>Degree</label><input type="text" class="degree" value="${escapeHtml(data.degree || '')}" placeholder="e.g., BSc Computer Science"></div><div class="form-group"><label>Institution</label><input type="text" class="institution" value="${escapeHtml(data.institution || '')}" placeholder="University name"></div></div>
-      <div class="form-row"><div class="form-group"><label>Start Year</label><input type="text" class="edu-start" value="${escapeHtml(data.start || '')}" placeholder="YYYY"></div><div class="form-group"><label>End Year</label><input type="text" class="edu-end" value="${escapeHtml(data.end || '')}" placeholder="YYYY"></div></div>
-      <button class="remove-entry btn-outline btn-sm">Remove</button>
-    `;
-    div.querySelector('.remove-entry').addEventListener('click', () => div.remove());
-    eduContainer.appendChild(div);
-  }
-  if (addEduBtn) addEduBtn.addEventListener('click', () => addEduEntry());
-  if (eduContainer && eduContainer.children.length === 0) addEduEntry();
-
-  // Template switching & preview
+  // DOM elements
   const fullName = document.getElementById('fullName');
   const jobTitle = document.getElementById('jobTitle');
   const email = document.getElementById('email');
@@ -100,10 +50,88 @@ document.addEventListener('DOMContentLoaded', function() {
   const templateSelect = document.getElementById('templateSelect');
   const previewTemplateSelect = document.getElementById('previewTemplateSelect');
   const resumePreview = document.getElementById('resumePreview');
-  const downloadPdfBtn = document.getElementById('downloadPdfBtn');
-  const saveResumeBtn = document.getElementById('saveResumeBtn');
+  const downloadBtn = document.getElementById('downloadPdfBtn');
+  const saveBtn = document.getElementById('saveResumeBtn');
 
-  // Helper: collect work entries
+  // Step navigation
+  const steps = document.querySelectorAll('.step');
+  const stepContents = document.querySelectorAll('.step-content');
+  function showStep(stepNumber) {
+    stepContents.forEach(c => c.classList.remove('active'));
+    document.querySelector(`.step-content[data-step="${stepNumber}"]`).classList.add('active');
+    steps.forEach(s => {
+      const num = parseInt(s.getAttribute('data-step'));
+      if (num === stepNumber) s.classList.add('active');
+      else s.classList.remove('active');
+    });
+  }
+  steps.forEach(s => {
+    s.addEventListener('click', () => {
+      const stepNum = parseInt(s.getAttribute('data-step'));
+      showStep(stepNum);
+    });
+  });
+  document.querySelectorAll('.next-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const current = document.querySelector('.step-content.active').getAttribute('data-step');
+      showStep(parseInt(current) + 1);
+    });
+  });
+  document.querySelectorAll('.prev-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const current = document.querySelector('.step-content.active').getAttribute('data-step');
+      showStep(parseInt(current) - 1);
+    });
+  });
+
+  // Dynamic Work Entries
+  const workContainer = document.getElementById('workEntries');
+  const addWorkBtn = document.getElementById('addWorkBtn');
+  function addWorkEntry(data = {}) {
+    const div = document.createElement('div');
+    div.className = 'work-entry entry';
+    div.innerHTML = `
+      <div class="form-row">
+        <div class="form-group"><label>Job Title</label><input type="text" class="job-title" value="${escapeHtml(data.title || '')}" placeholder="e.g., Frontend Developer"></div>
+        <div class="form-group"><label>Company</label><input type="text" class="company" value="${escapeHtml(data.company || '')}" placeholder="Company name"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Start Date</label><input type="text" class="start-date" value="${escapeHtml(data.start || '')}" placeholder="MM/YYYY"></div>
+        <div class="form-group"><label>End Date</label><input type="text" class="end-date" value="${escapeHtml(data.end || '')}" placeholder="Present or MM/YYYY"></div>
+      </div>
+      <div class="form-group"><label>Description</label><textarea class="work-desc" rows="2" placeholder="Key responsibilities...">${escapeHtml(data.desc || '')}</textarea></div>
+      <button type="button" class="remove-entry btn-outline btn-sm">Remove</button>
+    `;
+    div.querySelector('.remove-entry').addEventListener('click', () => div.remove());
+    workContainer.appendChild(div);
+  }
+  if (addWorkBtn) addWorkBtn.addEventListener('click', () => addWorkEntry());
+  if (workContainer && workContainer.children.length === 0) addWorkEntry();
+
+  // Dynamic Education Entries
+  const eduContainer = document.getElementById('eduEntries');
+  const addEduBtn = document.getElementById('addEduBtn');
+  function addEduEntry(data = {}) {
+    const div = document.createElement('div');
+    div.className = 'edu-entry entry';
+    div.innerHTML = `
+      <div class="form-row">
+        <div class="form-group"><label>Degree</label><input type="text" class="degree" value="${escapeHtml(data.degree || '')}" placeholder="BSc Computer Science"></div>
+        <div class="form-group"><label>Institution</label><input type="text" class="institution" value="${escapeHtml(data.institution || '')}" placeholder="University name"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Start Year</label><input type="text" class="edu-start" value="${escapeHtml(data.start || '')}" placeholder="YYYY"></div>
+        <div class="form-group"><label>End Year</label><input type="text" class="edu-end" value="${escapeHtml(data.end || '')}" placeholder="YYYY"></div>
+      </div>
+      <button type="button" class="remove-entry btn-outline btn-sm">Remove</button>
+    `;
+    div.querySelector('.remove-entry').addEventListener('click', () => div.remove());
+    eduContainer.appendChild(div);
+  }
+  if (addEduBtn) addEduBtn.addEventListener('click', () => addEduEntry());
+  if (eduContainer && eduContainer.children.length === 0) addEduEntry();
+
+  // Collect data
   function getWorkEntries() {
     const entries = [];
     document.querySelectorAll('.work-entry').forEach(entry => {
@@ -130,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
     return entries;
   }
 
-  // Template rendering functions (simplified but professional)
+  // Template rendering
   function renderModern(data) {
     return `
       <div class="resume-modern" style="font-family:'Chivo';max-width:800px;margin:0 auto;">
@@ -158,57 +186,61 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     `;
   }
-  // Classic and Executive templates (similar structure, different styling)
-  function renderClassic(data) { /* similar but classic style */ return renderModern(data).replace('background:#014656', 'background:#2c3e50'); }
-  function renderExecutive(data) { /* executive style with gold accents */ return renderModern(data).replace('#014656', '#1a1a2e').replace('#00a2ad', '#f6a801'); }
+  function renderClassic(data) {
+    return renderModern(data).replace('#014656', '#2c3e50').replace('#00a2ad', '#3498db');
+  }
+  function renderExecutive(data) {
+    return renderModern(data).replace('#014656', '#1a1a2e').replace('#00a2ad', '#f6a801');
+  }
 
   function updatePreview() {
     const work = getWorkEntries();
     const edu = getEduEntries();
-    const selectedTemplate = previewTemplateSelect.value;
+    const selectedTemplate = previewTemplateSelect ? previewTemplateSelect.value : (templateSelect ? templateSelect.value : 'modern');
     const data = {
-      fullName: fullName.value,
-      jobTitle: jobTitle.value,
-      email: email.value,
-      phone: phone.value,
-      address: address.value,
-      summary: summary.value,
-      skills: skills.value,
-      languages: languages.value,
+      fullName: fullName?.value || '',
+      jobTitle: jobTitle?.value || '',
+      email: email?.value || '',
+      phone: phone?.value || '',
+      address: address?.value || '',
+      summary: summary?.value || '',
+      skills: skills?.value || '',
+      languages: languages?.value || '',
       work, edu
     };
     let html = '';
     if (selectedTemplate === 'modern') html = renderModern(data);
     else if (selectedTemplate === 'classic') html = renderClassic(data);
     else html = renderExecutive(data);
-    resumePreview.innerHTML = html;
+    if (resumePreview) resumePreview.innerHTML = html;
   }
 
-  // Sync template selects
-  function syncTemplates() {
-    if (templateSelect) previewTemplateSelect.value = templateSelect.value;
-    updatePreview();
+  // Sync template selects and add listeners
+  if (templateSelect) {
+    templateSelect.addEventListener('change', () => {
+      if (previewTemplateSelect) previewTemplateSelect.value = templateSelect.value;
+      updatePreview();
+    });
   }
-  if (templateSelect) templateSelect.addEventListener('change', () => { previewTemplateSelect.value = templateSelect.value; updatePreview(); });
-  if (previewTemplateSelect) previewTemplateSelect.addEventListener('change', () => { if(templateSelect) templateSelect.value = previewTemplateSelect.value; updatePreview(); });
-
-  // Attach input listeners to all form fields
+  if (previewTemplateSelect) {
+    previewTemplateSelect.addEventListener('change', () => {
+      if (templateSelect) templateSelect.value = previewTemplateSelect.value;
+      updatePreview();
+    });
+  }
   const allInputs = [fullName, jobTitle, email, phone, address, summary, skills, languages];
   allInputs.forEach(inp => inp?.addEventListener('input', updatePreview));
-  // Also listen for dynamic changes – we'll call updatePreview after adding/removing entries
-  function observeDynamicEntries() {
-    const observer = new MutationObserver(() => updatePreview());
-    if (workContainer) observer.observe(workContainer, { childList: true, subtree: true, attributes: true });
-    if (eduContainer) observer.observe(eduContainer, { childList: true, subtree: true, attributes: true });
-  }
-  observeDynamicEntries();
+  // Observe dynamic entries
+  const observer = new MutationObserver(() => updatePreview());
+  if (workContainer) observer.observe(workContainer, { childList: true, subtree: true, attributes: true });
+  if (eduContainer) observer.observe(eduContainer, { childList: true, subtree: true, attributes: true });
   updatePreview();
 
-  // PDF Download using html2pdf
+  // PDF Download
   async function downloadPDF() {
-    const element = resumePreview;
-    if (!element) return;
+    if (!resumePreview) return;
     try {
+      const element = resumePreview;
       const opt = {
         margin: [0.5, 0.5, 0.5, 0.5],
         filename: 'resume.pdf',
@@ -222,9 +254,9 @@ document.addEventListener('DOMContentLoaded', function() {
       alert('PDF generation failed. Try again.');
     }
   }
-  if (downloadPdfBtn) downloadPdfBtn.addEventListener('click', downloadPDF);
+  if (downloadBtn) downloadBtn.addEventListener('click', downloadPDF);
 
-  // Save to Supabase (build data object)
+  // Save to Supabase
   async function saveResume() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -233,47 +265,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     const work = getWorkEntries();
     const edu = getEduEntries();
+    const template = previewTemplateSelect ? previewTemplateSelect.value : (templateSelect ? templateSelect.value : 'modern');
     const resumeData = {
       user_id: user.id,
-      full_name: fullName.value,
+      first_name: fullName.value.split(' ')[0] || '',
+      last_name: fullName.value.split(' ').slice(1).join(' ') || '',
       job_title: jobTitle.value,
-      email: email.value,
       phone: phone.value,
+      email: email.value,
       address: address.value,
       summary: summary.value,
       skills: skills.value,
       languages: languages.value,
-      work_experience: JSON.stringify(work),
+      experience: JSON.stringify(work),
       education: JSON.stringify(edu),
-      template: previewTemplateSelect.value,
+      template: template,
       created_at: new Date().toISOString()
     };
-    // Note: we need to adjust the resumes table columns to match this structure, or map to existing columns.
-    // For simplicity, we'll store the data in a new table 'resumes_v2' or adapt existing.
-    // Here we assume you have a table 'resumes' with columns: user_id, full_name, job_title, etc. Adjust accordingly.
-    const { error } = await supabase.from('resumes').insert([{
-      user_id: resumeData.user_id,
-      first_name: resumeData.full_name.split(' ')[0] || '',
-      last_name: resumeData.full_name.split(' ').slice(1).join(' ') || '',
-      job_title: resumeData.job_title,
-      phone: resumeData.phone,
-      email: resumeData.email,
-      address: resumeData.address,
-      summary: resumeData.summary,
-      skills: resumeData.skills,
-      languages: resumeData.languages,
-      experience: JSON.stringify(resumeData.work_experience),
-      education: JSON.stringify(resumeData.education),
-      template: resumeData.template,
-      created_at: resumeData.created_at
-    }]);
+    const { error } = await supabase.from('resumes').insert([resumeData]);
     if (error) alert('Save failed: ' + error.message);
     else alert('Resume saved to your profile!');
   }
-  if (saveResumeBtn) saveResumeBtn.addEventListener('click', saveResume);
+  if (saveBtn) saveBtn.addEventListener('click', saveResume);
 });
 
-// Helper escapeHtml (already defined elsewhere – ensure it exists)
+// Helper escapeHtml
 function escapeHtml(str) {
   if (!str) return '';
   return str.replace(/[&<>]/g, function(m) {
@@ -281,5 +297,84 @@ function escapeHtml(str) {
     if (m === '<') return '&lt;';
     if (m === '>') return '&gt;';
     return m;
+  });
+}
+
+// ==========================================
+// PROFILE PAGE (LOAD SAVED RESUME)
+// ==========================================
+if (window.location.pathname.includes('resume.html')) {
+  const loadData = localStorage.getItem('loadResumeData');
+  if (loadData) {
+    const resume = JSON.parse(loadData);
+    setTimeout(() => {
+      const fullName = document.getElementById('fullName');
+      if (fullName) {
+        fullName.value = `${resume.first_name} ${resume.last_name}`.trim();
+        document.getElementById('jobTitle').value = resume.job_title || '';
+        document.getElementById('email').value = resume.email || '';
+        document.getElementById('phone').value = resume.phone || '';
+        document.getElementById('address').value = resume.address || '';
+        document.getElementById('summary').value = resume.summary || '';
+        document.getElementById('skills').value = resume.skills || '';
+        document.getElementById('languages').value = resume.languages || '';
+        if (resume.template && document.getElementById('templateSelect')) {
+          document.getElementById('templateSelect').value = resume.template;
+          if (document.getElementById('previewTemplateSelect')) {
+            document.getElementById('previewTemplateSelect').value = resume.template;
+          }
+        }
+        // Load work entries
+        const workContainer = document.getElementById('workEntries');
+        if (workContainer && resume.experience) {
+          workContainer.innerHTML = '';
+          const workExp = JSON.parse(resume.experience);
+          workExp.forEach(w => {
+            const div = document.createElement('div');
+            div.className = 'work-entry entry';
+            div.innerHTML = `
+              <div class="form-row"><div class="form-group"><label>Job Title</label><input type="text" class="job-title" value="${escapeHtml(w.title)}"></div><div class="form-group"><label>Company</label><input type="text" class="company" value="${escapeHtml(w.company)}"></div></div>
+              <div class="form-row"><div class="form-group"><label>Start Date</label><input type="text" class="start-date" value="${escapeHtml(w.start)}"></div><div class="form-group"><label>End Date</label><input type="text" class="end-date" value="${escapeHtml(w.end)}"></div></div>
+              <div class="form-group"><label>Description</label><textarea class="work-desc" rows="2">${escapeHtml(w.desc)}</textarea></div>
+              <button class="remove-entry btn-outline btn-sm">Remove</button>
+            `;
+            div.querySelector('.remove-entry').addEventListener('click', () => div.remove());
+            workContainer.appendChild(div);
+          });
+        }
+        // Load education entries
+        const eduContainer = document.getElementById('eduEntries');
+        if (eduContainer && resume.education) {
+          eduContainer.innerHTML = '';
+          const eduExp = JSON.parse(resume.education);
+          eduExp.forEach(e => {
+            const div = document.createElement('div');
+            div.className = 'edu-entry entry';
+            div.innerHTML = `
+              <div class="form-row"><div class="form-group"><label>Degree</label><input type="text" class="degree" value="${escapeHtml(e.degree)}"></div><div class="form-group"><label>Institution</label><input type="text" class="institution" value="${escapeHtml(e.institution)}"></div></div>
+              <div class="form-row"><div class="form-group"><label>Start Year</label><input type="text" class="edu-start" value="${escapeHtml(e.start)}"></div><div class="form-group"><label>End Year</label><input type="text" class="edu-end" value="${escapeHtml(e.end)}"></div></div>
+              <button class="remove-entry btn-outline btn-sm">Remove</button>
+            `;
+            div.querySelector('.remove-entry').addEventListener('click', () => div.remove());
+            eduContainer.appendChild(div);
+          });
+        }
+        // Trigger preview update
+        const event = new Event('input');
+        document.getElementById('fullName').dispatchEvent(event);
+      }
+      localStorage.removeItem('loadResumeData');
+    }, 100);
+  }
+}
+
+// ==========================================
+// HUSTLER NOMINATION
+// ==========================================
+const nominateBtn = document.getElementById('nominateBtn');
+if (nominateBtn) {
+  nominateBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.open('https://wa.me/27794874559?text=I%20want%20to%20nominate%20someone%20for%20Hustler%20of%20the%20Month', '_blank');
   });
 }

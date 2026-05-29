@@ -1,230 +1,270 @@
-// Supabase configuration (same as before)
+// ==========================================
+// SUPABASE INITIALIZATION
+// ==========================================
 const SUPABASE_URL = 'https://pfqpyzfqwsksepoohive.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXB5emZxd3Nrc2Vwb29oaXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM1MTMsImV4cCI6MjA4OTk0OTUxM30.NPbcOFUPS_2zYg-2MjH1ukHrHqN8AjXRDrP1OpU4nNs';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ================= PAGE SWITCHING (unchanged) =================
-window.switchPage = function(pageId) {
-  document.querySelectorAll('.page-section').forEach(section => section.classList.remove('active-page'));
-  const target = document.getElementById(pageId + '-page');
-  if (target) target.classList.add('active-page');
-  document.querySelectorAll('.nav-link').forEach(link => {
-    link.classList.remove('active');
-    if (link.dataset.page === pageId) link.classList.add('active');
+// ==========================================
+// DARK MODE TOGGLE
+// ==========================================
+const darkToggle = document.getElementById('darkModeToggle');
+if (darkToggle) {
+  darkToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
   });
-  window.scrollTo(0, 0);
-  if (pageId === 'profile') renderProfilePage();
-  if (pageId === 'resume') initResumeBuilder();
-};
-document.body.addEventListener('click', (e) => {
-  let target = e.target.closest('[data-page]');
-  if (target && target.dataset.page) {
-    e.preventDefault();
-    window.switchPage(target.dataset.page);
-  }
-});
-
-// ================= NEW RESUME BUILDER LOGIC =================
-let currentUser = null;
-
-function updatePreview() {
-  const name = document.getElementById('fullName')?.value || '';
-  const title = document.getElementById('jobTitle')?.value || '';
-  const email = document.getElementById('email')?.value || '';
-  const phone = document.getElementById('phone')?.value || '';
-  const summary = document.getElementById('summary')?.value || '';
-  const skillsRaw = document.getElementById('skills')?.value || '';
-  const skills = skillsRaw.split(',').map(s => s.trim()).filter(s => s);
-  const expRaw = document.getElementById('experience')?.value || '';
-  const expLines = expRaw.split('\n').filter(l => l.trim());
-
-  document.getElementById('previewName').innerText = name || 'Not provided';
-  document.getElementById('previewTitle').innerText = title || 'Not provided';
-  document.getElementById('previewEmail').innerText = email;
-  document.getElementById('previewPhone').innerText = phone;
-  document.getElementById('previewSummary').innerText = summary;
-
-  const skillsContainer = document.getElementById('previewSkills');
-  skillsContainer.innerHTML = skills.map(s => `<span>${s}</span>`).join('');
-  const expContainer = document.getElementById('previewExperience');
-  expContainer.innerHTML = expLines.map(line => `<p>${line}</p>`).join('');
+  if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
 }
 
-function initResumeBuilder() {
-  const generateBtn = document.getElementById('generatePreviewBtn');
-  const saveBtn = document.getElementById('saveResumeBtnNew');
-  const downloadBtn = document.getElementById('downloadPdfBtnNew');
-  const inputs = ['fullName', 'jobTitle', 'email', 'phone', 'summary', 'experience', 'skills'];
-  inputs.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.removeEventListener('input', updatePreview);
-      el.addEventListener('input', updatePreview);
-    }
+// ==========================================
+// BACK TO TOP BUTTON
+// ==========================================
+const backBtn = document.getElementById('backToTop');
+if (backBtn) {
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) backBtn.classList.add('show');
+    else backBtn.classList.remove('show');
   });
-  if (generateBtn) {
-    generateBtn.removeEventListener('click', updatePreview);
-    generateBtn.addEventListener('click', updatePreview);
-  }
-  if (saveBtn) {
-    saveBtn.removeEventListener('click', saveCurrentResume);
-    saveBtn.addEventListener('click', saveCurrentResume);
-  }
-  if (downloadBtn) {
-    downloadBtn.removeEventListener('click', downloadPDF);
-    downloadBtn.addEventListener('click', downloadPDF);
-  }
-  updatePreview();
+  backBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
 
-async function saveCurrentResume() {
-  const user = await checkUser();
-  if (!user) {
-    alert('Please sign in to save your resume.');
-    window.switchPage('profile');
-    return;
-  }
-  const resumeData = {
-    fullName: document.getElementById('fullName')?.value,
-    jobTitle: document.getElementById('jobTitle')?.value,
-    email: document.getElementById('email')?.value,
-    phone: document.getElementById('phone')?.value,
-    summary: document.getElementById('summary')?.value,
-    experience: document.getElementById('experience')?.value,
-    skills: document.getElementById('skills')?.value
-  };
-  const name = resumeData.fullName || 'Untitled';
-  const { error } = await supabase.from('resumes').insert({
-    user_id: user.id,
-    name,
-    data: resumeData
+// ==========================================
+// RIBBON CLICK – WhatsApp Chat with Admin
+// ==========================================
+const ribbon = document.querySelector('.ribbon');
+if (ribbon) {
+  ribbon.addEventListener('click', () => {
+    window.open('https://wa.me/27794874559?text=Hello%2C%20I%20want%20to%20advertise%20on%209to5%20University', '_blank');
   });
-  if (error) alert('Error saving resume: ' + error.message);
-  else alert('Resume saved successfully!');
 }
 
-async function downloadPDF() {
-  const element = document.getElementById('resumePreviewCard');
-  if (!element) {
-    alert('No resume preview to download.');
-    return;
+// ==========================================
+// ANIMATED STATS (HOME PAGE)
+// ==========================================
+function animateStats() {
+  document.querySelectorAll('.stat-number[data-target]').forEach(el => {
+    const target = parseInt(el.getAttribute('data-target'));
+    let current = 0;
+    const increment = target / 30;
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        el.innerText = target;
+        clearInterval(timer);
+      } else {
+        el.innerText = Math.floor(current);
+      }
+    }, 30);
+  });
+}
+if (document.querySelector('.stat-number')) animateStats();
+
+// ==========================================
+// RESUME BUILDER – SIMPLE WORKING VERSION
+// ==========================================
+document.addEventListener('DOMContentLoaded', function() {
+  const firstName = document.getElementById('firstName');
+  if (!firstName) return;
+
+  const lastName = document.getElementById('lastName');
+  const jobTitle = document.getElementById('jobTitle');
+  const phone = document.getElementById('phone');
+  const emailField = document.getElementById('email');
+  const address = document.getElementById('address');
+  const summary = document.getElementById('summary');
+  const experience = document.getElementById('experience');
+  const education = document.getElementById('education');
+  const skills = document.getElementById('skills');
+  const languages = document.getElementById('languages');
+  const awards = document.getElementById('awards');
+  const references = document.getElementById('references');
+  const cvPreview = document.getElementById('cvPreview');
+  const downloadBtn = document.getElementById('downloadPdfBtn');
+  const saveBtn = document.getElementById('saveResumeBtn');
+
+  function parseExperience(t) {
+    return t.split('\n').filter(l=>l.trim()).map(l=>{
+      const p=l.split('|').map(v=>v.trim());
+      return {position:p[0]||'',company:p[1]||'',location:p[2]||'',start:p[3]||'',end:p[4]||'',description:p[5]||''};
+    });
   }
-  try {
-    const canvas = await html2canvas(element, { scale: 3, backgroundColor: '#ffffff', logging: false });
-    const imgData = canvas.toDataURL('image/png');
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const imgWidth = pdfWidth - 20;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-    pdf.save('resume_9to5.pdf');
-  } catch(err) {
-    console.error(err);
-    alert('PDF generation failed. Please try again.');
+  function parseEducation(t) {
+    return t.split('\n').filter(l=>l.trim()).map(l=>{
+      const p=l.split('|').map(v=>v.trim());
+      return {institution:p[0]||'',degree:p[1]||'',start:p[2]||'',end:p[3]||''};
+    });
   }
-}
+  function parseAwards(t) {
+    return t.split('\n').filter(l=>l.trim()).map(l=>{
+      const p=l.split('|').map(v=>v.trim());
+      return {title:p[0]||'',description:p[1]||'',year:p[2]||''};
+    });
+  }
+  function parseReferences(t) {
+    return t.split('\n').filter(l=>l.trim()).map(l=>{
+      const p=l.split('|').map(v=>v.trim());
+      return {name:p[0]||'',company:p[1]||'',phone:p[2]||'',email:p[3]||''};
+    });
+  }
+  function getSkillsArray() { return skills.value.split(',').map(s=>s.trim()).filter(s=>s); }
+  function getLanguagesArray() { return languages.value.split(',').map(l=>l.trim()).filter(l=>l); }
 
-// ================= AUTH & PROFILE (unchanged from previous full version) =================
-async function checkUser() {
-  const { data: { user } } = await supabase.auth.getUser();
-  currentUser = user;
-  return user;
-}
-
-async function renderProfilePage() {
-  const container = document.getElementById('profileContainer');
-  const user = await checkUser();
-  if (!user) {
-    container.innerHTML = `
-      <h2>Access Your Profile</h2>
-      <div style="display:flex; gap:2rem; flex-wrap:wrap;">
-        <div class="auth-form">
-          <h3>Sign In</h3>
-          <input type="email" id="loginEmail" placeholder="Email">
-          <input type="password" id="loginPassword" placeholder="Password">
-          <button class="btn-primary" id="loginBtn">Sign In</button>
-        </div>
-        <div class="auth-form">
-          <h3>Create Account</h3>
-          <input type="email" id="signupEmail" placeholder="Email">
-          <input type="password" id="signupPassword" placeholder="Password">
-          <input type="text" id="signupName" placeholder="Full Name">
-          <button class="btn-primary" id="signupBtn">Sign Up</button>
+  function professionalTemplate(d) {
+    return `
+      <div class="resume-a4" style="font-family:'Chivo',sans-serif;padding:1rem;">
+        <div style="text-align:center;"><h1 style="font-family:'Rubik Mono One',monospace;color:#014656;">${escapeHtml(d.firstName)} ${escapeHtml(d.lastName)}</h1><p style="color:#00a2ad;">${escapeHtml(d.jobTitle)}</p></div>
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;background:#f0f9fa;padding:0.6rem;border-radius:8px;"><span><i class="fas fa-phone"></i> ${escapeHtml(d.phone)}</span><span><i class="fas fa-envelope"></i> ${escapeHtml(d.email)}</span><span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(d.address)}</span></div>
+        <div style="display:flex;gap:1.5rem;margin-top:1rem;">
+          <div style="flex:1.5;"><h2 style="font-family:'Rubik Mono One',monospace;border-bottom:2px solid #00a2ad;">Professional Summary</h2><p>${escapeHtml(d.summary)}</p>
+          <h2>Work Experience</h2>${d.experience.map(exp=>`<div><strong>${escapeHtml(exp.position)}</strong> at ${escapeHtml(exp.company)} (${escapeHtml(exp.start)}–${escapeHtml(exp.end)})<br><em>${escapeHtml(exp.location)}</em><br>${escapeHtml(exp.description)}</div>`).join('')}
+          <h2>Education</h2>${d.education.map(edu=>`<div><strong>${escapeHtml(edu.degree)}</strong> – ${escapeHtml(edu.institution)} (${escapeHtml(edu.start)}–${escapeHtml(edu.end)})</div>`).join('')}</div>
+          <div style="flex:1;"><h2>Skills</h2><ul>${d.skills.map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ul>
+          <h2>Languages</h2><ul>${d.languages.map(l=>`<li>${escapeHtml(l)}</li>`).join('')}</ul>
+          ${d.awards.length?`<h2>Awards</h2><ul>${d.awards.map(aw=>`<li><strong>${escapeHtml(aw.title)}</strong> (${escapeHtml(aw.year)}) – ${escapeHtml(aw.description)}</li>`).join('')}</ul>`:''}
+          ${d.references.length?`<h2>References</h2><ul>${d.references.map(ref=>`<li>${escapeHtml(ref.name)}, ${escapeHtml(ref.company)}<br>${escapeHtml(ref.phone)} | ${escapeHtml(ref.email)}</li>`).join('')}</ul>`:''}</div>
         </div>
       </div>
     `;
-    document.getElementById('loginBtn')?.addEventListener('click', login);
-    document.getElementById('signupBtn')?.addEventListener('click', signup);
+  }
+
+  function updatePreview() {
+    const data = {
+      firstName: firstName.value, lastName: lastName.value, jobTitle: jobTitle.value,
+      phone: phone.value, email: emailField.value, address: address.value, summary: summary.value,
+      experience: parseExperience(experience.value), education: parseEducation(education.value),
+      skills: getSkillsArray(), languages: getLanguagesArray(),
+      awards: parseAwards(awards.value), references: parseReferences(references.value)
+    };
+    cvPreview.innerHTML = professionalTemplate(data);
+  }
+
+  async function downloadPDF() {
+    try {
+      const canvas = await html2canvas(cvPreview, { scale: 2, backgroundColor: '#ffffff' });
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 210;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight, position = 0;
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= 297;
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= 297;
+      }
+      pdf.save('resume.pdf');
+    } catch(err) { alert('PDF generation failed'); }
+  }
+
+  async function saveResume() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { alert('Please sign in first'); return; }
+    const resumeData = {
+      user_id: user.id, first_name: firstName.value, last_name: lastName.value, job_title: jobTitle.value,
+      phone: phone.value, email: emailField.value, address: address.value, summary: summary.value,
+      experience: experience.value, education: education.value, skills: skills.value, languages: languages.value,
+      awards: awards.value, references: references.value, created_at: new Date().toISOString()
+    };
+    const { error } = await supabase.from('resumes').insert([resumeData]);
+    if (error) alert('Save failed: '+error.message);
+    else alert('Resume saved!');
+  }
+
+  const inputs = [firstName, lastName, jobTitle, phone, emailField, address, summary, experience, education, skills, languages, awards, references];
+  inputs.forEach(inp => inp.addEventListener('input', updatePreview));
+  downloadBtn.addEventListener('click', downloadPDF);
+  saveBtn.addEventListener('click', saveResume);
+  updatePreview();
+});
+
+// ==========================================
+// PROFILE PAGE (AUTH & SAVED RESUMES)
+// ==========================================
+async function loadProfilePage() {
+  const container = document.getElementById('profileContainer');
+  if (!container) return;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    container.innerHTML = `<div class="auth-form"><h2>Sign In / Sign Up</h2><input type="email" id="authEmail" placeholder="Email"><input type="password" id="authPassword" placeholder="Password"><button id="loginBtn" class="btn-primary">Sign In</button><button id="signupBtn" class="btn-outline">Sign Up</button></div>`;
+    document.getElementById('loginBtn')?.addEventListener('click', async () => {
+      const email = document.getElementById('authEmail').value, pwd = document.getElementById('authPassword').value;
+      const { error } = await supabase.auth.signInWithPassword({ email, password: pwd });
+      alert(error ? error.message : 'Logged in!');
+      if (!error) loadProfilePage();
+    });
+    document.getElementById('signupBtn')?.addEventListener('click', async () => {
+      const email = document.getElementById('authEmail').value, pwd = document.getElementById('authPassword').value;
+      const { error } = await supabase.auth.signUp({ email, password: pwd });
+      alert(error ? error.message : 'Account created! You can now sign in.');
+    });
     return;
   }
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-  const { data: resumes } = await supabase.from('resumes').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
-  container.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-      <h2>Welcome, ${profile?.full_name || user.email}</h2>
-      <button class="btn-outline" id="logoutBtn">Sign Out</button>
-    </div>
-    <div style="margin-bottom: 2rem;">
-      <h3>Edit Profile</h3>
-      <input type="text" id="editName" placeholder="Full Name" value="${profile?.full_name || ''}">
-      <input type="text" id="editPhone" placeholder="Phone" value="${profile?.phone || ''}">
-      <button class="btn-primary" id="updateProfileBtn">Update Profile</button>
-    </div>
-    <div>
-      <h3>Saved Resumes</h3>
-      ${resumes?.length ? resumes.map(res => `<div class="saved-resume-item"><span><strong>${res.name}</strong> (${new Date(res.created_at).toLocaleDateString()})</span><button class="btn-outline" data-id="${res.id}" onclick="loadResume('${res.id}')">Load</button></div>`).join('') : '<p>No saved resumes yet.</p>'}
-    </div>
-  `;
-  document.getElementById('logoutBtn')?.addEventListener('click', () => supabase.auth.signOut().then(() => renderProfilePage()));
-  document.getElementById('updateProfileBtn')?.addEventListener('click', async () => {
-    const full_name = document.getElementById('editName').value;
-    const phone = document.getElementById('editPhone').value;
-    await supabase.from('profiles').update({ full_name, phone }).eq('id', user.id);
-    alert('Profile updated!');
-    renderProfilePage();
+  const { data: resumes, error } = await supabase.from('resumes').select('*').eq('user_id', user.id);
+  if (error) console.error(error);
+  container.innerHTML = `<h2>Your Profile</h2><p><strong>Email:</strong> ${user.email}</p><p><strong>Account created:</strong> ${new Date(user.created_at).toLocaleDateString()}</p><p><strong>Saved resumes:</strong> ${resumes?.length || 0}</p><button id="logoutBtn" class="btn-outline" style="background:#dc3545;color:white;">Sign Out</button><hr><h3>Your Resumes</h3><div id="savedResumesList">${(resumes || []).map(r => `<div class="saved-resume-item"><span><strong>${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</strong> – ${escapeHtml(r.job_title)}</span><button class="load-resume" data-id="${r.id}">Load</button><button class="delete-resume" data-id="${r.id}" style="background:#dc3545;">Delete</button></div>`).join('') || '<p>No saved resumes.</p>'}</div>`;
+  document.getElementById('logoutBtn')?.addEventListener('click', async () => { await supabase.auth.signOut(); loadProfilePage(); });
+  document.querySelectorAll('.load-resume').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-id');
+      const resume = resumes.find(r => r.id === id);
+      if (resume) {
+        localStorage.setItem('loadResumeData', JSON.stringify(resume));
+        window.location.href = 'resume.html';
+      }
+    });
+  });
+  document.querySelectorAll('.delete-resume').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-id');
+      if (confirm('Delete this resume?')) { await supabase.from('resumes').delete().eq('id', id); loadProfilePage(); }
+    });
   });
 }
+if (document.getElementById('profileContainer')) loadProfilePage();
 
-async function login() {
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) alert(error.message);
-  else window.switchPage('profile');
-}
-
-async function signup() {
-  const email = document.getElementById('signupEmail').value;
-  const password = document.getElementById('signupPassword').value;
-  const full_name = document.getElementById('signupName').value;
-  const { error, data } = await supabase.auth.signUp({ email, password });
-  if (error) alert(error.message);
-  else {
-    if (data.user) await supabase.from('profiles').update({ full_name }).eq('id', data.user.id);
-    alert('Sign-up successful! Please check your email to confirm.');
-    window.switchPage('profile');
+if (window.location.pathname.includes('resume.html')) {
+  const loadData = localStorage.getItem('loadResumeData');
+  if (loadData) {
+    const resume = JSON.parse(loadData);
+    setTimeout(() => {
+      const firstName = document.getElementById('firstName');
+      if (firstName) {
+        firstName.value = resume.first_name;
+        document.getElementById('lastName').value = resume.last_name;
+        document.getElementById('jobTitle').value = resume.job_title;
+        document.getElementById('phone').value = resume.phone;
+        document.getElementById('email').value = resume.email;
+        document.getElementById('address').value = resume.address;
+        document.getElementById('summary').value = resume.summary;
+        document.getElementById('experience').value = resume.experience;
+        document.getElementById('education').value = resume.education;
+        document.getElementById('skills').value = resume.skills;
+        document.getElementById('languages').value = resume.languages;
+        document.getElementById('awards').value = resume.awards;
+        document.getElementById('references').value = resume.references;
+        const event = new Event('input');
+        firstName.dispatchEvent(event);
+      }
+      localStorage.removeItem('loadResumeData');
+    }, 100);
   }
 }
 
-window.loadResume = async function(resumeId) {
-  const { data: resume } = await supabase.from('resumes').select('data').eq('id', resumeId).single();
-  if (resume && resume.data) {
-    const d = resume.data;
-    document.getElementById('fullName').value = d.fullName || '';
-    document.getElementById('jobTitle').value = d.jobTitle || '';
-    document.getElementById('email').value = d.email || '';
-    document.getElementById('phone').value = d.phone || '';
-    document.getElementById('summary').value = d.summary || '';
-    document.getElementById('experience').value = d.experience || '';
-    document.getElementById('skills').value = d.skills || '';
-    updatePreview();
-    window.switchPage('resume');
-    alert('Resume loaded!');
-  }
-};
+// Helper
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-  initResumeBuilder();
-  if (document.querySelector('.page-section.active-page')?.id === 'profile-page') renderProfilePage();
-});
+// Hustler nomination
+const nominateBtn = document.getElementById('nominateBtn');
+if (nominateBtn) {
+  nominateBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.open('https://wa.me/27794874559?text=I%20want%20to%20nominate%20someone%20for%20Hustler%20of%20the%20Month', '_blank');
+  });
+}

@@ -1161,3 +1161,59 @@ body.dark-mode .btn-secondary {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================
+   RESET & BASE
+========================= */
+* { margin: 0; padding: 0; box-sizing: border-box; max-width: 100%; }
+html, body { width: 100%; height: 100%; overflow-x: hidden; font-family: 'Chivo', sans-serif; background: #f9f7f6; color: #1e293b; line-height: 1.6; scroll-behavior: smooth; font-size: 14px; }
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Chivo:wght@300;400;500;600;700&display=swap');
+
+:root { --primary: #014656; --accent: #00a2ad; --gold: #f6a801; --white: #ffffff; --text-dark: #1e293b; --gray-border: #e2e8f0; --shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+
+h1, h2, h3, h4, h5, h6, .section-header h2, .founder-name { font-family: 'Rubik Mono One', monospace; font-weight: 400; color: var(--primary); margin-bottom: 0.75rem; }
+h1 { font-size: 1.8rem; } h2 { font-size: 1.5rem; } h3 { font-size: 1.2rem; }
+p, li, a, button, input, textarea, .nav-menu a { font-family: 'Chivo', sans-serif; }
+
+/* Buttons */
+.btn-primary, .btn-outline, button { display: inline-block; padding: 0.7rem 1.8rem; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; font-size: 0.85rem; }
+.btn-primary, button { background: var(--accent); color: white; }
+.btn-primary:hover, button:hover { background: var(--gold); transform: translateY(-2px); }
+.btn-outline { background: transparent; border: 2px solid var(--accent); color: var(--accent); }
+
+/* Top Bar, Header, Navigation – as before */
+.top-bar { background: var(--primary); color: white; padding: 0.4rem 5%; display: flex; justify-content: flex-end; gap: 1rem; flex-wrap: wrap; }
+.main-header { background: var(--white); padding: 1.5rem 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; border-bottom: 1px solid var(--gray-border); }
+.logo-link img { max-height: 260px; width: auto; }
+.crest-right { text-align: right; font-size: 0.7rem; color: #6b6a5f; border-left: 2px solid var(--accent); padding-left: 1rem; }
+.nav-bar { background: var(--white); padding: 0.5rem 5%; border-bottom: 1px solid var(--gray-border); }
+.nav-menu { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+.nav-menu a { color: var(--text-dark); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; padding-bottom: 4px; border-bottom: 2px solid transparent; }
+.nav-menu a:hover, .nav-menu a.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* Hero, Stats, Cards – same as before */
+.hero { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; padding: 3rem 5%; display: flex; flex-wrap: wrap; gap: 3rem; }
+.stat-number { font-size: 1.6rem; font-weight: 700; font-family: 'Rubik Mono One', monospace; }
+.service-card, .chores-card, .feature-card, .partner-card { background: var(--white); border-radius: 24px; border: 1px solid var(--gray-border); transition: 0.2s; box-shadow: var(--shadow); }
+.service-card:hover { transform: translateY(-4px); }
+
+/* Resume Builder – original two-column layout */
+.resume-section { padding: 2rem 5%; }
+.builder-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem; }
+.form-panel, .preview-panel { background: var(--white); border-radius: 28px; padding: 1.5rem; border: 1px solid var(--gray-border); }
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 0.3rem; }
+.form-group input, .form-group textarea { width: 100%; padding: 0.6rem 0.8rem; border: 1px solid var(--gray-border); border-radius: 12px; font-size: 0.85rem; }
+.cv-preview { background: white; padding: 1.5rem; border-radius: 20px; min-height: 400px; overflow-x: auto; border: 1px solid var(--gray-border); }
+.download-btn { text-align: center; margin-top: 1rem; }
+
+/* Profile, Footer, Back to Top */
+.profile-container { max-width: 800px; margin: 2rem auto; background: white; border-radius: 28px; padding: 2rem; border: 1px solid var(--gray-border); }
+.auth-form { max-width: 360px; margin: 0 auto; }
+.footer { background: var(--primary); color: white; padding: 2.5rem 5% 1.5rem; margin-top: 3rem; }
+.back-to-top { position: fixed; bottom: 2rem; right: 2rem; background: var(--accent); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; visibility: hidden; transition: all 0.3s; }
+.back-to-top.show { opacity: 1; visibility: visible; }
+
+/* Responsive */
+@media (max-width: 1024px) { .builder-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .main-header { flex-direction: column; text-align: center; } .crest-right { border-left: none; } }

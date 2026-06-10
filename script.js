@@ -61,12 +61,11 @@ function animateStats() {
 if (document.querySelector('.stat-number')) animateStats();
 
 // ==========================================
-// RESUME BUILDER – SIMPLE WORKING VERSION
+// RESUME BUILDER – FIXED PREVIEW & DOWNLOAD
 // ==========================================
 document.addEventListener('DOMContentLoaded', function() {
+  // Get all form elements
   const firstName = document.getElementById('firstName');
-  if (!firstName) return;
-
   const lastName = document.getElementById('lastName');
   const jobTitle = document.getElementById('jobTitle');
   const phone = document.getElementById('phone');
@@ -83,6 +82,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const downloadBtn = document.getElementById('downloadPdfBtn');
   const saveBtn = document.getElementById('saveResumeBtn');
 
+  // Exit if not on resume page
+  if (!firstName) return;
+
+  // Helper functions
   function parseExperience(t) {
     return t.split('\n').filter(l=>l.trim()).map(l=>{
       const p=l.split('|').map(v=>v.trim());
@@ -110,74 +113,146 @@ document.addEventListener('DOMContentLoaded', function() {
   function getSkillsArray() { return skills.value.split(',').map(s=>s.trim()).filter(s=>s); }
   function getLanguagesArray() { return languages.value.split(',').map(l=>l.trim()).filter(l=>l); }
 
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+  }
+
+  // Professional template
   function professionalTemplate(d) {
     return `
       <div class="resume-a4" style="font-family:'Chivo',sans-serif;padding:1rem;">
-        <div style="text-align:center;"><h1 style="font-family:'Rubik Mono One',monospace;color:#014656;">${escapeHtml(d.firstName)} ${escapeHtml(d.lastName)}</h1><p style="color:#00a2ad;">${escapeHtml(d.jobTitle)}</p></div>
-        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;background:#f0f9fa;padding:0.6rem;border-radius:8px;"><span><i class="fas fa-phone"></i> ${escapeHtml(d.phone)}</span><span><i class="fas fa-envelope"></i> ${escapeHtml(d.email)}</span><span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(d.address)}</span></div>
+        <div style="text-align:center;">
+          <h1 style="font-family:'Rubik Mono One',monospace;color:#014656;">${escapeHtml(d.firstName)} ${escapeHtml(d.lastName)}</h1>
+          <p style="color:#00a2ad;">${escapeHtml(d.jobTitle)}</p>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;background:#f0f9fa;padding:0.6rem;border-radius:8px;">
+          <span><i class="fas fa-phone"></i> ${escapeHtml(d.phone)}</span>
+          <span><i class="fas fa-envelope"></i> ${escapeHtml(d.email)}</span>
+          <span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(d.address)}</span>
+        </div>
         <div style="display:flex;gap:1.5rem;margin-top:1rem;">
-          <div style="flex:1.5;"><h2 style="font-family:'Rubik Mono One',monospace;border-bottom:2px solid #00a2ad;">Professional Summary</h2><p>${escapeHtml(d.summary)}</p>
-          <h2>Work Experience</h2>${d.experience.map(exp=>`<div><strong>${escapeHtml(exp.position)}</strong> at ${escapeHtml(exp.company)} (${escapeHtml(exp.start)}–${escapeHtml(exp.end)})<br><em>${escapeHtml(exp.location)}</em><br>${escapeHtml(exp.description)}</div>`).join('')}
-          <h2>Education</h2>${d.education.map(edu=>`<div><strong>${escapeHtml(edu.degree)}</strong> – ${escapeHtml(edu.institution)} (${escapeHtml(edu.start)}–${escapeHtml(edu.end)})</div>`).join('')}</div>
-          <div style="flex:1;"><h2>Skills</h2><ul>${d.skills.map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ul>
-          <h2>Languages</h2><ul>${d.languages.map(l=>`<li>${escapeHtml(l)}</li>`).join('')}</ul>
-          ${d.awards.length?`<h2>Awards</h2><ul>${d.awards.map(aw=>`<li><strong>${escapeHtml(aw.title)}</strong> (${escapeHtml(aw.year)}) – ${escapeHtml(aw.description)}</li>`).join('')}</ul>`:''}
-          ${d.references.length?`<h2>References</h2><ul>${d.references.map(ref=>`<li>${escapeHtml(ref.name)}, ${escapeHtml(ref.company)}<br>${escapeHtml(ref.phone)} | ${escapeHtml(ref.email)}</li>`).join('')}</ul>`:''}</div>
+          <div style="flex:1.5;">
+            <h2 style="font-family:'Rubik Mono One',monospace;border-bottom:2px solid #00a2ad;">Professional Summary</h2>
+            <p>${escapeHtml(d.summary)}</p>
+            <h2>Work Experience</h2>
+            ${d.experience.map(exp=>`<div><strong>${escapeHtml(exp.position)}</strong> at ${escapeHtml(exp.company)} (${escapeHtml(exp.start)}–${escapeHtml(exp.end)})<br><em>${escapeHtml(exp.location)}</em><br>${escapeHtml(exp.description)}</div>`).join('')}
+            <h2>Education</h2>
+            ${d.education.map(edu=>`<div><strong>${escapeHtml(edu.degree)}</strong> – ${escapeHtml(edu.institution)} (${escapeHtml(edu.start)}–${escapeHtml(edu.end)})</div>`).join('')}
+          </div>
+          <div style="flex:1;">
+            <h2>Skills</h2>
+            <ul>${d.skills.map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ul>
+            <h2>Languages</h2>
+            <ul>${d.languages.map(l=>`<li>${escapeHtml(l)}</li>`).join('')}</ul>
+            ${d.awards.length?`<h2>Awards</h2><ul>${d.awards.map(aw=>`<li><strong>${escapeHtml(aw.title)}</strong> (${escapeHtml(aw.year)}) – ${escapeHtml(aw.description)}</li>`).join('')}</ul>`:''}
+            ${d.references.length?`<h2>References</h2><ul>${d.references.map(ref=>`<li>${escapeHtml(ref.name)}, ${escapeHtml(ref.company)}<br>${escapeHtml(ref.phone)} | ${escapeHtml(ref.email)}</li>`).join('')}</ul>`:''}
+          </div>
         </div>
       </div>
     `;
   }
 
+  // Update preview
   function updatePreview() {
     const data = {
-      firstName: firstName.value, lastName: lastName.value, jobTitle: jobTitle.value,
-      phone: phone.value, email: emailField.value, address: address.value, summary: summary.value,
-      experience: parseExperience(experience.value), education: parseEducation(education.value),
-      skills: getSkillsArray(), languages: getLanguagesArray(),
-      awards: parseAwards(awards.value), references: parseReferences(references.value)
+      firstName: firstName.value,
+      lastName: lastName.value,
+      jobTitle: jobTitle.value,
+      phone: phone.value,
+      email: emailField.value,
+      address: address.value,
+      summary: summary.value,
+      experience: parseExperience(experience.value),
+      education: parseEducation(education.value),
+      skills: getSkillsArray(),
+      languages: getLanguagesArray(),
+      awards: parseAwards(awards.value),
+      references: parseReferences(references.value)
     };
     cvPreview.innerHTML = professionalTemplate(data);
   }
 
+  // PDF Download
   async function downloadPDF() {
     try {
-      const canvas = await html2canvas(cvPreview, { scale: 2, backgroundColor: '#ffffff' });
+      // Ensure the preview is fully rendered
+      const element = cvPreview;
+      if (!element) return alert('Preview not ready');
+      
+      // Use html2canvas to capture the preview
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        logging: false,
+        useCORS: true
+      });
       const imgData = canvas.toDataURL('image/png');
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgWidth = 210;
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight, position = 0;
+      let heightLeft = imgHeight;
+      let position = 0;
       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= 297;
+      heightLeft -= pageHeight;
       while (heightLeft > 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
         pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= 297;
+        heightLeft -= pageHeight;
       }
       pdf.save('resume.pdf');
-    } catch(err) { alert('PDF generation failed'); }
+    } catch (err) {
+      console.error(err);
+      alert('PDF generation failed: ' + err.message);
+    }
   }
 
+  // Save to Supabase
   async function saveResume() {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { alert('Please sign in first'); return; }
+    if (!user) {
+      alert('Please sign in on the Profile page first.');
+      return;
+    }
     const resumeData = {
-      user_id: user.id, first_name: firstName.value, last_name: lastName.value, job_title: jobTitle.value,
-      phone: phone.value, email: emailField.value, address: address.value, summary: summary.value,
-      experience: experience.value, education: education.value, skills: skills.value, languages: languages.value,
-      awards: awards.value, references: references.value, created_at: new Date().toISOString()
+      user_id: user.id,
+      first_name: firstName.value,
+      last_name: lastName.value,
+      job_title: jobTitle.value,
+      phone: phone.value,
+      email: emailField.value,
+      address: address.value,
+      summary: summary.value,
+      experience: experience.value,
+      education: education.value,
+      skills: skills.value,
+      languages: languages.value,
+      awards: awards.value,
+      references: references.value,
+      created_at: new Date().toISOString()
     };
     const { error } = await supabase.from('resumes').insert([resumeData]);
-    if (error) alert('Save failed: '+error.message);
-    else alert('Resume saved!');
+    if (error) {
+      alert('Save failed: ' + error.message);
+    } else {
+      alert('Resume saved to your profile!');
+    }
   }
 
-  const inputs = [firstName, lastName, jobTitle, phone, emailField, address, summary, experience, education, skills, languages, awards, references];
-  inputs.forEach(inp => inp.addEventListener('input', updatePreview));
-  downloadBtn.addEventListener('click', downloadPDF);
-  saveBtn.addEventListener('click', saveResume);
+  // Attach event listeners to all inputs
+  const allInputs = [firstName, lastName, jobTitle, phone, emailField, address, summary, experience, education, skills, languages, awards, references];
+  allInputs.forEach(input => {
+    if (input) input.addEventListener('input', updatePreview);
+  });
+
+  // Attach button listeners
+  if (downloadBtn) downloadBtn.addEventListener('click', downloadPDF);
+  if (saveBtn) saveBtn.addEventListener('click', saveResume);
+
+  // Initial preview
   updatePreview();
 });
 
@@ -189,15 +264,25 @@ async function loadProfilePage() {
   if (!container) return;
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
-    container.innerHTML = `<div class="auth-form"><h2>Sign In / Sign Up</h2><input type="email" id="authEmail" placeholder="Email"><input type="password" id="authPassword" placeholder="Password"><button id="loginBtn" class="btn-primary">Sign In</button><button id="signupBtn" class="btn-outline">Sign Up</button></div>`;
+    container.innerHTML = `
+      <div class="auth-form">
+        <h2>Sign In / Sign Up</h2>
+        <input type="email" id="authEmail" placeholder="Email" required>
+        <input type="password" id="authPassword" placeholder="Password" required>
+        <button id="loginBtn" class="btn-primary">Sign In</button>
+        <button id="signupBtn" class="btn-outline">Sign Up</button>
+      </div>
+    `;
     document.getElementById('loginBtn')?.addEventListener('click', async () => {
-      const email = document.getElementById('authEmail').value, pwd = document.getElementById('authPassword').value;
+      const email = document.getElementById('authEmail').value;
+      const pwd = document.getElementById('authPassword').value;
       const { error } = await supabase.auth.signInWithPassword({ email, password: pwd });
       alert(error ? error.message : 'Logged in!');
       if (!error) loadProfilePage();
     });
     document.getElementById('signupBtn')?.addEventListener('click', async () => {
-      const email = document.getElementById('authEmail').value, pwd = document.getElementById('authPassword').value;
+      const email = document.getElementById('authEmail').value;
+      const pwd = document.getElementById('authPassword').value;
       const { error } = await supabase.auth.signUp({ email, password: pwd });
       alert(error ? error.message : 'Account created! You can now sign in.');
     });
@@ -205,8 +290,30 @@ async function loadProfilePage() {
   }
   const { data: resumes, error } = await supabase.from('resumes').select('*').eq('user_id', user.id);
   if (error) console.error(error);
-  container.innerHTML = `<h2>Your Profile</h2><p><strong>Email:</strong> ${user.email}</p><p><strong>Account created:</strong> ${new Date(user.created_at).toLocaleDateString()}</p><p><strong>Saved resumes:</strong> ${resumes?.length || 0}</p><button id="logoutBtn" class="btn-outline" style="background:#dc3545;color:white;">Sign Out</button><hr><h3>Your Resumes</h3><div id="savedResumesList">${(resumes || []).map(r => `<div class="saved-resume-item"><span><strong>${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</strong> – ${escapeHtml(r.job_title)}</span><button class="load-resume" data-id="${r.id}">Load</button><button class="delete-resume" data-id="${r.id}" style="background:#dc3545;">Delete</button></div>`).join('') || '<p>No saved resumes.</p>'}</div>`;
-  document.getElementById('logoutBtn')?.addEventListener('click', async () => { await supabase.auth.signOut(); loadProfilePage(); });
+  container.innerHTML = `
+    <h2>Your Profile</h2>
+    <p><strong>Email:</strong> ${user.email}</p>
+    <p><strong>Account created:</strong> ${new Date(user.created_at).toLocaleDateString()}</p>
+    <p><strong>Saved resumes:</strong> ${resumes?.length || 0}</p>
+    <button id="logoutBtn" class="btn-outline" style="background:#dc3545;color:white;">Sign Out</button>
+    <hr>
+    <h3>Your Resumes</h3>
+    <div id="savedResumesList">
+      ${(resumes || []).map(r => `
+        <div class="saved-resume-item">
+          <span><strong>${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</strong> – ${escapeHtml(r.job_title)}</span>
+          <div>
+            <button class="btn-sm load-resume" data-id="${r.id}">Load</button>
+            <button class="btn-sm delete-resume" data-id="${r.id}" style="background:#dc3545;color:white;">Delete</button>
+          </div>
+        </div>
+      `).join('') || '<p>No saved resumes.</p>'}
+    </div>
+  `;
+  document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    loadProfilePage();
+  });
   document.querySelectorAll('.load-resume').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = btn.getAttribute('data-id');
@@ -220,12 +327,18 @@ async function loadProfilePage() {
   document.querySelectorAll('.delete-resume').forEach(btn => {
     btn.addEventListener('click', async () => {
       const id = btn.getAttribute('data-id');
-      if (confirm('Delete this resume?')) { await supabase.from('resumes').delete().eq('id', id); loadProfilePage(); }
+      if (confirm('Delete this resume?')) {
+        await supabase.from('resumes').delete().eq('id', id);
+        loadProfilePage();
+      }
     });
   });
 }
 if (document.getElementById('profileContainer')) loadProfilePage();
 
+// ==========================================
+// LOAD SAVED RESUME DATA ON RESUME PAGE
+// ==========================================
 if (window.location.pathname.includes('resume.html')) {
   const loadData = localStorage.getItem('loadResumeData');
   if (loadData) {
@@ -246,6 +359,7 @@ if (window.location.pathname.includes('resume.html')) {
         document.getElementById('languages').value = resume.languages;
         document.getElementById('awards').value = resume.awards;
         document.getElementById('references').value = resume.references;
+        // Trigger preview update
         const event = new Event('input');
         firstName.dispatchEvent(event);
       }
@@ -254,13 +368,20 @@ if (window.location.pathname.includes('resume.html')) {
   }
 }
 
-// Helper
+// Helper escapeHtml
 function escapeHtml(str) {
   if (!str) return '';
-  return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+  return str.replace(/[&<>]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    return m;
+  });
 }
 
-// Hustler nomination
+// ==========================================
+// HUSTLER NOMINATION
+// ==========================================
 const nominateBtn = document.getElementById('nominateBtn');
 if (nominateBtn) {
   nominateBtn.addEventListener('click', (e) => {

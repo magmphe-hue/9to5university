@@ -1,5 +1,5 @@
 /* ============================================================
-   9to5 University – Main Styles (existing + new resume builder)
+   9to5 University – Complete Styles (Existing + New Resume Builder)
    ============================================================ */
 * {
   margin: 0;
@@ -18,6 +18,7 @@ body {
   --primary: #014656;
   --primary-dark: #013544;
   --accent: #00a2ad;
+  --accent-light: #2fb8c2;
   --gold-light: #fdd65d;
   --gold: #f6a801;
   --bg-light: #f9f7f6;
@@ -25,7 +26,7 @@ body {
   --text-dark: #1f2937;
 }
 
-/* --- Existing Global Styles (unchanged) --- */
+/* ---------- Buttons (Global) ---------- */
 .btn-primary, .btn-outline {
   display: inline-block;
   padding: 12px 28px;
@@ -54,13 +55,638 @@ body {
   background: var(--accent);
   color: white;
 }
-/* ... (all existing styles for top-bar, main-header, nav, hero, cards, etc. remain as before) ... */
-/* I'm keeping only the essential new additions below; assume your existing styles are kept. */
+
+/* ---------- Top Bar ---------- */
+.top-bar {
+  background: var(--primary);
+  color: white;
+  padding: 0.6rem 5%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.top-bar a {
+  color: white;
+  text-decoration: none;
+}
+.whatsapp-icon, .facebook-icon, .signin-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.whatsapp-icon { background: #25D366; }
+.facebook-icon { background: #1877f2; }
+.facebook-icon:hover { background: #0f5bdb; }
+.signin-icon {
+  border: 1px solid white;
+  background: transparent;
+}
+.signin-icon:hover {
+  background: white;
+  color: var(--primary);
+}
+
+/* ---------- Header ---------- */
+.main-header {
+  background: var(--white);
+  padding: 2rem 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+.logo-link {
+  display: inline-block;
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+.logo-link:hover { transform: scale(1.02); }
+.logo-link img {
+  max-height: 320px;
+  width: auto;
+}
+.crest-right {
+  text-align: right;
+  font-size: 0.85rem;
+  color: #6b6a5f;
+  border-left: 2px solid var(--accent);
+  padding-left: 1rem;
+}
+.crest-right span {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+/* ---------- Navigation ---------- */
+.nav-bar {
+  background: var(--white);
+  padding: 0.6rem 5%;
+  border-bottom: 1px solid #e5e7eb;
+}
+.nav-menu {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.nav-menu a {
+  color: var(--text-dark);
+  text-decoration: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+  transition: 0.2s;
+}
+.nav-menu a:hover, .nav-menu a.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+  padding: 3rem 5%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: space-between;
+}
+.hero-text {
+  flex: 2;
+  min-width: 280px;
+}
+.hero-text h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+.hero-text p {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  border-left: 3px solid var(--gold-light);
+  padding-left: 1rem;
+}
+.stat-grid {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+.stat-card {
+  background: rgba(255,255,255,0.15);
+  padding: 0.6rem 1rem;
+  border-radius: 30px;
+  text-align: center;
+  flex: 1;
+  min-width: 100px;
+}
+.stat-number {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+.hero-card {
+  flex: 1;
+  background: rgba(255,255,255,0.1);
+  border-radius: 24px;
+  padding: 1.5rem;
+  backdrop-filter: blur(4px);
+  min-width: 260px;
+}
+
+/* ---------- Section Headers ---------- */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 2.5rem 5% 1rem;
+}
+.section-header i {
+  font-size: 1.8rem;
+  color: var(--accent);
+}
+.section-header h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* ---------- Service Cards ---------- */
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  padding: 0 5% 2rem;
+}
+.service-card {
+  background: var(--white);
+  border-radius: 24px;
+  padding: 1.5rem;
+  flex: 1 1 280px;
+  max-width: 320px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  transition: 0.2s;
+  border: 1px solid #e5e7eb;
+}
+.service-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+}
+.service-icon {
+  font-size: 2.2rem;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+.service-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+/* ---------- Chores, Feature, Partner Cards (Existing) ---------- */
+.chores-card, .feature-card, .partner-card {
+  background: var(--white);
+  border-radius: 28px;
+  border: 1px solid #e5e7eb;
+  margin: 1.5rem 5% 2rem;
+  overflow: hidden;
+}
+.chores-header, .feature-header {
+  background: #fef7e6;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+.chores-header i, .feature-header i { color: var(--accent); font-size: 1.3rem; }
+.chores-header h3, .feature-header span { font-weight: 700; color: var(--primary); }
+.chores-content { padding: 2rem; }
+.chores-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+}
+.chore-item {
+  flex: 1;
+  min-width: 260px;
+  background: #fef7e6;
+  border-radius: 20px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.2s;
+}
+.chore-item:hover { transform: translateY(-3px); }
+.chore-icon {
+  font-size: 2rem;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+.chore-amount {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+}
+.feature-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 2rem;
+  align-items: flex-start;
+}
+.feature-image-container {
+  flex: 0 0 200px;
+  text-align: center;
+}
+.feature-image-container img {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+}
+.feature-story-container { flex: 2; }
+.founder-name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.3rem;
+}
+.brand-tag {
+  background: #eef2f6;
+  display: inline-block;
+  padding: 0.2rem 1rem;
+  border-radius: 30px;
+  font-size: 0.75rem;
+}
+.stats-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+.stat-pill {
+  background: #eef2f6;
+  padding: 0.3rem 1rem;
+  border-radius: 30px;
+  font-size: 0.75rem;
+}
+.stat-pill i { color: var(--accent); margin-right: 6px; }
+.social-links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+.social-btn {
+  background: #eef2f6;
+  padding: 0.4rem 1rem;
+  border-radius: 30px;
+  text-decoration: none;
+  color: var(--text-dark);
+  font-size: 0.75rem;
+}
+.social-btn:hover {
+  background: var(--accent);
+  color: white;
+}
+.order-container {
+  flex: 0 0 200px;
+  background: #fef7e6;
+  border-radius: 20px;
+  padding: 1rem;
+  text-align: center;
+}
+.order-container img {
+  width: 100%;
+  max-width: 150px;
+  height: auto;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+}
+.watch-price {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+.order-btn {
+  background: var(--accent);
+  color: white;
+  padding: 0.4rem;
+  border-radius: 40px;
+  display: block;
+  text-decoration: none;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* ---------- Partners Grid ---------- */
+.partners-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin: 2rem 5%;
+}
+.partner-card {
+  flex: 1;
+  margin: 0;
+  padding: 1.5rem;
+}
+.partner-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.partner-logo {
+  height: 70px;
+  width: auto;
+  object-fit: contain;
+}
+.partner-badge {
+  background: #eef2f6;
+  padding: 0.2rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  color: var(--accent);
+}
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: 1rem 0;
+}
+.contact-link {
+  background: #f8fafc;
+  padding: 0.4rem 1rem;
+  border-radius: 40px;
+  text-decoration: none;
+  color: var(--text-dark);
+  border: 1px solid #e5e7eb;
+  font-size: 0.75rem;
+}
+.contact-link:hover {
+  background: var(--accent);
+  color: white;
+}
+
+/* ---------- Empty Store ---------- */
+.empty-store-section {
+  background: #0a0f1c;
+  margin: 2rem 5%;
+  border-radius: 32px;
+  padding: 3rem 2rem;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.2);
+}
+.empty-store-content i {
+  font-size: 3rem;
+  color: #ffb347;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+.empty-store-content h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.3px;
+}
+.empty-store-content p {
+  font-size: 1.1rem;
+  color: #b0b8c5;
+  margin-bottom: 1.5rem;
+}
+.store-notice {
+  background: rgba(255,255,255,0.05);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 60px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: #ffd966;
+}
+.store-placeholder {
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  color: #8c9aab;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-top: 1px dashed rgba(255,255,255,0.2);
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+}
+.store-placeholder span {
+  padding: 0.2rem 0.8rem;
+  background: rgba(255,255,255,0.03);
+  border-radius: 30px;
+}
+
+/* ---------- Other Pages (Workers' Rights, Issues, Contact) ---------- */
+.content-page {
+  background: var(--white);
+  border-radius: 28px;
+  margin: 2rem 5%;
+  padding: 2rem;
+  border: 1px solid #e5e7eb;
+}
+.report-links {
+  background: #fef7e6;
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border-left: 4px solid var(--gold);
+}
+.city-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* ---------- Profile Page ---------- */
+.profile-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  background: white;
+  border-radius: 28px;
+  padding: 2rem;
+  border: 1px solid #e5e7eb;
+}
+.auth-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+.auth-form input {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border-radius: 40px;
+  border: 1px solid #e5e7eb;
+}
+.saved-resume-item {
+  background: #f8fafc;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  background: var(--primary);
+  color: white;
+  padding: 3rem 5% 2rem;
+  margin-top: 3rem;
+}
+.footer-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2rem;
+}
+.footer-col h4 {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+.footer-col a, .footer-col p {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 0.85rem;
+  line-height: 1.8;
+}
+.footer-copyright {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #2f6e6e;
+  font-size: 0.7rem;
+}
+.footer-link {
+  color: #ccc;
+  text-decoration: none;
+}
+.footer-link:hover {
+  color: white;
+}
+
+/* ---------- Page Switching ---------- */
+.page-section {
+  display: none;
+}
+.active-page {
+  display: block;
+}
+
+/* ---------- Responsive (Global) ---------- */
+@media (max-width: 1024px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+  }
+  .hero-text p {
+    text-align: left;
+  }
+  .stat-grid {
+    justify-content: center;
+  }
+}
+@media (max-width: 768px) {
+  .main-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  .crest-right {
+    border-left: none;
+    padding-left: 0;
+  }
+  .logo-link img {
+    max-height: 180px;
+  }
+  .nav-menu a {
+    font-size: 0.75rem;
+  }
+  .feature-content {
+    flex-direction: column;
+    align-items: center;
+  }
+  .feature-image-container, .order-container {
+    flex: auto;
+    width: 100%;
+    max-width: 280px;
+  }
+  .chores-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+  .partners-grid {
+    flex-direction: column;
+  }
+  .empty-store-section {
+    margin: 1rem 5%;
+    padding: 2rem 1rem;
+  }
+  .empty-store-content h2 {
+    font-size: 1.6rem;
+  }
+  .store-placeholder {
+    gap: 0.5rem;
+  }
+}
+@media (max-width: 480px) {
+  .hero-text h1 {
+    font-size: 1.8rem;
+  }
+  .stat-number {
+    font-size: 1.4rem;
+  }
+  .section-header h2 {
+    font-size: 1.4rem;
+  }
+  .service-card {
+    max-width: 100%;
+  }
+  .profile-container {
+    padding: 1rem;
+  }
+  .footer-grid {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
 
 /* ============================================================
-   NEW RESUME BUILDER STYLES
+   NEW RESUME BUILDER STYLES (Scoped under #resume-page)
    ============================================================ */
-/* Reset inside builder */
 #resume-page * {
   margin: 0;
   padding: 0;
@@ -237,13 +863,7 @@ body {
 #resume-page .template-executive { font-family: 'Trebuchet MS', sans-serif; }
 #resume-page .template-creative { font-family: 'Poppins', sans-serif; }
 #resume-page .template-minimal { font-family: 'Arial', sans-serif; }
-/* Themes */
-#resume-page .theme-blue { --secondary: #2563eb; }
-#resume-page .theme-green { --secondary: #16a34a; }
-#resume-page .theme-gold { --secondary: #c89b00; }
-#resume-page .theme-purple { --secondary: #7c3aed; }
-#resume-page .theme-black { --secondary: #111827; }
-/* In resume, override section h2 color using theme */
+/* Themes – override section h2 color */
 #resume-page.theme-blue section h2,
 #resume-page.theme-green section h2,
 #resume-page.theme-gold section h2,
@@ -251,6 +871,11 @@ body {
 #resume-page.theme-black section h2 {
   color: var(--secondary, #2563eb);
 }
+#resume-page.theme-blue { --secondary: #2563eb; }
+#resume-page.theme-green { --secondary: #16a34a; }
+#resume-page.theme-gold { --secondary: #c89b00; }
+#resume-page.theme-purple { --secondary: #7c3aed; }
+#resume-page.theme-black { --secondary: #111827; }
 /* Dark mode */
 body.dark #resume-page {
   background: #0f172a;
@@ -273,7 +898,7 @@ body.dark #resume-page #resume {
   background: #fff;
   color: #111;
 }
-/* Responsive */
+/* Responsive (builder) */
 @media (max-width: 1100px) {
   #resume-page .container {
     grid-template-columns: 1fr;
@@ -306,7 +931,7 @@ body.dark #resume-page #resume {
     padding: 20px;
   }
 }
-/* Print styles */
+/* Print styles for resume */
 @media print {
   #resume-page header, #resume-page .left-panel {
     display: none;

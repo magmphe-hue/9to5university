@@ -1,5 +1,9 @@
 {
-  "rewrites": [
-    { "source": "/((?!.*\\.).*)", "destination": "/" }
+  "version": 2,
+  "static": {
+    "public": "."
+  },
+  "routes": [
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }
